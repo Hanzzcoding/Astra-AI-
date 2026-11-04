@@ -653,7 +653,7 @@ function logoHTML(){return `<img class="logo-img" src="${LOGO}" alt="ASTRA" oner
 function applyI18n(){document.querySelectorAll('[data-tp]').forEach(e=>e.placeholder=t(e.dataset.tp));document.querySelectorAll('[data-t]').forEach(e=>e.textContent=t(e.dataset.t))}
 let tt;function toast(m){const e=$('#toast');e.textContent=m;e.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>e.classList.remove('show'),2800)}
 function setTheme(th){S.theme=th;document.documentElement.dataset.theme=th;saveSettings()}
-function saveSettings(){DB.set('settings',{lang:S.lang,theme:S.theme,mode:S.mode})}
+function saveSettings(){DB.set('settings',{lang:S.lang,theme:S.theme,mode:S.mode});try{if(S.user&&typeof saveUser==='function')saveUser()}catch(e){}}
 function closePop(){document.querySelectorAll('.pop').forEach(p=>p.remove())}
 function closeModal(){const o=$('#ov');if(o){o.querySelectorAll('video,audio').forEach(v=>{try{v.pause();v.removeAttribute('src');v.load()}catch(e){}});o.remove()}}
 document.addEventListener('visibilitychange',()=>{document.querySelectorAll('#ov video').forEach(v=>{if(document.hidden)v.pause();else v.play().catch(()=>{})})});
@@ -676,7 +676,7 @@ function boot(){
   const st=DB.get('settings',null);if(st){S.lang=st.lang||'id';S.theme=st.theme||'dark';S.mode=st.mode||'balanced'}
   document.documentElement.dataset.theme=S.theme;applyI18n();
   const ses=DB.get('session',null);
-  if(ses&&tok()){const u=(DB.get('users',{}))[ses];if(u){S.user=u;applyLook();api('me','GET',null,1).then(o=>{Object.assign(S.user,pullData(o.data,S.user.email),{name:o.name,avatar:o.avatar,uid:o.id});DB.set('ouser',o);saveUser();applyLook();refreshChrome()}).catch(()=>toast('Mode offline: server belum bisa dihubungi'));return enter(false)}}
+  if(ses&&(tok()||DB.get('cred'))){const u=(DB.get('users',{}))[ses];if(u){S.user=u;applyLook();api('me','GET',null,1).then(o=>{Object.assign(S.user,pullData(o.data,S.user.email),{name:o.name,avatar:o.avatar,uid:o.id});DB.set('ouser',o);document.documentElement.dataset.theme=S.theme;saveUser();applyLook();refreshChrome()}).catch(()=>toast('Mode offline: server belum bisa dihubungi'));return enter(false)}}
   $('#auth').hidden=false;
 }
 $('#authForm').addEventListener('submit',e=>{e.preventDefault();authGo(false)});
@@ -1390,7 +1390,7 @@ function menuAct(a){
   else if(a==='help')modal(`<div class="mh"><h3>${t('help')}</h3><button class="ibtn" data-close>${ic('x')}</button></div><div class="bub" style="max-width:none;border:0;padding:0">${md('**Cara memakai ASTRA AI**\n- Ketik pesan lalu tekan tombol panah atas.\n- Tombol plus: unggah file, foto, atau video.\n- Tombol mikrofon: bicara, teks muncul di kolom pesan.\n- Tombol gambar: aktifkan mode pembuatan gambar.\n- Chip di sebelahnya: pilih mode berpikir.\n\n**Batas harian**\nKata dan gambar dihitung otomatis oleh sistem dan direset tiap hari. Lihat sisanya di bawah kolom pesan.')}</div>`);
   else if(a==='about')modal(`<div class="mh"><h3>${t('about')}</h3><button class="ibtn" data-close>${ic('x')}</button></div><div class="bub" style="max-width:none;border:0;padding:0">${md('**ASTRA AI** adalah asisten chat yang memakai model AI online (tanpa API key) dan mesin lokal sebagai cadangan.\n\nDibuat oleh **Ziurixy x Hanzzy**.\n\nKalau AI online tidak terjangkau, ASTRA memakai mesin lokal yang jawabannya terbatas.')}</div><div class="foot" style="text-align:center">From Ziurixy x Hanzzy</div>`);
   else if(a==='priv')modal(`<div class="mh"><h3>${t('privacy')}</h3><button class="ibtn" data-close>${ic('x')}</button></div><div class="bub" style="max-width:none;border:0;padding:0">${md('Akun, chat, saldo, dan batas pemakaian disimpan di database lokal browser ini. Saat kamu mengirim chat, pesan dikirim ke penyedia AI yang dipilih di Pengaturan (default: layanan AI online gratis). Di mode lokal tidak ada yang dikirim keluar. File yang kamu kirim disimpan di browser ini saja. Kalau Cari web aktif, kata kunci pertanyaanmu juga dikirim ke Wikipedia, GDELT (berita), atau Tavily (jika kamu memasang key). Pembuatan gambar mengirim deskripsimu ke layanan gambar online (Pollinations), dan pencarian gambar ke Wikimedia Commons atau Tavily. Pencarian berita memakai Google News lewat layanan perantara (allorigins atau rss2json). Suara Google bawaan diproses oleh mesin suara di perangkatmu (di Chrome bisa lewat layanan suara Google); suara natural gratis mengirim teks jawaban ke Pollinations.\n\nFitur suara memakai pengenalan suara bawaan browser, yang pada sebagian browser memprosesnya lewat layanan penyedia browser itu.\n\nPassword disimpan dalam bentuk hash.')}</div>`);
-  else if(a==='out'){try{MU.audio.pause()}catch(e){}DB.del('session');S.user=null;$('#app').hidden=true;$('#auth').hidden=false;$('#pw').value=''}
+  else if(a==='out'){try{MU.audio.pause()}catch(e){}DB.del('session');DB.del('cred');DB.del('tok');S.user=null;$('#app').hidden=true;$('#auth').hidden=false;$('#pw').value=''}
 }
 
 /* ===== MUSIK (link Catbox atau file suara) ===== */
@@ -1470,7 +1470,7 @@ function openSettings(scroll){
   {const c=DB.get('ai',{}),pv=o.querySelector('#aiProv'),cu=o.querySelector('#aiCust');pv.value=c.provider||'auto';o.querySelector('#aiUrl').value=c.url||'';o.querySelector('#aiKey').value=c.key||'';o.querySelector('#aiModel').value=c.model||'';o.querySelector('#aiTav').value=c.tav||'';cu.hidden=pv.value!=='custom';
    const sv=()=>{DB.set('ai',{provider:pv.value,url:o.querySelector('#aiUrl').value.trim(),key:o.querySelector('#aiKey').value.trim(),model:o.querySelector('#aiModel').value.trim(),tav:o.querySelector('#aiTav').value.trim()});cu.hidden=pv.value!=='custom'};
    o.querySelectorAll('#aiProv,#aiUrl,#aiKey,#aiModel,#aiTav').forEach(e=>e.onchange=sv)}
-  {const v=VC(),vp=o.querySelector('#vProv');vp.value=v.prov;vp.onchange=()=>DB.set('voice',{...VC(),prov:vp.value})}
+  {const v=VC(),vp=o.querySelector('#vProv');vp.value=v.prov;vp.onchange=()=>DB.set('voice',{...VC(),prov:vp.value});try{saveUser()}catch(e){}}
   o.querySelector('#clrBtn').onclick=e=>{const b=e.currentTarget;if(!b.dataset.s){b.dataset.s=1;b.textContent='Ketuk lagi untuk menghapus';return}purge(S.chats);S.chats=[];persist();newChat();closeModal();toast('Semua chat dihapus')};
   o.querySelector('#rstBtn').onclick=e=>{const b=e.currentTarget;if(!b.dataset.s){b.dataset.s=1;b.textContent='Ketuk lagi untuk reset';return}['chats:','usage:','mem:'].forEach(k=>DB.del(k+S.user.email));S.user.plan='free';saveUser();purge(S.chats);S.chats=[];newChat();refreshChrome();closeModal();toast('Data akun direset')};
   if(scroll)o.querySelector('#stor').scrollIntoView();
@@ -1691,22 +1691,33 @@ document.addEventListener('DOMContentLoaded',()=>{});
 /* ===== ASTRA ONLINE ===== */
 const API=(window.ASTRA_API||'https://server-astra-database.onrender.com').replace(/\/$/,'');
 const tok=()=>DB.get('tok','');
-async function api(p,m='GET',b,quiet){const c=new AbortController(),tm=setTimeout(()=>c.abort(),15000);
+async function api(p,m='GET',b,quiet,retry){const c=new AbortController(),tm=setTimeout(()=>c.abort(),15000);
  try{const r=await fetch(API+'/api/'+p,{method:m,signal:c.signal,headers:{'content-type':'application/json',authorization:'Bearer '+tok()},body:b?JSON.stringify(b):undefined});
   let o={};try{o=await r.json()}catch(e){}
   if(!r.ok){const msg=o.e||(r.status===503?'Server sedang penuh atau overload, coba lagi nanti':r.status>=500?'Server error ('+r.status+'), coba lagi sebentar':'Terjadi kesalahan ('+r.status+')');
-   if(!quiet)toast(msg);if(r.status===401&&tok()&&p!=='login'){DB.del('tok');setTimeout(()=>location.reload(),1500)}throw Object.assign(new Error(msg),{st:r.status})}
+   if(r.status===401&&!retry&&!['login','register'].includes(p)&&DB.get('cred')&&await recoverOnce())return api(p,m,b,quiet,1);
+   if(!quiet)toast(msg);if(r.status===401&&tok()&&!['login','register'].includes(p)){DB.del('tok');setTimeout(()=>location.reload(),1500)}throw Object.assign(new Error(msg),{st:r.status})}
   return o}catch(e){if(!e.st&&!quiet)toast(e.name==='AbortError'?'Server terlalu lama merespons (timeout)':'Tidak bisa terhubung ke server. Cek internet atau server mungkin mati');if(!e.st)e.message=e.name==='AbortError'?'Server timeout':'Tidak bisa terhubung ke server';throw e}finally{clearTimeout(tm)}}
+const shaK=async t=>{try{const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(t));return[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}catch(e){return 'x'+btoa(unescape(encodeURIComponent(t)))}};
+const dk=(em,pw)=>shaK('astra1:'+em+':'+pw);
 async function authGo(reg){const em=$('#em').value.trim().toLowerCase(),pw=$('#pw').value,er=$('#authErr');er.textContent='';
  if(!/^\S+@\S+\.\S+$/.test(em))return er.textContent='Format email belum benar.';
  if(pw.length<6)return er.textContent='Password minimal 6 karakter.';
  const bs=document.querySelectorAll('#authForm button');bs.forEach(b=>b.disabled=true);
- try{const o=await api(reg?'register':'login','POST',{email:em,pass:pw},1);adopt(o,em,reg)}catch(e){er.textContent=e.message;toast(e.message)}finally{bs.forEach(b=>b.disabled=false)}}
+ try{const key=await dk(em,pw);let o;
+  try{o=await api(reg?'register':'login','POST',{email:em,pass:key},1)}
+  catch(e){if(reg||e.st!==401)throw e;o=await api('login','POST',{email:em,pass:pw},1);DB.set('tok',o.token);try{await api('password','POST',{old:pw,new:key},1)}catch(x){}}
+  DB.set('cred',{e:em,p:key});adopt(o,em,reg)}catch(e){er.textContent=e.message;toast(e.message)}finally{bs.forEach(b=>b.disabled=false)}}
+let rcv;function recoverOnce(){return rcv||(rcv=(async()=>{const c=DB.get('cred');if(!c)return false;const old=DB.get('ouser',{});
+ for(const p of['login','register']){try{const o=await api(p,'POST',{email:c.e,pass:c.p},1,1);DB.set('tok',o.token);DB.set('ouser',o.user);
+  const body={};for(const f of['name','avatar','bg','wall','fx','status'])if(old[f]&&(p==='register'||!o.user[f]))body[f]=old[f];
+  if(Object.keys(body).length){try{const u=await api('profile','POST',body,1,1);DB.set('ouser',u)}catch(e){}}
+  if(S.user){S.user.uid=o.user.id;saveUser()}toast('Akunmu dipulihkan otomatis');return true}catch(e){if(e.st&&e.st!==401&&e.st!==409)return false}}return false})().finally(()=>setTimeout(()=>rcv=null,3000)))}
 function adopt(o,em,first){DB.set('tok',o.token);DB.set('session',em);const us=DB.get('users',{}),old=us[em]||{};
  const u=Object.assign({email:em,created:Date.now(),plan:'free',seenUpsell:false},old,pullData(o.data,em),{email:em,uid:o.user.id,name:o.user.name,avatar:o.user.avatar,welcome:first?1:old.welcome});
  us[em]=u;DB.set('users',us);DB.set('ouser',o.user);S.user=u;saveUser();$('#auth').hidden=true;applyLook();enter(first)}
-const packData=()=>{const e=S.user.email,d={...S.user};delete d.pass;delete d.avatar;d.__usage=DB.get('usage:'+e,null);d.__mem=DB.get('mem:'+e,null);d.__red=DB.get('redeemed',null);if(JSON.stringify(d).length>55e4)delete d.__mem;return d};
-const pullData=(d,e)=>{const x={...(d||{})};if(x.__usage)DB.set('usage:'+e,x.__usage);if(x.__mem)DB.set('mem:'+e,x.__mem);if(x.__red)DB.set('redeemed',x.__red);delete x.__usage;delete x.__mem;delete x.__red;return x};
+const packData=()=>{const e=S.user.email,d={...S.user};delete d.pass;delete d.avatar;d.__usage=DB.get('usage:'+e,null);d.__mem=DB.get('mem:'+e,null);d.__red=DB.get('redeemed',null);d.__set=DB.get('settings',null);d.__voice=DB.get('voice',null);d.__web=DB.get('web',null);if(JSON.stringify(d).length>55e4)delete d.__mem;return d};
+const pullData=(d,e)=>{const x={...(d||{})};if(x.__usage)DB.set('usage:'+e,x.__usage);if(x.__mem)DB.set('mem:'+e,x.__mem);if(x.__red)DB.set('redeemed',x.__red);if(x.__set){DB.set('settings',x.__set);Object.assign(S,{lang:x.__set.lang||S.lang,theme:x.__set.theme||S.theme,mode:x.__set.mode||S.mode})}if(x.__voice)DB.set('voice',x.__voice);if(x.__web!=null){DB.set('web',x.__web);S.web=!!x.__web}delete x.__usage;delete x.__mem;delete x.__red;delete x.__set;delete x.__voice;delete x.__web;return x};
 let syT;saveUser=function(){const u=DB.get('users',{});u[S.user.email]=S.user;DB.set('users',u);clearTimeout(syT);syT=setTimeout(()=>{if(tok()){api('sync','POST',{data:packData()},1).catch(()=>{})}},1500)};
 function applyLook(){const o=DB.get('ouser',{});let b=$('#acbg');if(!b){b=document.createElement('div');b.id='acbg';document.body.prepend(b)}
  b.style.backgroundImage=o.bg?`url(${o.bg})`:'none';b.classList.toggle('on',!!o.bg);
@@ -1801,8 +1812,8 @@ function account(){const me=DB.get('ouser',{}),o=modal(`<div class="mh"><h3>Peng
  const q=s=>o.querySelector(s),T=(f,m)=>f.then(()=>toast(m)).catch(()=>{});q('#fx').value=me.fx||'';
  q('#ans').onclick=()=>T(post({name:q('#an').value}),'Nama diganti');q('#fx').onchange=()=>T(post({fx:q('#fx').value}),'Efek diterapkan');
  q('#aa').onclick=()=>pick(256,d=>T(post({avatar:d}),'Foto profil diganti'),1);q('#ab').onclick=()=>pick(900,d=>T(post({bg:d}),'Background diganti'));q('#aw').onclick=()=>pick(900,d=>T(post({wall:d}),'Wallpaper bilah chat diganti'));
- q('#ps').onclick=()=>T(api('password','POST',{old:q('#po').value,new:q('#pn').value}),'Sandi diganti');
- q('#ao').onclick=()=>api('logoutall','POST',{}).then(()=>{DB.del('tok');location.reload()}).catch(()=>{});
+ q('#ps').onclick=async()=>{if(q('#pn').value.length<6)return toast('Password baru minimal 6 karakter');try{const k=await dk(S.user.email,q('#pn').value);await api('password','POST',{old:await dk(S.user.email,q('#po').value),new:k});DB.set('cred',{e:S.user.email,p:k});toast('Sandi diganti')}catch(e){}};
+ q('#ao').onclick=()=>api('logoutall','POST',{}).then(()=>{DB.del('tok');DB.del('cred');location.reload()}).catch(()=>{});
  q('#ax').onclick=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(S.chats||[])],{type:'application/json'}));a.download='astra-chat.json';a.click()};
  q('#ad').onclick=()=>{if(confirm('Hapus akun permanen?'))api('delete','POST',{}).then(()=>{DB.del('tok');DB.del('session');location.reload()}).catch(()=>{})}}
 const _ma=menuAct;menuAct=function(a){if(a==='com')room('com','Chat Komunitas');else if(a==='fr')privChat();else if(a==='st')statusPage();else if(a==='acc')account();else _ma(a)};
