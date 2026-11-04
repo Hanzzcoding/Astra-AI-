@@ -391,6 +391,7 @@ function linkify(raw){
 
 /* ---------- data awal: Ziurixy CS dan Ziurixy Official, keduanya dilayani asisten chat bot AI ---------- */
 var KEY='chatzix-demo-v2'+(AID?'-'+AID:'');
+function uid(){return 'm'+Date.now().toString(36)+Math.random().toString(36).slice(2,8)}
 function m(min){return Date.now()-min*60000}
 function csGreet(name){return 'Halo'+(name?', '+name:'')+'! Saya asisten AI '+OFF_NAME+', akun resmi '+APP_NAME+'. Selamat datang! Panduan lengkap ada di https://example.com/bantuan. Ketik "bantuan" untuk melihat topik yang bisa saya bantu.'}
 function csHuman(name){return 'Halo'+(name?', '+name:'')+'! Saya asisten AI '+CS_NAME+'. Selamat datang di '+APP_NAME+'! Tulis pertanyaan Anda, saya jawab otomatis. Kalau mau bicara dengan CS asli, ketuk tombol WhatsApp (0857-2256-7019).'}
