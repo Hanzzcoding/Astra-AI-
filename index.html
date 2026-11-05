@@ -197,9 +197,15 @@ details.think summary::-webkit-details-marker{display:none}
 .story{width:100%;height:100%;display:grid;place-items:center;padding:30px;text-align:center;font-size:26px;font-weight:700;color:#fff;position:relative}.story img{max-width:100%;max-height:100%}.story .cap{position:absolute;bottom:30px;left:0;right:0;margin:0;padding:0 20px;font-size:16px;text-shadow:0 1px 4px #000}
 .sw{display:flex;gap:8px}.sw i{width:30px;height:30px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:transform .15s}.sw i.on{border-color:#fff;transform:scale(1.2)}
 
-.czf{flex:1;width:100%;border:0;background:#fff}.sbar{position:absolute;left:0;right:0;top:0;display:flex;gap:10px;align-items:center;padding:14px;color:#fff;background:linear-gradient(#000a,transparent);z-index:2}.sbar .lk{margin-left:auto;background:rgba(255,255,255,.18);color:#fff;border-radius:99px;padding:6px 12px}.fsv.dark .story{width:100vw;height:100vh}.tb button.on{background:var(--accent);color:#fff}
+.czf{flex:1;width:100%;border:0;background:#fff}.fsv.dark .story{width:100vw;height:100vh}.tb button.on{background:var(--accent);color:#fff}
 .modal.full{position:relative}.ptab{display:flex;gap:6px}.ptab button{flex:1;padding:9px;border-radius:12px;background:var(--card);font-weight:700;transition:background .25s,color .25s}.ptab .on{background:var(--accent);color:#fff}.pgr{flex:1;display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior-x:contain}.pgr::-webkit-scrollbar{display:none}.pgr section{flex:0 0 100%;scroll-snap-align:start;overflow-y:auto;padding:4px;display:flex;flex-direction:column;gap:10px;min-width:0}
 .fab{position:absolute;right:22px;bottom:26px;width:58px;height:58px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-size:24px;box-shadow:0 8px 24px var(--glow);transition:transform .2s,opacity .3s}.fab:active{transform:scale(.9)}.cm{flex:1;min-width:0}.ct{display:flex;align-items:center;gap:6px}.ct i{margin-left:auto;font-style:normal;font-size:11px;color:var(--muted)}.cm small{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.bdg{background:var(--accent);color:#fff;border-radius:99px;font-size:12px;font-weight:800;padding:2px 8px}
+.fsv.sv{display:block}.svm{position:absolute;inset:0;display:grid;place-items:center;background:#000}.svm img{max-width:100%;max-height:100%}.svm .story{width:100%;height:100%}
+.svt{position:absolute;left:0;right:0;top:0;display:flex;gap:12px;align-items:center;padding:12px 14px;color:#fff;background:linear-gradient(#000b,transparent);z-index:2}.sx{width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.18);color:#fff;font-size:22px}.sn{display:flex;flex-direction:column}.sn span{font-size:12px;opacity:.8}
+.sbot{position:absolute;left:0;right:0;bottom:0;padding:14px 12px calc(14px + env(safe-area-inset-bottom));background:linear-gradient(transparent,rgba(0,0,0,.78));display:flex;flex-direction:column;gap:10px;color:#fff;z-index:2}.scap{margin:0;text-align:center;font-size:16px;text-shadow:0 1px 4px #000;overflow-wrap:anywhere}.sinfo{text-align:center;cursor:pointer}
+.sx{display:grid;place-items:center;font-size:24px;line-height:1}.sbot{gap:8px}.scap{background:rgba(0,0,0,.35);padding:8px 12px;border-radius:14px;text-align:left;max-height:30vh;overflow:auto;white-space:pre-wrap}.stray{flex-wrap:wrap}.srep .ibtn{flex:none;width:44px;height:44px;border-radius:50%}.srep .ibtn[hidden]{display:none}.lkb.on{background:rgba(255,70,100,.28)}.sflo{position:absolute;right:22px;bottom:110px;font-size:44px;pointer-events:none;animation:sflo 1s ease-out forwards;z-index:3}@keyframes sflo{to{transform:translateY(-140px) scale(1.5);opacity:0}}
+.stc{display:flex;flex-direction:column;gap:10px}.stc .stp{position:relative}.stc .stp img{width:100%;max-height:40vh;object-fit:cover;border-radius:14px;display:block}.stc .stp button{position:absolute;top:8px;right:8px;width:34px;height:34px;border-radius:50%;background:rgba(0,0,0,.6);color:#fff}.stc textarea{transition:background .2s}.stc .cnt{font-size:12px;color:var(--muted);text-align:right}
+.srep{display:flex;gap:8px;align-items:center}.srep .oin{flex:1;background:rgba(255,255,255,.14);color:#fff;border-color:rgba(255,255,255,.3);border-radius:99px}.srep .ibtn{background:rgba(255,255,255,.14);color:#fff}.lkb{width:50px;height:50px;border-radius:50%;background:rgba(255,255,255,.18);font-size:26px;transition:transform .2s cubic-bezier(.2,.9,.3,1.6)}.lkb:active{transform:scale(1.35)}.stray{display:flex;gap:6px;justify-content:flex-end;animation:rise .2s both}.stray button{font-size:26px;width:46px;height:46px;border-radius:50%;background:rgba(255,255,255,.16)}
 /* COMPOSER */
 footer.comp{padding:8px 14px 12px;background:var(--bg)}
 .cbox{max-width:780px;margin:0 auto;border:1px solid var(--line);border-radius:22px;background:var(--card);padding:10px 10px 8px;transition:border-color .2s,box-shadow .2s}
@@ -634,14 +640,17 @@ const roleKey=()=>plan().id;
 const roleHTML=k=>{const r=ROLES[k]||ROLES.free;return `<span class="role ${r[1]}">${k==='free'?'':ic('crown')}${r[0]}</span>`};
 const avail=p=>p.id!=='free';
 const today=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
-function usage(){const k='usage:'+S.user.email,u=DB.get(k,{}),now=Date.now(),p=plan();
- if(p.id==='free'){let n={words:0,images:0,streak:0,wEnd:0,iEnd:0,...u},ch=!u.day;
-  if(n.wEnd&&now>=n.wEnd){n.streak=n.words>=p.words*.9?Math.min((n.streak||0)+1,4):0;n.words=0;n.wEnd=0;ch=true}
-  if(n.iEnd&&now>=n.iEnd){n.images=0;n.iEnd=0;ch=true}
-  n.day=today();if(ch)DB.set(k,n);return n}
- if(u.day!==today()||u.wEnd||u.iEnd){const n={day:today(),words:0,images:0};DB.set(k,n);return n}
- return u}
-const saveUsage=u=>{if(plan().id==='free'){const n=Date.now();if(u.words>0&&!u.wEnd)u.wEnd=n+(180+(u.streak||0)*30)*60000;if(u.images>0&&!u.iEnd)u.iEnd=n+36e5}DB.set('usage:'+S.user.email,u)};
+const durOf=(w,p,W)=>p.words===Infinity?3*60000:Math.min(W,Math.max(3*60000,w/p.words*W));
+const estReset=(n,p,W)=>{const a=(n.log||[]).map(e=>[e[0]+durOf(e[1],p,W),e[1]]).sort((x,y)=>x[0]-y[0]);if(!a.length)return 0;let rem=a.reduce((t,e)=>t+e[1],0),i=0;const tg=p.words*.9;while(rem>tg&&i<a.length){rem-=a[i][1];i++}return i?a[i-1][0]:a[a.length-1][0]};
+function usage(){const k='usage:'+S.user.email,u=DB.get(k,{}),now=Date.now(),p=plan(),free=p.id==='free';
+ /* Jendela pemulihan: gratis maks 4 jam, berbayar maks 24 jam. Waktu pulih dihitung dari banyak pemakaian (bisa hitungan menit sampai jam). */
+ const W=free?240*60000:864e5;let n={words:0,images:0,streak:0,wEnd:0,iEnd:0,...u},ch=!u.day;
+ if(!Array.isArray(u.log)){n.log=u.words>0&&(free?u.wEnd>now:u.day===today())?[[free?u.wEnd-180*60000:now,u.words]]:[];ch=true}
+ const lg=n.log.filter(e=>now-e[0]<durOf(e[1],p,W)).slice(-300);if(lg.length!==n.log.length)ch=true;n.log=lg;n.words=lg.reduce((a,e)=>a+e[1],0);n.wEnd=n.words?estReset(n,p,W):0;
+ if(free){if(n.iEnd&&now>=n.iEnd){n.images=0;n.iEnd=0;ch=true}}
+ else if(u.day&&u.day!==today()){n.images=0;ch=true}
+ n.day=today();if(ch)DB.set(k,n);return n}
+const saveUsage=u=>{const n=Date.now();u.log=u.log||[];const sm=u.log.reduce((a,e)=>a+e[1],0);if(u.words>sm)u.log.push([n,u.words-sm]);if(plan().id==='free'&&u.images>0&&!u.iEnd)u.iEnd=n+36e5;DB.set('usage:'+S.user.email,u);try{saveUser()}catch(e){}};
 const fmtN=n=>Number(n).toLocaleString('id-ID'),lim=n=>n===Infinity?'∞':fmtN(n);
 const fmtLeft=ms=>{const m=Math.ceil(Math.max(0,ms)/60000),h=Math.floor(m/60);return h?h+'j '+(m%60)+'m':m+'m'};
 const countWords=s=>(s.trim().match(/\S+/g)||[]).length;
@@ -699,7 +708,7 @@ function refreshChrome(){try{applyWallpaper();unoteInit();unoteRender()}catch(e)
 }
 function renderMeter(){
   const u=usage(),p=plan();const wl=p.words===Infinity?'∞':Math.max(0,p.words-u.words);
-  $('#meter').innerHTML=`<span>${t('words')}: <b>${fmtN(u.words)}${p.words===Infinity?'':'/'+lim(p.words)}</b>${p.id==='free'?'<small> /3 jam</small>':''}</span><span>${t('images')}: <b>${p.images===Infinity?fmtN(u.images):fmtN(u.images)+'/'+lim(p.images)}</b>${p.id==='free'?'<small> /jam</small>':''}</span>`;
+  $('#meter').innerHTML=`<span>${t('images')}: <b>${p.images===Infinity?fmtN(u.images):fmtN(u.images)+'/'+lim(p.images)}</b>${p.id==='free'?'<small> /jam</small>':''}</span>`;
 }
 
 /* ===== CHAT ===== */
@@ -1063,7 +1072,7 @@ async function send(){
   if(S.busy){if(ctl)ctl.abort();return}
   const raw=inp.value.trim();if(!raw&&!S.pending.length)return;
   const p=plan(),u=usage(),w=countWords(raw);
-  if(p.words!==Infinity&&u.words+w>p.words){limitToast('w');return}
+  if(p.words!==Infinity&&(u.words>=p.words||u.words+w>p.words)){limitToast('w');return}
   const sq=imgSearchQ(raw),wantImg=!sq&&(S.imgMode||/(buat|bikin|generate|gambar(kan)?|lukis).*(gambar|foto|image|lukisan|ilustrasi|poster)/i.test(raw));
   if(wantImg&&u.images>=p.images){limitToast('i');return}
   S.busy=true;$('#sendBtn').innerHTML=ic('stop','fill');
@@ -1480,13 +1489,13 @@ function openSettings(scroll){
 let unT=0,unInit=0;
 function isFull(){const p=plan();return p.words!==Infinity&&usage().words>=p.words}
 function unoteRender(){const el=$('#unote');if(!el||!S.user)return;const p=plan(),u=usage();if(p.words===Infinity){el.hidden=true;return}
- const pct=Math.min(100,Math.round(u.words/p.words*100)),full=u.words>=p.words;
- const left=p.id==='free'?(u.wEnd?'reset dalam '+fmtLeft(u.wEnd-Date.now()):'reset 3 jam setelah chat pertama'):'reset jam 00.00';
+ const pct=Math.min(100,Math.round(u.words/p.words*100)),full=u.words>=p.words;if(pct<90){el.hidden=true;return}
+ const when=u.wEnd?'estimasi pulih sekitar '+new Date(u.wEnd).toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'})+' ('+fmtLeft(u.wEnd-Date.now())+' lagi)':'segera pulih';
  el.className='unote'+(full?' full':'');
- el.innerHTML=full?`<span><b>Batas kata tercapai (100%)</b> · ${left}. Yuk upgrade ke Premium biar bebas ngobrol!</span><button data-up>Upgrade</button><i style="width:100%"></i>`:`<span>Penggunaan chat kamu ke Astra AI: <b>${pct}%</b> · ${fmtN(u.words)}/${lim(p.words)} kata · ${left}</span><i style="width:${pct}%"></i>`;
+ el.innerHTML=full?`<span><b>Batas penggunaan chat tercapai (100%)</b> · ${when}.${p.id==='free'?' Upgrade ke Premium biar bebas ngobrol!':''}</span>${p.id==='free'?'<button data-up>Upgrade</button>':''}<i style="width:100%"></i>`:`<span>Penggunaan chat kamu ke Astra AI: <b>${pct}%</b> · ${when}</span><i style="width:${pct}%"></i>`;
  el.hidden=false}
 function unoteShow(){unoteRender();clearTimeout(unT);if(!isFull())unT=setTimeout(()=>{const e=$('#unote');if(e&&!isFull())e.hidden=true},5000)}
-function limitToast(k){const p=plan(),u=usage(),e=k==='w'?u.wEnd:u.iEnd;unoteRender();toast((k==='w'?'Jatah kata habis. ':'Jatah gambar habis. ')+(p.id==='free'&&e?'Reset dalam '+fmtLeft(e-Date.now())+'.':'Reset jam 00.00.'))}
+function limitToast(k){const p=plan(),u=usage(),e=k==='w'?u.wEnd:u.iEnd;unoteRender();toast((k==='w'?'Jatah kata habis. ':'Jatah gambar habis. ')+(k==='w'?(u.wEnd?'Bisa chat lagi sekitar '+fmtLeft(u.wEnd-Date.now())+' lagi.':'Coba lagi sebentar.'):(e?'Reset dalam '+fmtLeft(e-Date.now())+'.':'Reset jam 00.00.')))}
 function unoteInit(){if(unInit||!S.user)return;const f=document.querySelector('footer.comp');if(!f)return;unInit=1;const el=document.createElement('div');el.id='unote';el.hidden=true;f.prepend(el);
  el.addEventListener('click',e=>{if(e.target.closest('[data-up]'))openPlans(false)});
  const inp=$('#inp');if(inp)inp.addEventListener('input',()=>{if(el.hidden)unoteShow()});
@@ -1793,20 +1802,35 @@ function privChat(){const me=DB.get('ouser',{}),o=modal(`<div class="rh"><button
    s.querySelector('#aadd').onclick=async()=>{try{await api('friend','POST',{id:u.id});s.parentNode.remove();toast('Berteman dengan '+u.name);room('dm/'+u.id,'Chat '+u.name,privChat)}catch(e){}}}catch(e){s.querySelector('#ares').innerHTML='<p class="mt">ID tidak ditemukan.</p>'}}};
  try{ws=new WebSocket(API.replace(/^http/,'ws')+'/ws?t='+tok()+'&r=inbox');ws.onmessage=e=>{const d=JSON.parse(e.data);if(d.t==='dm')load()}}catch(e){}
  const iv=setInterval(()=>{if(!document.body.contains(o)){clearInterval(iv);ws&&ws.close()}else load()},6000)}
-function story(x,mine){const s=x.s,d=document.createElement('div');d.className='fsv dark';
- d.innerHTML=(s.k==='img'?`<div class="story" style="background:#000;padding:0"><img src="${s.b}"><p class="cap">${esc(s.cap||'')}</p></div>`:`<div class="story" style="background:${GR[s.bg||0]};${FS[s.fs||0]}"><p>${esc(s.b)}</p></div>`)+`<div class="sbar"><b>${esc((x.u&&x.u.name)||'Statusku')}</b><span>${timeAgo(s.t)}</span><button class="lk">${mine?'👁 '+s.nv+' · ❤️ '+s.nl:(s.liked?'❤️':'🤍')+' '+s.nl}</button></div>`;
- d.onclick=e=>{if(!e.target.closest('.lk'))d.remove()};document.body.appendChild(d);const lk=d.querySelector('.lk');
- if(mine)lk.onclick=()=>toast(s.vn&&s.vn.length?'Dilihat: '+s.vn.join(', '):'Belum ada yang melihat');
- else{api('status/view','POST',{id:s.id},1).catch(()=>{});lk.onclick=async()=>{try{const r=await api('status/like','POST',{id:s.id});s.liked=r.liked;s.nl=r.nl;lk.textContent=(r.liked?'❤️':'🤍')+' '+r.nl}catch(e){}}}}
-function statusPage(root){const me=DB.get('ouser',{}),html=`<div class="rh"><button class="ibtn" data-close>${ic('x')}</button><h3>Status</h3></div><div class="stb"><div id="mys" class="frw"></div><div class="rbar"><button class="btn pri" id="st1">✍️ Tulis status</button><button class="btn" id="st2">🖼️ Foto status</button></div><input id="fs" class="oin" maxlength="80" placeholder="Status singkat (tampil di chat)" value="${esc(me.status||'')}"><button class="btn" id="fss">Simpan status singkat</button><h4>Status teman</h4><div id="fl"><p class="mt">Memuat...</p></div><h4>Status global · semua pengguna</h4><div id="gl"></div></div>`;let o;if(root){root.innerHTML=html.replace(/<div class="rh">[\s\S]*?<\/h3><\/div>/,'');o=root}else o=modal(html,'omod full');
+async function dmTo(id,text){await api('friend','POST',{id});await api('dm/'+id,'POST',{k:'text',b:text});toast('Terkirim ke chat')}
+function story(x,mine){const s=x.s,nm=esc((x.u&&x.u.name)||'Statusku'),d=document.createElement('div');d.className='fsv dark sv';
+ const cap=s.k==='img'?(s.cap||''):(s.cap||'');
+ d.innerHTML=`<div class="svm">${s.k==='img'?`<img src="${s.b}" alt="">`:`<div class="story" style="background:${GR[s.bg||0]};${FS[s.fs||0]}"><p>${esc(s.b)}</p></div>`}</div><div class="svt"><button class="sx" aria-label="Keluar">←</button><div class="sn"><b>${nm}</b><span>${timeAgo(s.t)}</span></div></div>
+ <div class="sbot">${mine?`${cap?`<p class="scap">${esc(cap)}</p>`:''}<div class="sinfo" id="sinf">👁 ${s.nv} · ❤️ ${s.nl}</div>`:`<div class="stray" hidden>${['😂','😮','😢','👍','🔥','🙏','😍','🎉'].map(e=>`<button>${e}</button>`).join('')}</div>${cap?`<p class="scap">${esc(cap)}</p>`:''}<div class="srep"><input class="oin" id="srt" maxlength="300" placeholder="Balas ${nm}..." autocomplete="off"><button class="ibtn" id="ssd" aria-label="Kirim balasan" hidden>➤</button><button class="ibtn" id="sem" aria-label="Emoji">😊</button><button class="lkb${s.liked?' on':''}" id="slk" aria-label="Suka">${s.liked?'❤️':'🤍'}</button></div>`}</div>`;
+ document.body.appendChild(d);const q=k=>d.querySelector(k);q('.sx').onclick=()=>d.remove();
+ const esc_=e=>{if(e.key==='Escape'){d.remove();document.removeEventListener('keydown',esc_)}};document.addEventListener('keydown',esc_);
+ new MutationObserver(()=>{if(!document.body.contains(d))document.removeEventListener('keydown',esc_)}).observe(document.body,{childList:true});
+ if(mine){q('#sinf').onclick=()=>toast(s.vn&&s.vn.length?'Dilihat: '+s.vn.join(', '):'Belum ada yang melihat');return}
+ api('status/view','POST',{id:s.id},1).catch(()=>{});
+ const fly=e=>{const f=document.createElement('div');f.className='sflo';f.textContent=e;d.appendChild(f);setTimeout(()=>f.remove(),1000)};
+ const send=async t=>{try{await dmTo(s.id,t);return 1}catch(e){return 0}};
+ const inp=q('#srt'),sd=q('#ssd');inp.oninput=()=>{sd.hidden=!inp.value.trim()};
+ sd.onclick=async()=>{const v=inp.value.trim();if(!v)return;inp.value='';sd.hidden=true;if(!await send(v))inp.value=v};
+ inp.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();sd.click()}};
+ q('#sem').onclick=()=>{const t=q('.stray');t.hidden=!t.hidden};
+ q('.stray').querySelectorAll('button').forEach(b=>b.onclick=async()=>{q('.stray').hidden=true;fly(b.textContent);await send(b.textContent)});
+ q('#slk').onclick=async()=>{try{const r=await api('status/like','POST',{id:s.id});s.liked=r.liked;q('#slk').textContent=r.liked?'❤️':'🤍';q('#slk').classList.toggle('on',!!r.liked);if(r.liked){fly('❤️');send('❤️')}}catch(e){}}}
+function statusPage(root){const me=DB.get('ouser',{}),html=`<div class="rh"><button class="ibtn" data-close>${ic('x')}</button><h3>Status</h3></div><div class="stb"><div id="mys" class="frw"></div><div class="rbar"><button class="btn pri" id="st1" style="flex:1">➕ Buat status</button></div><input id="fs" class="oin" maxlength="80" placeholder="Status singkat (tampil di chat)" value="${esc(me.status||'')}"><button class="btn" id="fss">Simpan status singkat</button><h4>Status teman</h4><div id="fl"><p class="mt">Memuat...</p></div><h4>Status global · semua pengguna</h4><div id="gl"></div></div>`;let o;if(root){root.innerHTML=html.replace(/<div class="rh">[\s\S]*?<\/h3><\/div>/,'');o=root}else o=modal(html,'omod full');
  const q=s=>o.querySelector(s),rows=(l,el)=>{el.innerHTML=l.length?l.map((x,i)=>`<div class="frw" data-i="${i}">${av(x.u)}<div><b>${esc(x.u.name)}</b> ${roleHTML(x.u.role)}<small>${timeAgo(x.s.t)} · ❤️ ${x.s.nl} · 👁 ${x.s.nv}</small></div></div>`).join(''):'<p class="mt">Belum ada status. Kosong sampai ada yang upload.</p>';el.querySelectorAll('.frw').forEach(w=>w.onclick=()=>story(l[w.dataset.i]))};
  const load=async()=>{try{const d=await api('statuses');q('#mys').innerHTML=`${av(me)}<div><b>Statusku</b><small>${d.me?timeAgo(d.me.t)+' · ❤️ '+d.me.nl+' · 👁 '+d.me.nv:'Belum ada status'}</small></div>`+(d.me?'<button class="btn dng" id="sdel" style="margin-left:auto">Hapus</button>':'');
   q('#mys').onclick=e=>{if(e.target.id!=='sdel'&&d.me)story({s:d.me},1)};const sd=q('#sdel');if(sd)sd.onclick=async()=>{try{await api('status/del','POST',{});toast('Status dihapus');load()}catch(e){}};rows(d.list,q('#fl'));rows(d.global,q('#gl'))}catch(e){q('#fl').innerHTML='<p class="mt">Gagal memuat status.</p>'}};
- q('#st1').onclick=()=>{let bg=0,fs=0;const s=sheet(`<h3>Tulis status</h3><textarea id="stx" class="oin" rows="4" maxlength="200" placeholder="Apa yang kamu pikirkan?"></textarea><div class="sw">${GR.map((g,i)=>`<i data-g="${i}" style="background:${g}" class="${i?'':'on'}"></i>`).join('')}</div><div class="tb">${['Normal','Serif','Tulisan sambung','Tebal'].map((n,i)=>`<button data-f="${i}" class="${i?'':'on'}">${n}</button>`).join('')}</div><button class="btn pri" id="sgo">Upload status</button><button class="btn" data-close>Batal</button>`),tx=s.querySelector('#stx');
-  s.querySelectorAll('.sw i').forEach(i=>i.onclick=()=>{bg=+i.dataset.g;s.querySelectorAll('.sw i').forEach(x=>x.classList.toggle('on',x===i));tx.style.background=GR[bg]});
-  s.querySelectorAll('.tb button').forEach(b=>b.onclick=()=>{fs=+b.dataset.f;s.querySelectorAll('.tb button').forEach(x=>x.classList.toggle('on',x===b));tx.style.cssText+=FS[fs]});
-  s.querySelector('#sgo').onclick=async()=>{const t=tx.value.trim();if(!t)return;try{await api('status','POST',{k:'text',b:t,bg,fs});s.parentNode.remove();toast('Status diupload');load()}catch(e){}}};
- q('#st2').onclick=()=>pick(800,d=>{const s=sheet(`<img src="${d}" style="width:100%;border-radius:14px"><input id="scp" class="oin" maxlength="100" placeholder="Keterangan (opsional)"><button class="btn pri" id="sgo">Upload status</button><button class="btn" data-close>Batal</button>`);s.querySelector('#sgo').onclick=async()=>{try{await api('status','POST',{k:'img',b:d,cap:s.querySelector('#scp').value});s.parentNode.remove();toast('Status diupload');load()}catch(e){}}});
+ q('#st1').onclick=()=>{let bg=0,fs=0,img='';const s=sheet(`<h3>Buat status</h3><div class="stc"><div class="stp" id="stpv" hidden><img id="stim" alt=""><button id="strm" aria-label="Hapus foto">✕</button></div><textarea id="stx" class="oin" rows="4" maxlength="200" placeholder="Tulis status..."></textarea><div class="cnt"><span id="stn">0</span>/200</div><div id="stopt"><div class="sw">${GR.map((g,i)=>`<i data-g="${i}" style="background:${g}" class="${i?'':'on'}"></i>`).join('')}</div><div class="tb">${['Normal','Serif','Tulisan sambung','Tebal'].map((n,i)=>`<button data-f="${i}" class="${i?'':'on'}">${n}</button>`).join('')}</div></div><button class="btn" id="stph">🖼️ Tambah foto (opsional)</button><button class="btn pri" id="sgo">Upload status</button><button class="btn" data-close>Batal</button></div>`),tx=s.querySelector('#stx'),pv=s.querySelector('#stpv'),opt=s.querySelector('#stopt'),ph=s.querySelector('#stph');
+  const paint=()=>{tx.style.cssText='';if(img){pv.hidden=false;opt.hidden=true;s.querySelector('#stim').src=img;tx.placeholder='Tambahkan teks (opsional)';tx.rows=2;ph.textContent='🖼️ Ganti foto'}else{pv.hidden=true;opt.hidden=false;tx.placeholder='Tulis status...';tx.rows=4;tx.style.background=GR[bg];tx.style.color='#fff';tx.style.cssText+=FS[fs];ph.textContent='🖼️ Tambah foto (opsional)'}};paint();
+  tx.oninput=()=>{s.querySelector('#stn').textContent=tx.value.length};
+  s.querySelectorAll('.sw i').forEach(i=>i.onclick=()=>{bg=+i.dataset.g;s.querySelectorAll('.sw i').forEach(x=>x.classList.toggle('on',x===i));paint()});
+  s.querySelectorAll('.tb button').forEach(b=>b.onclick=()=>{fs=+b.dataset.f;s.querySelectorAll('.tb button').forEach(x=>x.classList.toggle('on',x===b));paint()});
+  ph.onclick=()=>pick(800,d=>{img=d;paint()});s.querySelector('#strm').onclick=()=>{img='';paint()};
+  s.querySelector('#sgo').onclick=async()=>{const t=tx.value.trim();if(!t&&!img){toast('Tulis teks atau pilih foto dulu');return}const b=s.querySelector('#sgo');b.disabled=true;try{await api('status','POST',img?{k:'img',b:img,cap:t}:{k:'text',b:t,bg,fs});s.parentNode.remove();toast('Status diupload');load()}catch(e){b.disabled=false}}};
  q('#fss').onclick=async()=>{try{await post({status:q('#fs').value});toast('Status singkat disimpan')}catch(e){}};load()}
 function account(){const me=DB.get('ouser',{}),o=modal(`<div class="mh"><h3>Pengaturan Akun</h3><button class="ibtn" data-close>${ic('x')}</button></div><div class="acp">${av(me)}<div><b>${esc(me.name||'')}</b><small>ID ${me.id} · ${esc(S.user.email)}</small></div></div><label>Ganti nama<input id="an" class="oin" maxlength="24" value="${esc(me.name||'')}"></label><button class="btn" id="ans">Simpan nama</button><button class="btn" id="aa">Ganti foto profil</button><button class="btn" id="ab">Background belakang</button><button class="btn" id="aw">Wallpaper bilah chat</button><label>Efek bilah chat<select id="fx" class="oin"><option value="">Tanpa efek</option><option value="glow">Glow berdenyut</option><option value="aurora">Aurora</option><option value="neon">Neon</option></select></label><label>Password lama<input id="po" type="password" class="oin"></label><label>Password baru<input id="pn" type="password" class="oin"></label><button class="btn" id="ps">Ganti sandi</button><button class="btn" id="ao">Keluar dari semua perangkat</button><button class="btn" id="ax">Ekspor data chat (JSON)</button><button class="btn dng" id="ad">Hapus akun</button>`,'omod');
  const q=s=>o.querySelector(s),T=(f,m)=>f.then(()=>toast(m)).catch(()=>{});q('#fx').value=me.fx||'';
