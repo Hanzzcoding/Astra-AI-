@@ -1580,6 +1580,7 @@ const rp=n=>'Rp'+Math.round(n).toLocaleString('id-ID');
 const bal=()=>(S.user&&S.user.saldo)||0;
 function addTx(amount,note){S.user.tx=[{t:Date.now(),amount,note},...(S.user.tx||[])].slice(0,60)}
 const devId=()=>{let d=DB.get('devid',null);if(!d){d='D'+Math.random().toString(36).slice(2,10);DB.set('devid',d)}return d};
+async function ownerReg(code){try{const r=await api('admin/redeem','POST',{code},1);try{DB.set('ouser',await api('me','GET',null,1))}catch(e){}return r}catch(e){return{err:e.message||'Gagal terhubung ke server'}}}
 async function redeemOwner(){S.user.saldo=bal()+200000;addTx(200000,'Redeem kode Owner');S.user.unlimited=true;saveUser();return{ok:'Mode Owner aktif: pemakaian tanpa batas. Saldo bertambah '+rp(200000)}}
 async function redeemCode(c){
   const isPlan=c.startsWith('ASTRA');let h;
@@ -1588,6 +1589,7 @@ async function redeemCode(c){
   if(!pid&&!sv)return{err:'Kode tidak valid.'};
   const used=isPlan?'Kode ini sudah dipakai.':'Kode redeem saldo Astra ini telah dipakai dan tidak bisa dipakai lagi.';
   const mine=S.user.redeemed||[],all=DB.get('redeemed',[]);
+  if(sv&&sv.u){const a=await ownerReg(c);if(a.err)return{err:a.err};if(mine.includes(h)||all.includes(h)){S.user.unlimited=true;saveUser();return{ok:'Akses Owner aktif kembali di akun ini.'}}}
   if(mine.includes(h)||all.includes(h))return{err:used};
   if(ASTRA_API){try{const r=await fetch(ASTRA_API+'/redeem',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({h,email:S.user.email,dev:devId()})}),j=await r.json();if(!j.ok)return{err:j.reason==='used'?used:'Kode ditolak oleh server.'}}catch(e){return{err:'Server verifikasi kode tidak terjangkau. Coba lagi nanti.'}}}
   S.user.redeemed=[...mine,h];DB.set('redeemed',[...all,h]);
@@ -1598,7 +1600,7 @@ function bindRedeem(o){
   const inp=o.querySelector('.rdIn'),err=o.querySelector('.rdErr'),btn=o.querySelector('.rdBtn'),lab=btn.innerHTML;
   inp.addEventListener('input',()=>{err.textContent=''});
   btn.onclick=async()=>{const raw=inp.value.trim();let isOwner=false;try{isOwner=(await sha('astra-owner-v1|'+raw))===OWNER_H}catch(e){}
-    if(isOwner){btn.disabled=true;const r=await redeemOwner();btn.disabled=false;inp.value='';refreshWallet();refreshChrome();toast(r.ok);return}
+    if(isOwner){btn.disabled=true;const a=await ownerReg(raw);if(a.err){btn.disabled=false;err.textContent=a.err;return}const r=S.user.unlimited?{ok:'Akses Owner aktif kembali di akun ini.'}:await redeemOwner();S.user.unlimited=true;saveUser();btn.disabled=false;inp.value='';refreshWallet();refreshChrome();toast(r.ok);return}
     const c=raw.toUpperCase();
     if(!/^(ASTRA|SALDO|OWNER)-[A-Z0-9-]{10,40}$/.test(c)){err.textContent='Format kode belum benar.';return}
     btn.disabled=true;btn.innerHTML='<i class="dcspin"></i> Memeriksa kode...';
@@ -1757,8 +1759,8 @@ function pickAny(cb){const i=document.createElement('input');i.type='file';i.acc
  const v=/^video\//.test(f.type);if(f.size>(v?2e6:15e5))return toast(v?'Video maksimal 2 MB (server gratis terbatas)':'File maksimal 1,5 MB');
  const r=new FileReader();r.onload=()=>cb(v?'vid':'file',r.result,f.name);r.readAsDataURL(f)};i.click()}
 const mediaHTML=x=>x.k==='stk'||x.k==='img'?`<img src="${x.b}" class="mimg ${x.k}">`:x.k==='vid'?`<video src="${x.b}" controls playsinline preload="metadata" class="mvid"></video>`:`<a class="mfile" download="${esc(x.n||'file')}" href="${x.b}">${ic('clip')} ${esc(x.n||'file')}</a>`;
-function profile(u){if(!u||!u.id||u.id==='bot')return;const me=u.id===S.user.uid,o=sheet(`<div class="acp">${av(u)}<div><b>${esc(u.name)}</b> ${roleHTML(u.role||'free')}<small>ID ${u.id}${u.status?' · '+esc(u.status):''}</small></div></div>${me?'':'<button class="btn pri" id="pa">Tambah teman</button><button class="btn" id="pc">Chat pribadi</button>'}<button class="btn" data-close>Tutup</button>`);
- if(me)return;o.querySelector('#pa').onclick=async()=>{try{await api('friend','POST',{id:u.id});toast('Berteman dengan '+u.name)}catch(e){}};
+function profile(u){if(!u||!u.id||u.id==='bot')return;const me=u.id===S.user.uid,o=sheet(`<div class="acp">${av(u)}<div><b>${esc(u.name)}</b> ${roleHTML(u.role||'free')}<small>ID ${u.id}${u.status?' · '+esc(u.status):''}</small></div></div>${me?'':'<button class="btn pri" id="pa">Tambah teman</button><button class="btn" id="pc">Chat pribadi</button>'}${!me&&DB.get('ouser',{}).adm==='root'?'<button class="btn dng" id="pb">Ban dari komunitas</button><button class="btn" id="pu">Buka ban</button><button class="btn dng" id="ps">Hapus status pengguna ini</button>':''}<button class="btn" data-close>Tutup</button>`);
+ if(me)return;const adm=(id,body,ok)=>async()=>{try{await api('admin/'+id,'POST',{id:u.id,...body});toast(ok)}catch(e){}};const pb=o.querySelector('#pb');if(pb){pb.onclick=adm('ban',{on:1},u.name+' di-BAN');o.querySelector('#pu').onclick=adm('ban',{on:0},'Ban dibuka');o.querySelector('#ps').onclick=adm('status/del',{},'Status dihapus')}o.querySelector('#pa').onclick=async()=>{try{await api('friend','POST',{id:u.id});toast('Berteman dengan '+u.name)}catch(e){}};
  o.querySelector('#pc').onclick=async()=>{try{await api('friend','POST',{id:u.id});o.parentNode.remove();closeModal();room('dm/'+u.id,'Chat '+u.name)}catch(e){}}}
 let poll;
 function room(path,title,back){const isC=path==='com',mine=S.user.uid;let since=0,tosShown=0,ws,rday;const seen=new Set(),pend=[];
@@ -1766,16 +1768,16 @@ function room(path,title,back){const isC=path==='com',mine=S.user.uid;let since=
  const rm=o.querySelector('#rm'),stp=o.querySelector('#stp'),rt=o.querySelector('#rt'),BOTU={id:'bot',name:'Bot Keamanan ASTRA',role:'owner',status:'Pemantau 24 jam'};
  o.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>{closeModal();if(back)back()});const peer=path.split('/')[1];
  const body=x=>x.k==='text'&&/^\p{Extended_Pictographic}\uFE0F?$/u.test(x.b)?`<div class="rc big">${esc(x.b)}</div>`:x.k==='text'||x.k==='bot'?`<div class="rc ${x.k}">${esc(x.b)}</div>`:`<div class="rc ${x.k}">${mediaHTML(x)}</div>`;
- const isOwner=(DB.get('ouser',{}).role==='owner');
+ const isOwner=(DB.get('ouser',{}).adm==='root');
  const delMsg=(x,e)=>{const next=e.nextSibling;e.remove();api(path+(isC?'/del':'/del'),'POST',{i:x.i},1).then(()=>toast('Pesan dihapus')).catch(er=>{rm.insertBefore(e,next);toast('Gagal menghapus: '+er.message)})};
- const msgMenu=(x,e,canDel)=>{const txt=x.k==='text'||x.k==='bot',s=sheet(`<h3>Pesan</h3>${txt?`<button class="btn" id="mc">${ic('copy')} Salin teks</button>`:''}${canDel?`<button class="btn dng" id="md">${ic('trash')} Hapus pesan${isC?' (untuk semua orang)':''}</button>`:''}<button class="btn" data-close>Batal</button>`);const c=s.querySelector('#mc');if(c)c.onclick=()=>{copyText(x.b);s.parentNode.remove();toast('Teks disalin')};const d=s.querySelector('#md');if(d)d.onclick=()=>{s.parentNode.remove();delMsg(x,e)}};
+ const msgMenu=(x,e,canDel)=>{const txt=x.k==='text'||x.k==='bot',s=sheet(`<h3>Pesan</h3>${txt?`<button class="btn" id="mc">${ic('copy')} Salin teks</button>`:''}${canDel?`<button class="btn dng" id="md">${ic('trash')} Hapus pesan${isC?' (untuk semua orang)':''}</button>`:''}${isC&&isOwner?`<button class="btn dng" id="mr">${ic('trash')} Reset semua chat komunitas</button>`:''}<button class="btn" data-close>Batal</button>`);const rs=s.querySelector('#mr');if(rs)rs.onclick=()=>{s.parentNode.remove();api('admin/clear','POST',{},1).then(()=>toast('Chat komunitas direset')).catch(er=>toast(er.message))};const c=s.querySelector('#mc');if(c)c.onclick=()=>{copyText(x.b);s.parentNode.remove();toast('Teks disalin')};const d=s.querySelector('#md');if(d)d.onclick=()=>{s.parentNode.remove();delMsg(x,e)}};
  const row=(x,u,me)=>{const e=document.createElement('div');e.className='rmsg'+(me?' me':'');if(x.i!=null&&!x.local){e.dataset.i=x.i;e.dataset.t=x.t}e.innerHTML=`${av(u)}<div class="rb"><div class="rn">${esc(u.name||'?')} ${roleHTML(u.role||'free')}${u.status?`<i class="rst">${esc(u.status)}</i>`:''}</div>${body(x)}</div>`;const a=e.querySelector('.oav');a.style.cursor='pointer';a.onclick=()=>profile(u);e.querySelectorAll('.mimg').forEach(i=>i.onclick=()=>viewer(`<img src="${i.src}">`));
   const canDel=x.i!=null&&!x.local&&(x.u===mine||(isC&&isOwner)),txt=x.k==='text'||x.k==='bot',rc=e.querySelector('.rc');
   if(rc&&(canDel||txt)&&!(x.i==null)){let tm=0,lp=0;const open=()=>{lp=1;msgMenu(x,e,canDel)};rc.addEventListener('pointerdown',()=>{lp=0;clearTimeout(tm);tm=setTimeout(open,450)});['pointerup','pointerleave','pointercancel'].forEach(n=>rc.addEventListener(n,()=>clearTimeout(tm)));rc.addEventListener('contextmenu',ev=>{ev.preventDefault();clearTimeout(tm);open()});rc.addEventListener('click',ev=>{if(lp){lp=0;ev.stopPropagation();ev.preventDefault();return}if(canDel&&!['img','vid','file'].includes(x.k))open()},true)}
   return e};
  const wipe=()=>{rm.innerHTML='';seen.clear();pend.length=0;since=0};
  const tosCard=b=>draw({m:[{u:'bot',k:'bot',b,local:1}],u:{bot:BOTU}});
- const draw=d=>{if(d.day){if(rday&&rday!==d.day){wipe();tosShown=0;d.tos=d.tos||'🧹 Chat komunitas sudah direset otomatis (tiap 2 jam sekali).'}rday=d.day}
+ const draw=d=>{if(d.force){wipe();tosShown=0}if(d.day){if(rday&&rday!==d.day){wipe();tosShown=0;d.tos=d.tos||'🧹 Chat komunitas sudah direset otomatis (tiap 2 jam sekali).'}rday=d.day}
   if(d.ids){const ls=new Set(d.ids.map(String));rm.querySelectorAll('.rmsg[data-i]').forEach(r=>{if(!ls.has(r.dataset.i)&&+r.dataset.t<d.now)r.remove()})}
   if(d.tos&&!tosShown){tosShown=1;tosCard(d.tos)}if(!d.m.length)return;const nb=rm.scrollHeight-rm.scrollTop-rm.clientHeight<120;
   d.m.forEach(x=>{if(!x.local){if(seen.has(x.i))return;seen.add(x.i);since=Math.max(since,x.t);if(x.u===mine){const i=pend.findIndex(p=>p.k===x.k&&p.b===x.b);if(i>=0){clearTimeout(pend[i].tm);pend[i].e.remove();pend.splice(i,1)}}}
@@ -1791,7 +1793,7 @@ function room(path,title,back){const isC=path==='com',mine=S.user.uid;let since=
   stp.querySelectorAll('button').forEach(b=>b.onclick=()=>{const d=b.dataset;if(d.t)return panel(d.t);if(d.e){rt.value+=d.e;return}if(d.b){send('text',d.b);stp.hidden=true;return}if(d.n){maker(s=>send('stk',s));return}send('stk',MYS()[d.s]);stp.hidden=true})};
  o.querySelector('#sb').onclick=()=>stp.hidden?panel(stp.dataset.t||'e'):stp.hidden=true;
  const mdl=o.querySelector('.modal'),cb=$('#chatbg'),bi=cb&&getComputedStyle(cb).backgroundImage;if(bi&&bi!=='none'){mdl.style.backgroundImage=`linear-gradient(rgba(0,0,0,.5),rgba(0,0,0,.5)),${bi}`;mdl.style.backgroundSize='cover'}
- try{ws=new WebSocket(API.replace(/^http/,'ws')+'/ws?t='+tok()+'&r='+(isC?'com':'dm'));ws.onmessage=e=>{const d=JSON.parse(e.data);if(d.t==='del'){if(isC?!d.p:d.p===[mine,peer].sort().join('-')){const r=rm.querySelector(`.rmsg[data-i="${d.i}"]`);if(r)r.remove()}return}if(d.t==='dm'&&!isC&&((d.from===peer&&d.to===mine)||(d.from===mine&&d.to===peer)))draw({m:[d.m],u:d.u});if(!isC)return;if(d.t==='m')draw({m:[d.m],u:d.u});else if(d.t==='tos')draw({m:[],u:{},tos:d.b});else if(d.t==='clear')draw({m:[],u:{},day:d.day});else if(d.t==='warn'){const p=pend[0];p?p.fail(d.b):toast(d.b)}};ws.onopen=()=>o.querySelector('h3').insertAdjacentHTML('beforeend',' <i class="lv">● Live</i>')}catch(e){}
+ try{ws=new WebSocket(API.replace(/^http/,'ws')+'/ws?t='+tok()+'&r='+(isC?'com':'dm'));ws.onmessage=e=>{const d=JSON.parse(e.data);if(d.t==='del'){if(isC?!d.p:d.p===[mine,peer].sort().join('-')){const r=rm.querySelector(`.rmsg[data-i="${d.i}"]`);if(r)r.remove()}return}if(d.t==='dm'&&!isC&&((d.from===peer&&d.to===mine)||(d.from===mine&&d.to===peer)))draw({m:[d.m],u:d.u});if(!isC)return;if(d.t==='m')draw({m:[d.m],u:d.u});else if(d.t==='tos')draw({m:[],u:{},tos:d.b});else if(d.t==='clear')draw({m:[],u:{},day:d.day,force:d.force});else if(d.t==='warn'){const p=pend[0];p?p.fail(d.b):toast(d.b)}};ws.onopen=()=>o.querySelector('h3').insertAdjacentHTML('beforeend',' <i class="lv">● Live</i>')}catch(e){}
  api('ping','GET',null,1).then(o=>{if((o.v||0)<8)toast('Server masih versi lama. Upload server.js terbaru ke GitHub lalu deploy ulang di Render.')}).catch(()=>{});
  load();clearInterval(poll);poll=setInterval(()=>{if(!document.body.contains(o)){clearInterval(poll);ws&&ws.close()}else load()},3000)}
 const FS=['','font-family:Georgia,serif','font-family:"Dancing Script",cursive;font-size:34px','font-weight:900;text-transform:uppercase;letter-spacing:2px'];
