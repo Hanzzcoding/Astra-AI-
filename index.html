@@ -66,6 +66,7 @@ svg.i.fill{fill:currentColor;stroke:none}
 .field{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:0 14px;height:50px;transition:border-color .2s,box-shadow .2s}
 .field:focus-within{border-color:var(--accent2);box-shadow:0 0 0 3px var(--glow)}
 .field input{flex:1;min-width:0;background:none;border:0;outline:0;height:100%}
+.pwt{flex:none;display:grid;place-items:center;width:32px;height:32px;margin-right:-6px;border-radius:50%;background:none;color:var(--muted)}.pwt:active{color:var(--text)}
 .field input::placeholder{color:var(--muted);opacity:.7}
 .btn{height:48px;border-radius:14px;padding:0 20px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:transform .15s,filter .2s}
 a.btn{text-decoration:none;color:var(--text)}
@@ -502,7 +503,7 @@ footer.comp,html[data-device=mobile] footer.comp{padding:4px 10px 6px}
     <h1>ASTRA AI</h1>
     <p data-t="authSub">Masuk untuk menyimpan chat dan batas pemakaianmu.</p>
     <label class="field"><svg class="i" viewBox="0 0 24 24" data-ic="mail"></svg><input id="em" type="email" placeholder="Email" autocomplete="email" required></label>
-    <label class="field"><svg class="i" viewBox="0 0 24 24" data-ic="key"></svg><input id="pw" type="password" placeholder="Password" autocomplete="current-password" required></label>
+    <label class="field"><svg class="i" viewBox="0 0 24 24" data-ic="key"></svg><input id="pw" type="password" placeholder="Password" autocomplete="current-password" required><button type="button" class="pwt" id="pwt" aria-label="Lihat password" aria-pressed="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><path d="M1 1l22 22"/></svg></button></label>
     <div class="err" id="authErr"></div>
     <button class="btn pri" type="submit" data-t="login">Masuk</button>
     <div class="foot">From Ziurixy x Hanzzy</div>
@@ -1848,3 +1849,4 @@ $('#menuBtn').insertAdjacentHTML('afterend','<button class="ibtn" id="comBtn" ar
 
 applyIcons();applyLogo();
 </script>
+<script>(function(){var b=document.getElementById('pwt'),i=document.getElementById('pw');if(!b||!i)return;var OFF='<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><path d="M1 1l22 22"/></svg>',ON='<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';b.addEventListener('mousedown',function(e){e.preventDefault()});b.addEventListener('click',function(){var show=i.type==='password';i.type=show?'text':'password';b.innerHTML=show?ON:OFF;b.setAttribute('aria-pressed',show);b.setAttribute('aria-label',show?'Sembunyikan password':'Lihat password');i.focus()})})();</script>
