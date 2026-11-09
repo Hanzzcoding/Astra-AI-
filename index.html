@@ -2139,16 +2139,16 @@ async function capture(c){
 
 function hostRun(cfg,stm){
  let ws,rc=null,alive=1,t0=Date.now(),viewers=0,gsum=0,top=[],snapOn=false,snapTm=0,fails=0,cmOn=true,jpg=false,hasRec=!!window.MediaRecorder;
- const mime=['video/webm;codecs=vp8,opus','video/webm;codecs=vp9,opus','video/webm;codecs=vp8','video/webm'].find(t=>hasRec&&MediaRecorder.isTypeSupported(t))||'';if(!mime)jpg=true;
- const W=document.createElement('div');W.className='lvw host';W.hidden=true;
+ const hasA=stm.getAudioTracks().length>0,mime=(hasA?['video/webm;codecs=vp8,opus','video/webm;codecs=vp9,opus','video/webm;codecs=vp8','video/webm']:['video/webm;codecs=vp8','video/webm;codecs=vp9','video/webm']).find(t=>hasRec&&MediaRecorder.isTypeSupported(t))||'';if(!mime)jpg=true;
+ const W=document.createElement('div');W.className='lvw host';W.style.visibility='hidden';
  W.innerHTML=`<video muted playsinline autoplay></video><div class="lvtop"><span class="lvb red"><i class="lvdot"></i> LIVE <b id="ht">0:00</b></span><span class="lvb">${ic('eye','sm')} <b id="hv">0</b></span><span class="lvb">${ic('coin','sm')} <b id="hg">Rp0</b></span><span class="sp"></span><button class="ibtn" id="hm" aria-label="Mikrofon">${ic(stm._mic?'mic':'micoff')}</button><button class="ibtn" id="hc" aria-label="Komentar">${ic('chat')}</button><button class="ibtn" id="hh" aria-label="Sembunyikan">${ic('chev')}</button><button class="btn dng" id="he" style="padding:7px 14px">Akhiri</button></div><div class="lvtopg" id="htp"></div><div class="lvwait" id="hw" hidden></div>`;
  document.body.appendChild(W);const vid=W.querySelector('video');vid.srcObject=stm;vid.play().catch(()=>{});
  const fl=floater(W,{key:'host',title:'Chat penonton',send:v=>send({t:'c',b:v}),w:'min(340px,88vw)',bottom:24});
  const q=s=>W.querySelector(s),send=o=>{try{ws&&ws.readyState===1&&ws.send(JSON.stringify(o))}catch(e){}};
  const tick=setInterval(()=>{q('#ht').textContent=fmtT(Date.now()-t0)},1000);
  const startRec=()=>{if(jpg||!alive)return;try{if(rc&&rc.state!=='inactive')rc.stop()}catch(e){}
-  try{rc=new MediaRecorder(stm,{mimeType:mime,videoBitsPerSecond:cfg.q>=720?1400000:cfg.q>=480?750000:420000,audioBitsPerSecond:56000})}catch(e){jpg=true;send({t:'meta',kind:'jpg',reset:1});return}
-  send({t:'meta',kind:'webm',mime,reset:1});
+  try{rc=new MediaRecorder(stm,{mimeType:mime,videoBitsPerSecond:cfg.q>=720?1400000:cfg.q>=480?750000:420000,...(hasA?{audioBitsPerSecond:56000}:{})})}catch(e){try{rc=new MediaRecorder(stm)}catch(e2){jpg=true;send({t:'meta',kind:'jpg',reset:1});return}}
+  send({t:'meta',kind:'webm',mime:rc.mimeType||mime,reset:1});
   rc.ondataavailable=async e=>{if(!e.data||!e.data.size||!ws||ws.readyState!==1)return;if(ws.bufferedAmount>5e6){fails++;if(fails>8){toast('Koneksi terlalu lambat, kualitas diturunkan: pilih "Hemat data"');fails=0}return}
    try{ws.send(new Blob([new Uint8Array([1]),e.data]))}catch(er){}};
   rc.onerror=()=>{};rc.start(400)};
@@ -2172,10 +2172,10 @@ function hostRun(cfg,stm){
  q('#he').onclick=()=>{if(q('#he').dataset.s!=='1'){q('#he').dataset.s='1';q('#he').textContent='Yakin?';setTimeout(()=>{q('#he').dataset.s='';q('#he').textContent='Akhiri'},3000);return}api('live/stop','POST',{},1).catch(()=>{});setTimeout(()=>{if(alive)finish({})},1500)};
  q('#hm').onclick=()=>{const t=stm._mic||stm.getAudioTracks()[0];if(!t)return toast('Tidak ada mikrofon');t.enabled=!t.enabled;q('#hm').innerHTML=ic(t.enabled?'mic':'micoff')};
  q('#hc').onclick=()=>{cmOn=!cmOn;send({t:'cm',on:cmOn});toast(cmOn?'Komentar penonton dihidupkan':'Komentar penonton dimatikan')};
- q('#hh').onclick=()=>{W.hidden=true;toast('Siaran tetap berjalan. Buka lagi lewat Pengaturan Akun › Studio Live')};
+ q('#hh').onclick=()=>{W.style.visibility='hidden';toast('Siaran tetap berjalan. Buka lagi lewat Pengaturan Akun › Studio Live')};
  stm.getVideoTracks()[0].addEventListener('ended',()=>{toast('Berbagi layar dihentikan');q('#he').click();q('#he').click()});
  connect();
- return{show:()=>{W.hidden=false}}}
+ return{show:()=>{W.style.visibility=''}}}
 
 /* ====================== PENONTON ====================== */
 let WATCH=false;
@@ -2184,12 +2184,12 @@ function watch(info){
  const MS=window.ManagedMediaSource||window.MediaSource,okMSE=!!(MS&&MS.isTypeSupported&&MS.isTypeSupported('video/webm;codecs=vp8,opus'));
  const W=document.createElement('div');W.className='lvw';
  W.innerHTML=`<video playsinline autoplay ${okMSE?'':'hidden'}></video><img class="lvimg" ${okMSE?'hidden':''} alt=""><div class="lvwait" id="vw">Menyambung ke siaran...</div><div class="lvtop"><button class="ibtn" id="vx" aria-label="Keluar">${ic('back')}</button><span class="lvb red"><i class="lvdot"></i> LIVE</span><span class="lvb">${ic('eye','sm')} <b id="vn">${info.v||0}</b></span><span class="lvb" style="max-width:40vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" id="vh">${esc(info.host||'')} ${roleHTML('owner')}</span></div><div class="lvtopg" id="vtp">${topHTML(info.top)}</div><div class="lvbot"><button class="ibtn gbtn" id="vg" aria-label="Kirim gift">${ic('gift')}</button><button class="ibtn" id="vmu" aria-label="Suara">${ic('volume')}</button></div>`;
- document.body.appendChild(W);const vid=W.querySelector('video'),img=W.querySelector('.lvimg'),q=s=>W.querySelector(s);
+ document.body.appendChild(W);const vid=W.querySelector('video'),img=W.querySelector('.lvimg'),q=s=>W.querySelector(s);vid.disableRemotePlayback=true;vid.muted=false;
  let ws,ms,sb,queue=[],alive=1,snap=!okMSE,kind=info.kind,mime=info.mime||'video/webm;codecs=vp8,opus',tries=0,cmOn=true,lastUrl='',ended=0,gTimer=0;
  const fl=floater(W,{key:'view',title:'Chat live',send:v=>{try{ws.send(JSON.stringify({t:'c',b:v}))}catch(e){toast('Belum tersambung')}},bottom:24,w:'min(330px,84vw)'});
  const wait=t=>{const w=q('#vw');w.hidden=!t;if(t)w.textContent=t};
  const resetMSE=()=>{queue=[];sb=null;if(ms){try{URL.revokeObjectURL(vid.src)}catch(e){}ms=null}if(snap||kind!=='webm')return;
-  ms=new MS();vid.src=URL.createObjectURL(ms);ms.addEventListener('sourceopen',()=>{try{let mt=mime;if(!MS.isTypeSupported(mt))mt='video/webm;codecs=vp8,opus';sb=ms.addSourceBuffer(mt);sb.mode='sequence';sb.addEventListener('updateend',pump);pump()}catch(e){snap=1;toast('Memakai mode gambar');reconnect(1)}},{once:true})};
+  ms=new MS();if(window.ManagedMediaSource&&ms instanceof window.ManagedMediaSource){ms.addEventListener('startstreaming',()=>pump())}vid.src=URL.createObjectURL(ms);ms.addEventListener('sourceopen',()=>{try{let mt=mime;if(!MS.isTypeSupported(mt))mt='video/webm;codecs=vp8,opus';sb=ms.addSourceBuffer(mt);sb.mode='sequence';sb.addEventListener('updateend',pump);pump()}catch(e){snap=1;toast('Memakai mode gambar');reconnect(1)}},{once:true})};
  const pump=()=>{if(!sb||sb.updating||!queue.length)return;try{
    if(sb.buffered.length){const e=sb.buffered.end(sb.buffered.length-1),s0=sb.buffered.start(0);if(e-s0>25){sb.remove(s0,e-8);return}
     if(vid.paused)vid.play().catch(()=>{});if(e-vid.currentTime>2.2)vid.currentTime=e-.4}
@@ -2214,7 +2214,10 @@ function watch(info){
  const endIt=d=>{if(ended)return;ended=1;const s=d.sum||{};const e=document.createElement('div');e.className='lvend';e.innerHTML=`<div class="card"><h3>Live telah selesai</h3><p class="xsm">${esc(s.title||'')}${s.reason?' · '+esc(s.reason):''}</p><button class="btn pri" id="vok">Tutup</button></div>`;W.appendChild(e);e.querySelector('#vok').onclick=stop};
  q('#vx').onclick=stop;q('#vmu').onclick=()=>{vid.muted=!vid.muted;q('#vmu').innerHTML=ic(vid.muted?'mute':'volume')};
  q('#vg').onclick=()=>giftSheet(W,()=>ws);
- resetMSE();connect()}
+ resetMSE();connect();
+ let lastT=-1,still=0,got=0;const dog=setInterval(()=>{if(!alive||ended||snap)return;if(!W.isConnected)return clearInterval(dog);
+  if(kind==='webm'){const ok=vid.readyState>=2&&vid.videoWidth>0;if(ok&&vid.currentTime!==lastT){still=0;got=1}else if(!document.hidden)still++;lastT=vid.currentTime;if(vid.paused&&ok)vid.play().catch(()=>{});
+   if(still>=(got?3:5)&&!(q('#vw').textContent||'').includes('terputus')){still=0;snap=1;vid.hidden=true;img.hidden=false;toast('Video dialihkan ke mode gambar agar lancar');reconnect()}}},3000)}
 
 async function giftSheet(W,getWs){
  let L;try{L=await gifts()}catch(e){return toast(e.message)}
