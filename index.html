@@ -2283,3 +2283,34 @@ setInterval(beat,12000);setTimeout(beat,2500);
 window.__ext.watch=watch;window.__ext.studio=studio;window.__ext.hub=hub;
 })();
 </script>
+<script>
+/* ===== Suara notifikasi ASTRA ===== */
+(function(){
+'use strict';
+const URL_='https://files.catbox.moe/95mlrm.mp3',KEY='astra_notif_snd';
+let au=null,last=0,unlocked=false;
+const on=()=>{try{return localStorage.getItem(KEY)!=='0'}catch(e){return true}};
+const get=()=>{if(!au){try{au=new Audio(URL_);au.preload='auto';au.volume=.9}catch(e){}}return au};
+const unlock=()=>{if(unlocked)return;unlocked=true;const a=get();if(!a)return;a.muted=true;const p=a.play();const fin=()=>{try{a.pause();a.currentTime=0}catch(e){}a.muted=false};if(p&&p.then)p.then(fin).catch(()=>{unlocked=false;a.muted=false});else fin()};
+['pointerdown','keydown','touchstart'].forEach(e=>document.addEventListener(e,unlock,{passive:true}));
+window.playNotif=function(force){if(!on()&&!force)return;const n=Date.now();if(n-last<700)return;last=n;const a=get();if(!a)return;try{a.currentTime=0;const p=a.play();if(p&&p.catch)p.catch(()=>{})}catch(e){}};
+/* setiap toast sukses/info ikut berbunyi, kecuali pesan gagal */
+const BAD=/gagal|tidak bisa|tidak cukup|salah|ditolak|terlalu|belum|error|kurang|maksimal|minimal|terputus|dicabut|di-ban|izin/i;
+const _t=toast;toast=function(m){_t(m);if(!BAD.test(String(m||'')))playNotif()};
+/* chat pribadi masuk (di mana pun user berada) */
+let ws=null,tries=0;
+const connect=()=>{if(!tok()||!S.user){setTimeout(connect,4000);return}
+ try{ws=new WebSocket(API.replace(/^http/,'ws')+'/ws?t='+tok()+'&r=inbox')}catch(e){return}
+ ws.onopen=()=>{tries=0};
+ ws.onmessage=e=>{let d;try{d=JSON.parse(e.data)}catch(er){return}
+  if(d.t==='dm'&&d.to===S.user.uid&&d.from!==S.user.uid){const open=document.querySelector('.rh h3')&&document.querySelector('.rh h3').textContent.includes((d.u&&d.u[d.from]&&d.u[d.from].name)||'\u0000');
+   const nm=(d.u&&d.u[d.from]&&d.u[d.from].name)||'Teman',k=d.m&&d.m.k,body=k==='text'?d.m.b:k==='img'?'📷 Foto':k==='vid'?'🎬 Video':k==='aud'?'🎤 Pesan suara':k==='stk'?'Stiker':'📎 Berkas';
+   if(document.hidden||!open){playNotif();_t('💬 '+nm+': '+String(body).slice(0,60))}else playNotif()}};
+ ws.onclose=()=>{setTimeout(connect,Math.min(30000,2000*(++tries)))}};
+setTimeout(connect,3000);
+/* sakelar di Pengaturan Akun */
+const _a=account;account=function(){_a();const m=document.querySelector('#ov .modal'),b=m&&m.querySelector('#aa');if(!b||m.querySelector('#nsd'))return;
+ b.insertAdjacentHTML('beforebegin',`<label style="flex-direction:row;align-items:center;gap:10px"><input type="checkbox" id="nsd" ${on()?'checked':''}> Suara notifikasi</label>`);
+ m.querySelector('#nsd').onchange=e=>{try{localStorage.setItem(KEY,e.target.checked?'1':'0')}catch(er){}if(e.target.checked)playNotif(true)}};
+})();
+</script>
