@@ -1995,6 +1995,7 @@ audio.maud{width:230px;max-width:100%;height:38px}
 .gban{position:absolute;left:0;right:0;top:34%;z-index:9;text-align:center;pointer-events:none;padding:10px;background:linear-gradient(90deg,transparent,#ff2d55cc,#ffb340cc,#ff2d55cc,transparent);font:800 15px var(--f-d);animation:gban 3.2s both}@keyframes gban{0%{transform:translateX(-100%)}12%{transform:none}88%{transform:none;opacity:1}100%{opacity:0;transform:translateX(100%)}}
 .glist{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;max-height:46vh;overflow:auto;padding:2px}.gi{display:flex;flex-direction:column;align-items:center;gap:2px;padding:9px 2px 7px;border-radius:13px;border:1.5px solid var(--line);background:var(--card);color:inherit;font:inherit;position:relative}.gi .e{font-size:30px;line-height:1.1}.gi small{font-size:10.5px;text-align:center;line-height:1.15;padding:0 2px}.gi b{font:700 11px var(--f-b);color:var(--warn)}.gi.on{border-color:var(--accent2);box-shadow:0 0 0 3px var(--glow);transform:translateY(-2px)}.gi.t3{background:linear-gradient(160deg,var(--card),#3a2a0a55)}.gi.t4{background:linear-gradient(160deg,var(--card),#5a1a6a66)}.gi.t5{background:linear-gradient(160deg,#4a0f1f,#7a3a00);border-color:#ffb340}
 .gbar{display:flex;gap:8px;align-items:center;margin-top:6px}.gbar .seg{flex:1}.gq{display:flex;gap:4px}.gq button{padding:7px 10px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:inherit;font-weight:700;font-size:12px}.gq button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.lvaud{position:absolute;top:calc(100px + env(safe-area-inset-top,0px));right:12px;z-index:6;display:flex;align-items:center;gap:8px;padding:6px 12px;border-radius:99px;background:#000a;backdrop-filter:blur(6px);width:min(210px,55vw)}.lvaud .i{width:18px;height:18px;flex:none}.lvaud input[type=range]{flex:1;min-width:0;accent-color:#4da3ff;height:4px}.lvaud .lvl{position:absolute;left:38px;right:14px;bottom:3px;height:3px;border-radius:3px;background:#fff2;overflow:hidden}.lvaud .lvl i{display:block;height:100%;width:0;background:linear-gradient(90deg,#3ddc84,#ffd54a,#ff5a5f);transition:width .08s}.lvaud b{font:700 11px var(--f-b);min-width:30px;text-align:right}
 .lvend{position:absolute;inset:0;z-index:20;background:#000e;display:grid;place-items:center;padding:20px}.lvend .card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:20px;width:min(380px,100%);display:flex;flex-direction:column;gap:10px;color:var(--utext)}.lvend h3{margin:0;font:800 20px var(--f-d)}
 `;document.head.appendChild(st);
 
@@ -2031,13 +2032,13 @@ function ownerUser(u,after){
  <div class="sec-t">Saldo &amp; role</div><div class="xrow"><input id="sa" class="oin" inputmode="numeric" placeholder="Nominal, mis. 50000 atau -20000"><button class="btn pri" id="o5" style="flex:0 0 auto">Terapkan</button></div>
  <div class="xrow"><select id="pp" class="oin">${PLANS.filter(p=>p.id!=='free').map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join('')}</select><select id="pd" class="oin"><option value="30">30 hari</option><option value="90">90 hari</option><option value="365">1 tahun</option><option value="0">Unlimited</option></select></div>
  <div class="xpl"><button class="btn pri" id="o6">Beri premium</button><button class="btn" id="o7">Cabut premium</button></div>
- <div class="sec-t">Lainnya</div><div class="xpl"><button class="btn dng" id="o8">Hapus status</button><button class="btn dng" id="o9">Hapus akun</button></div><button class="btn" data-close>Tutup</button>`);
+ <div class="sec-t">Lainnya</div><div class="xpl"><button class="btn" id="o10">Paksa keluar</button><button class="btn dng" id="o8">Hapus status</button><button class="btn dng" id="o9">Hapus akun</button></div><button class="btn" data-close>Tutup</button>`);
  const q=x=>s.querySelector(x),A=(p,b,m)=>async()=>{try{await api('admin/'+p,'POST',{id:u.id,...b()},1);toast(m);if(after)after()}catch(e){toast(e.message)}};
  q('#o1').onclick=A('ban',()=>({on:1,dur:+q('#bd').value,reason:q('#br').value}),u.name+' di-BAN');q('#o2').onclick=A('ban',()=>({on:0}),'Ban dibuka');
  q('#o3').onclick=A('mute',()=>({dur:+q('#bd').value||1440}),'Di-mute');q('#o4').onclick=A('mute',()=>({dur:0}),'Mute dibuka');
  q('#o5').onclick=A('saldo',()=>({amount:Math.trunc(+q('#sa').value.replace(/[^\d-]/g,''))}),'Saldo diperbarui');
  q('#o6').onclick=A('plan',()=>({plan:q('#pp').value,days:+q('#pd').value}),'Premium diberikan (aktif saat user online)');q('#o7').onclick=A('plan',()=>({plan:'free'}),'Premium dicabut');
- q('#o8').onclick=A('status/del',()=>({}),'Status dihapus');
+ q('#o10').onclick=A('logout',()=>({}),'Akun dipaksa keluar');q('#o8').onclick=A('status/del',()=>({}),'Status dihapus');
  q('#o9').onclick=()=>{if(q('#o9').dataset.s!=='1'){q('#o9').dataset.s='1';q('#o9').textContent='Ketuk lagi untuk menghapus permanen';return}A('user/del',()=>({}),'Akun dihapus')().then(()=>s.parentNode.remove())}}
 
 /* ---------- profil (override): donasi, hadiah role, aksi owner ---------- */
@@ -2133,19 +2134,25 @@ async function capture(c){
  if(c.src==='screen')vs=await navigator.mediaDevices.getDisplayMedia({video:{frameRate:{ideal:24,max:30},width:{max:1920},height:{max:1080}},audio:true});
  else vs=await navigator.mediaDevices.getUserMedia({video:{facingMode:c.src,width:{ideal:w},height:{ideal:h},frameRate:{ideal:24,max:30}},audio:false});
  if(c.mic){try{ms=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true}})}catch(e){}}
- const tr=[...vs.getVideoTracks()],a1=vs.getAudioTracks(),a2=ms?ms.getAudioTracks():[];let mix=null;
- if(a1.length&&a2.length){try{const ac=new AudioContext(),d=ac.createMediaStreamDestination();ac.createMediaStreamSource(new MediaStream(a1)).connect(d);ac.createMediaStreamSource(new MediaStream(a2)).connect(d);mix=d.stream.getAudioTracks()}catch(e){}}
- const out=new MediaStream([...tr,...(mix||(a2.length?a2:a1))]);out._src=[vs,ms];out._mic=a2[0]||null;return out}
+ const tr=[...vs.getVideoTracks()],a1=vs.getAudioTracks(),a2=ms?ms.getAudioTracks():[];let at=[],gm=null,an=null,ac=null;
+ if(a1.length||a2.length){try{ac=new (window.AudioContext||window.webkitAudioContext)();if(ac.state==='suspended')ac.resume();const d=ac.createMediaStreamDestination();an=ac.createAnalyser();an.fftSize=256;
+  const mx=ac.createGain();mx.connect(d);mx.connect(an);
+  if(a2.length){gm=ac.createGain();gm.gain.value=1;ac.createMediaStreamSource(new MediaStream(a2)).connect(gm);gm.connect(mx)}
+  if(a1.length)ac.createMediaStreamSource(new MediaStream(a1)).connect(mx);at=d.stream.getAudioTracks()}catch(e){console.warn('AUDIOGRAPH',e.name,e.message);at=a2.length?a2:a1;gm=null;an=null}}
+ const out=new MediaStream([...tr,...at]);out._src=[vs,ms];out._ac=ac;out._gm=gm;out._an=an;out._mic=a2[0]||null;return out}
 
 function hostRun(cfg,stm){
  let ws,rc=null,alive=1,t0=Date.now(),viewers=0,gsum=0,top=[],snapOn=false,snapTm=0,fails=0,cmOn=true,jpg=false,hasRec=!!window.MediaRecorder;
  const hasA=stm.getAudioTracks().length>0,mime=(hasA?['video/webm;codecs=vp8,opus','video/webm;codecs=vp9,opus','video/webm;codecs=vp8','video/webm']:['video/webm;codecs=vp8','video/webm;codecs=vp9','video/webm']).find(t=>hasRec&&MediaRecorder.isTypeSupported(t))||'';if(!mime)jpg=true;
  const W=document.createElement('div');W.className='lvw host';W.style.visibility='hidden';
- W.innerHTML=`<video muted playsinline autoplay></video><div class="lvtop"><span class="lvb red"><i class="lvdot"></i> LIVE <b id="ht">0:00</b></span><span class="lvb">${ic('eye','sm')} <b id="hv">0</b></span><span class="lvb">${ic('coin','sm')} <b id="hg">Rp0</b></span><span class="sp"></span><button class="ibtn" id="hm" aria-label="Mikrofon">${ic(stm._mic?'mic':'micoff')}</button><button class="ibtn" id="hc" aria-label="Komentar">${ic('chat')}</button><button class="ibtn" id="hh" aria-label="Sembunyikan">${ic('chev')}</button><button class="btn dng" id="he" style="padding:7px 14px">Akhiri</button></div><div class="lvtopg" id="htp"></div><div class="lvwait" id="hw" hidden></div>`;
+ W.innerHTML=`<video muted playsinline autoplay></video><div class="lvtop"><span class="lvb red"><i class="lvdot"></i> LIVE <b id="ht">0:00</b></span><span class="lvb">${ic('eye','sm')} <b id="hv">0</b></span><span class="lvb">${ic('coin','sm')} <b id="hg">Rp0</b></span><span class="sp"></span><button class="ibtn" id="hm" aria-label="Mikrofon">${ic(stm._mic?'mic':'micoff')}</button><button class="ibtn" id="hc" aria-label="Komentar">${ic('chat')}</button><button class="ibtn" id="hh" aria-label="Sembunyikan">${ic('chev')}</button><button class="btn dng" id="he" style="padding:7px 14px">Akhiri</button></div><div class="lvtopg" id="htp"></div><div class="lvaud" id="hau">${ic('mic')}<input type="range" id="hmv" min="0" max="200" value="100" aria-label="Volume mikrofon"><b id="hmp">100%</b><div class="lvl"><i id="hlv"></i></div></div><div class="lvwait" id="hw" hidden></div>`;
  document.body.appendChild(W);const vid=W.querySelector('video');vid.srcObject=stm;vid.play().catch(()=>{});
  const fl=floater(W,{key:'host',title:'Chat penonton',send:v=>send({t:'c',b:v}),w:'min(340px,88vw)',bottom:24});
  const q=s=>W.querySelector(s),send=o=>{try{ws&&ws.readyState===1&&ws.send(JSON.stringify(o))}catch(e){}};
  const tick=setInterval(()=>{q('#ht').textContent=fmtT(Date.now()-t0)},1000);
+ const aud=q('#hau');if(!stm._an&&!stm._gm)aud.hidden=true;let mon=0;const buf=stm._an?new Uint8Array(stm._an.frequencyBinCount):null;
+ if(buf){const lp=()=>{if(!alive)return;stm._an.getByteTimeDomainData(buf);let m=0;for(let i=0;i<buf.length;i++)m=Math.max(m,Math.abs(buf[i]-128));q('#hlv').style.width=Math.min(100,m/128*140)+'%';mon=requestAnimationFrame(lp)};lp()}
+ q('#hmv').oninput=e=>{const v=+e.target.value;q('#hmp').textContent=v+'%';if(stm._gm)stm._gm.gain.value=v/100};
  const startRec=()=>{if(jpg||!alive)return;try{if(rc&&rc.state!=='inactive')rc.stop()}catch(e){}
   try{rc=new MediaRecorder(stm,{mimeType:mime,videoBitsPerSecond:cfg.q>=720?1400000:cfg.q>=480?750000:420000,...(hasA?{audioBitsPerSecond:56000}:{})})}catch(e){try{rc=new MediaRecorder(stm)}catch(e2){jpg=true;send({t:'meta',kind:'jpg',reset:1});return}}
   send({t:'meta',kind:'webm',mime:rc.mimeType||mime,reset:1});
@@ -2167,10 +2174,10 @@ function hostRun(cfg,stm){
    else if(d.t==='warn')toast(d.b);
    else if(d.t==='end'){finish(d.sum)}};
   ws.onclose=()=>{if(!alive)return;q('#hw').hidden=false;q('#hw').textContent='Koneksi terputus, mencoba menyambung kembali...';setTimeout(connect,1500)}};
- const stopAll=()=>{alive=0;clearInterval(tick);clearTimeout(snapTm);try{rc&&rc.state!=='inactive'&&rc.stop()}catch(e){}[...(stm._src||[]),stm].forEach(s=>s&&s.getTracks().forEach(t=>t.stop()));try{ws&&ws.close()}catch(e){}HOST=null};
+ const stopAll=()=>{alive=0;clearInterval(tick);cancelAnimationFrame(mon);try{stm._ac&&stm._ac.close()}catch(e){}clearTimeout(snapTm);try{rc&&rc.state!=='inactive'&&rc.stop()}catch(e){}[...(stm._src||[]),stm].forEach(s=>s&&s.getTracks().forEach(t=>t.stop()));try{ws&&ws.close()}catch(e){}HOST=null};
  const finish=sum=>{if(!alive&&!W.parentNode)return;stopAll();sum=sum||{};const e=document.createElement('div');e.className='lvend';e.innerHTML=`<div class="card"><h3>Live selesai</h3><div class="rcp"><div><span>Durasi</span><b>${fmtT(sum.dur||Date.now()-t0)}</b></div><div><span>Puncak penonton</span><b>${sum.peak!=null?sum.peak:'-'}</b></div><div><span>Pendapatan gift</span><b>${rp(sum.gifts||gsum)}</b></div></div>${(sum.top||[]).length?`<b>Gifter teratas</b>${sum.top.map((x,i)=>`<div class="xsm">${i+1}. ${esc(x.name)} · ${rp(x.v)}</div>`).join('')}`:''}<p class="xsm">Server sudah mereset data siaran.</p><button class="btn pri" id="hok">Selesai</button></div>`;W.appendChild(e);e.querySelector('#hok').onclick=()=>{W.remove();api('hb','GET',null,1).then(applyWallet).catch(()=>{})}};
  q('#he').onclick=()=>{if(q('#he').dataset.s!=='1'){q('#he').dataset.s='1';q('#he').textContent='Yakin?';setTimeout(()=>{q('#he').dataset.s='';q('#he').textContent='Akhiri'},3000);return}api('live/stop','POST',{},1).catch(()=>{});setTimeout(()=>{if(alive)finish({})},1500)};
- q('#hm').onclick=()=>{const t=stm._mic||stm.getAudioTracks()[0];if(!t)return toast('Tidak ada mikrofon');t.enabled=!t.enabled;q('#hm').innerHTML=ic(t.enabled?'mic':'micoff')};
+ let mutd=0;q('#hm').onclick=()=>{if(!stm._mic)return toast('Tidak ada mikrofon');mutd=!mutd;stm._mic.enabled=!mutd;if(stm._gm)stm._gm.gain.value=mutd?0:(+q('#hmv').value/100);q('#hm').innerHTML=ic(mutd?'micoff':'mic');toast(mutd?'Mikrofon dimatikan':'Mikrofon dihidupkan')};
  q('#hc').onclick=()=>{cmOn=!cmOn;send({t:'cm',on:cmOn});toast(cmOn?'Komentar penonton dihidupkan':'Komentar penonton dimatikan')};
  q('#hh').onclick=()=>{W.style.visibility='hidden';toast('Siaran tetap berjalan. Buka lagi lewat Pengaturan Akun › Studio Live')};
  stm.getVideoTracks()[0].addEventListener('ended',()=>{toast('Berbagi layar dihentikan');q('#he').click();q('#he').click()});
@@ -2183,7 +2190,7 @@ function watch(info){
  if(WATCH)return;WATCH=true;
  const MS=window.ManagedMediaSource||window.MediaSource,okMSE=!!(MS&&MS.isTypeSupported&&MS.isTypeSupported('video/webm;codecs=vp8,opus'));
  const W=document.createElement('div');W.className='lvw';
- W.innerHTML=`<video playsinline autoplay ${okMSE?'':'hidden'}></video><img class="lvimg" ${okMSE?'hidden':''} alt=""><div class="lvwait" id="vw">Menyambung ke siaran...</div><div class="lvtop"><button class="ibtn" id="vx" aria-label="Keluar">${ic('back')}</button><span class="lvb red"><i class="lvdot"></i> LIVE</span><span class="lvb">${ic('eye','sm')} <b id="vn">${info.v||0}</b></span><span class="lvb" style="max-width:40vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" id="vh">${esc(info.host||'')} ${roleHTML('owner')}</span></div><div class="lvtopg" id="vtp">${topHTML(info.top)}</div><div class="lvbot"><button class="ibtn gbtn" id="vg" aria-label="Kirim gift">${ic('gift')}</button><button class="ibtn" id="vmu" aria-label="Suara">${ic('volume')}</button></div>`;
+ W.innerHTML=`<video playsinline autoplay ${okMSE?'':'hidden'}></video><img class="lvimg" ${okMSE?'hidden':''} alt=""><div class="lvwait" id="vw">Menyambung ke siaran...</div><div class="lvtop"><button class="ibtn" id="vx" aria-label="Keluar">${ic('back')}</button><span class="lvb red"><i class="lvdot"></i> LIVE</span><span class="lvb">${ic('eye','sm')} <b id="vn">${info.v||0}</b></span><span class="lvb" style="max-width:40vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" id="vh">${esc(info.host||'')} ${roleHTML('owner')}</span></div><div class="lvtopg" id="vtp">${topHTML(info.top)}</div><div class="lvaud" id="vau"><button class="ibtn" id="vmu2" style="background:none;color:#fff;width:24px;height:24px;padding:0" aria-label="Suara">${ic('volume')}</button><input type="range" id="vvol" min="0" max="100" value="100" aria-label="Volume"><b id="vvp">100%</b></div><div class="lvbot"><button class="ibtn gbtn" id="vg" aria-label="Kirim gift">${ic('gift')}</button><button class="ibtn" id="vmu" aria-label="Suara">${ic('volume')}</button></div>`;
  document.body.appendChild(W);const vid=W.querySelector('video'),img=W.querySelector('.lvimg'),q=s=>W.querySelector(s);vid.disableRemotePlayback=true;vid.muted=false;
  let ws,ms,sb,queue=[],alive=1,snap=!okMSE,kind=info.kind,mime=info.mime||'video/webm;codecs=vp8,opus',tries=0,cmOn=true,lastUrl='',ended=0,gTimer=0;
  const fl=floater(W,{key:'view',title:'Chat live',send:v=>{try{ws.send(JSON.stringify({t:'c',b:v}))}catch(e){toast('Belum tersambung')}},bottom:24,w:'min(330px,84vw)'});
@@ -2212,7 +2219,11 @@ function watch(info){
  const reconnect=()=>{try{ws.onclose=null;ws.close()}catch(e){}resetMSE();connect()};
  const stop=()=>{alive=0;try{ws&&(ws.onclose=null,ws.close())}catch(e){}try{vid.pause();vid.removeAttribute('src');vid.load()}catch(e){}if(lastUrl)URL.revokeObjectURL(lastUrl);W.remove();WATCH=false};
  const endIt=d=>{if(ended)return;ended=1;const s=d.sum||{};const e=document.createElement('div');e.className='lvend';e.innerHTML=`<div class="card"><h3>Live telah selesai</h3><p class="xsm">${esc(s.title||'')}${s.reason?' · '+esc(s.reason):''}</p><button class="btn pri" id="vok">Tutup</button></div>`;W.appendChild(e);e.querySelector('#vok').onclick=stop};
- q('#vx').onclick=stop;q('#vmu').onclick=()=>{vid.muted=!vid.muted;q('#vmu').innerHTML=ic(vid.muted?'mute':'volume')};
+ q('#vx').onclick=stop;
+ const setVol=v=>{v=Math.max(0,Math.min(100,v));vid.volume=v/100;vid.muted=v===0;q('#vvol').value=v;q('#vvp').textContent=v+'%';const ico=ic(v===0?'mute':'volume');q('#vmu').innerHTML=ico;q('#vmu2').innerHTML=ico;try{localStorage.setItem('astra_lvvol',v)}catch(e){}};
+ let sv0=100;try{sv0=+localStorage.getItem('astra_lvvol');if(isNaN(sv0)||localStorage.getItem('astra_lvvol')===null)sv0=100}catch(e){}setVol(sv0);
+ q('#vvol').oninput=e=>setVol(+e.target.value);let last=sv0||100;q('#vmu').onclick=q('#vmu2').onclick=()=>{if(+q('#vvol').value===0)setVol(last||70);else{last=+q('#vvol').value;setVol(0)}};
+ const hideAud=()=>{q('#vau').style.display=(snap||kind==='jpg')?'none':''};setInterval(()=>W.isConnected?hideAud():0,1500);
  q('#vg').onclick=()=>giftSheet(W,()=>ws);
  resetMSE();connect();
  let lastT=-1,still=0,got=0;const dog=setInterval(()=>{if(!alive||ended||snap)return;if(!W.isConnected)return clearInterval(dog);
@@ -2233,7 +2244,7 @@ async function giftSheet(W,getWs){
 
 /* ====================== HUB OWNER ====================== */
 function hub(){
- const secs=[['ov','dash','Ringkasan'],['us','users','Pengguna'],['cd','key','Kode redeem'],['cm','chat','Komunitas'],['lv','live','Live'],['wd','flag','Kata terlarang'],['rg','lock','Pendaftaran'],['lg','list','Log']];
+ const secs=[['ov','dash','Ringkasan'],['us','users','Pengguna'],['cd','key','Kode redeem'],['cm','chat','Komunitas'],['lv','live','Live'],['sd','coin','Top saldo'],['tl','dash','Alat server'],['wd','flag','Kata terlarang'],['rg','lock','Pendaftaran'],['lg','list','Log']];
  const o=modal(`<div class="mh"><h3>Hub Owner</h3><button class="ibtn" data-close>${ic('x')}</button></div><div class="xnav">${secs.map(([k,i,n])=>`<button data-k="${k}">${ic(i)} ${n}</button>`).join('')}</div><div id="hv"></div>`,'omod tfm'),v=o.querySelector('#hv');
  const go=async k=>{o.querySelectorAll('.xnav button').forEach(b=>b.classList.toggle('on',b.dataset.k===k));v.innerHTML='<p class="mt">Memuat...</p>';
   try{await V[k]()}catch(e){v.innerHTML='<p class="mt">'+esc(e.message)+'</p>'}};
@@ -2246,6 +2257,14 @@ function hub(){
    const ld=async r=>{if(r){off=0;list=[]}const d=await P('users',{q:qs,f,off,lim:25});list=list.concat(d.list);off=list.length;tot=d.total;paint()};
    v.querySelectorAll('#uf button').forEach(b=>b.onclick=()=>{f=b.dataset.f;v.querySelectorAll('#uf button').forEach(x=>x.classList.toggle('on',x===b));ld(1)});
    v.querySelector('#uq').oninput=e=>{qs=e.target.value.trim();clearTimeout(tm);tm=setTimeout(()=>ld(1),300)};um.onclick=()=>ld(0);ld(1)},
+  async sd(){const d=await P('users',{sort:'sal',lim:20});v.innerHTML=`<div class="xsm">20 saldo terbesar</div><div class="tlist">${d.list.map((x,i)=>`<button class="xu" data-i="${i}"><b style="width:22px">${i+1}</b>${avU(x)}<span class="tri"><b>${esc(x.name)} ${roleHTML(x.role)}</b><small>ID ${x.id}</small></span><b>${rp(x.sal)}</b></button>`).join('')}</div>`;v.querySelectorAll('.xu').forEach(b=>b.onclick=()=>ownerUser({...d.list[b.dataset.i],avatar:null},()=>go('sd')))},
+  async tl(){const s=await P('stats');v.innerHTML=`<div class="sec-t">Bagi-bagi saldo</div><div class="xrow"><input id="ad" class="oin" inputmode="numeric" placeholder="Nominal per akun"><select id="aw" class="oin"><option value="on">Yang online</option><option value="all">Semua akun</option></select></div><button class="btn pri" id="ag">${ic('gift')} Bagikan</button><p class="xsm" id="ai"></p>
+   <div class="sec-t">Mode pemeliharaan</div><input id="mm" class="oin" maxlength="120" placeholder="Pesan untuk member" value="${esc(s.maint||'')}"><button class="btn ${s.maint?'pri':'dng'}" id="mb">${s.maint?'Matikan pemeliharaan':'Aktifkan (member dikunci sementara)'}</button>
+   <div class="sec-t">Ekspor data</div><button class="btn" id="ex">Unduh daftar akun (CSV)</button><small class="xsm">Berisi ID, nama, email, role, saldo. Tanpa password.</small>`;
+   const amt=()=>Math.floor(+v.querySelector('#ad').value.replace(/\D/g,''))||0;
+   v.querySelector('#ag').onclick=async e=>{const n=amt(),who=v.querySelector('#aw').value;if(n<100)return v.querySelector('#ai').textContent='Minimal Rp100';try{const d=await P('airdrop',{amount:n,who,dry:1});if(e.target.dataset.s!==String(n)+who){e.target.dataset.s=String(n)+who;e.target.textContent=`Ketuk lagi: ${rp(n)} × ${d.n} akun = ${rp(d.total)}`;return}const r=await P('airdrop',{amount:n,who});toast('Dibagikan ke '+r.n+' akun');go('tl')}catch(er){v.querySelector('#ai').textContent=er.message}};
+   v.querySelector('#mb').onclick=async()=>{try{await P('maint',{on:!s.maint,msg:v.querySelector('#mm').value});go('tl')}catch(e){toast(e.message)}};
+   v.querySelector('#ex').onclick=async()=>{try{const d=await P('export');const csv='id,nama,email,role,saldo,ban,dibuat\n'+d.list.map(x=>[x.id,'"'+String(x.name).replace(/"/g,'""')+'"',x.email,x.role,x.saldo,x.ban,x.dibuat?new Date(x.dibuat).toISOString():''].join(',')).join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='astra-akun.csv';a.click()}catch(e){toast(e.message)}}},
   async cd(){v.innerHTML='<button class="btn pri" id="cp">Buka manajer kode redeem</button><small class="xsm">Buat kode saldo/premium sekali pakai, lihat yang terpakai, hapus kode.</small>';v.querySelector('#cp').onclick=()=>{closeModal();ownerPanel()}},
   async cm(){const s=await P('stats');v.innerHTML=`<div class="sec-t">Mode lambat (detik antar pesan member)</div><div class="xrow"><input id="sl" class="oin" type="number" min="0" max="600" value="${s.slow}"><button class="btn" id="sls" style="flex:0 0 auto">Terapkan</button></div>
    <div class="sec-t">Kunci komunitas</div><button class="btn ${s.lock?'':'dng'}" id="lk">${s.lock?'Buka kunci komunitas':'Kunci komunitas (hanya Admin yang bisa kirim)'}</button>
@@ -2278,7 +2297,7 @@ const applyGift=g=>{if(!g||!g.plan)return;const now=Date.now();
  if(g.rev||g.plan==='free'){S.user.plan='free';S.user.planExp=0;toast('Premium kamu dicabut oleh Owner')}
  else{const same=S.user.plan===g.plan&&S.user.planExp&&S.user.planExp>now;const base=same?S.user.planExp:now;S.user.plan=g.plan;S.user.planExp=g.days?base+g.days*864e5:0;const p=PLANS.find(x=>x.id===g.plan)||{};if(p.modes&&!p.modes.includes(S.mode))S.mode='fast';toast('🎁 '+esc(g.from||'Seseorang')+' menghadiahkan role '+(p.name||g.plan)+' untukmu!')}
  saveUser();try{saveSettings()}catch(e){}api('gift/ack','POST',{},1).catch(()=>{})};
-const beat=()=>{if(!tok()||!S.user||document.hidden)return;api('hb','GET',null,1).then(r=>{showPill(r.live);if(r.gift)applyGift(r.gift);if(r.ban&&Date.now()-lastBan>6e5){lastBan=Date.now();toast('Akunmu sedang di-BAN dari komunitas')}}).catch(()=>{})};
+const beat=()=>{if(!tok()||!S.user||document.hidden)return;api('hb','GET',null,1).then(r=>{showPill(r.live);if(r.gift)applyGift(r.gift);if(r.maint&&!X.isAdmU()&&Date.now()-lastBan>3e5){lastBan=Date.now();toast('Server pemeliharaan: '+r.maint)}if(r.ban&&Date.now()-lastBan>6e5){lastBan=Date.now();toast('Akunmu sedang di-BAN dari komunitas')}}).catch(()=>{})};
 setInterval(beat,12000);setTimeout(beat,2500);
 window.__ext.watch=watch;window.__ext.studio=studio;window.__ext.hub=hub;
 })();
