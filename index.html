@@ -655,7 +655,7 @@ const plan=()=>{if(S.user&&S.user.unlimited)return OWNER_PLAN;if(S.user&&S.user.
 const ROLES={free:['Member','r-free'],go25:['Mini','r-mini'],go50:['Lite','r-lite'],go75:['Plus','r-plus'],go150:['Elite','r-elite'],go250:['Pro','r-pro'],q3:['Kuartal','r-kuartal'],y1:['Legend','r-legend'],y2:['Mythic','r-mythic'],y5:['Sultan','r-sultan'],owner:['Owner','r-owner'],root:['Owner','r-owner']};
 const VFB='<svg class="vf" viewBox="0 0 24 24" role="img" aria-label="Terverifikasi"><path fill="#1d9bf0" d="M12 1.6l2.5 1.7 3-.3 1.3 2.8 2.7 1.5-.6 3 .6 3-2.7 1.5-1.3 2.8-3-.3L12 22.4l-2.5-1.7-3 .3-1.3-2.8-2.7-1.5.6-3-.6-3 2.7-1.5 1.3-2.8 3 .3z"/><path d="M7.8 12.3l2.8 2.8 5.6-5.8" fill="none" stroke="#fff" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 const roleKey=()=>plan().id;
-const roleHTML=k=>{const r=ROLES[k]||ROLES.free;return `<span class="role ${r[1]}">${k==='free'?'':ic('crown')}${r[0]}</span>${k==='root'?VFB:''}`};
+const roleHTML=k=>{const r=ROLES[k]||ROLES.free;return `<span class="role ${r[1]}">${k==='free'?'':ic('crown')}${r[0]}</span>`};
 const avail=p=>p.id!=='free';
 const today=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
 const durOf=(w,p,W)=>p.words===Infinity?3*60000:Math.min(W,Math.max(3*60000,w/p.words*W));
