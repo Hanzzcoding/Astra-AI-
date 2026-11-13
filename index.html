@@ -2674,11 +2674,23 @@ function wpEditor(root,focus){
    if(blob.size>30*1048576)throw new Error('Hasil masih '+(blob.size/1e6).toFixed(1)+' MB. Pendekkan durasinya.');
    const f=new File([blob],'wallpaper.webm',{type:'video/webm'});E[cur]={...s,k:'file',fid:'',src:'',mime:'video/webm',name:'wallpaper (terkompres '+(blob.size/1e6).toFixed(2)+' MB)',_f:f,_url:URL.createObjectURL(f),_up:"",z:1,x:50,y:50,st:0,en:0};dur[cur]=0;busy=0;draw();$('#wer',root).textContent='';$('.st',root.querySelector('#wfm')).textContent='Selesai: '+(blob.size/1e6).toFixed(2)+' MB. Jangan lupa Simpan.'
   }catch(e){busy=0;er.textContent=e.message||'Gagal memangkas video';bar.hidden=true;const b=$('#wcp',root);if(b)b.disabled=false}};
+ /* upload dipotong 1 MB per permintaan, otomatis dicoba ulang dan bisa dilanjutkan kalau jaringan putus */
+ const upl=async f=>{const id=Array.from(crypto.getRandomValues(new Uint8Array(8)),b=>b.toString(16).padStart(2,'0')).join(''),CH=1048576,tot=f.size,btn=()=>$('#wsv',root);let off=0,fail=0;
+  if(!tot)throw new Error('File kosong');
+  while(off<tot){const b=btn();if(b)b.innerHTML='<i class="dcspin"></i> Mengunggah '+Math.floor(off/tot*100)+'%';
+   let r,j={};try{r=await fetch(API+'/api/wpup?id='+id+'&off='+off+'&total='+tot,{method:'POST',headers:{authorization:'Bearer '+tok(),'x-mime':f.type},body:f.slice(off,off+CH)});try{j=await r.json()}catch(e){}}
+   catch(e){if(++fail>8)throw new Error('Koneksi terputus saat mengunggah ('+Math.floor(off/tot*100)+'%). Periksa internet lalu coba simpan lagi.');await new Promise(z=>setTimeout(z,Math.min(6000,600*fail)));continue}
+   if(r.status===409){if(off===0&&j.size===0&&++fail>4)throw new Error(j.e||'Sesi upload hilang');off=j.size||0;continue}
+   if(r.status===401)throw new Error('Sesi habis. Muat ulang halaman lalu masuk lagi.');
+   if(r.status>=500||r.status===429){if(++fail>8)throw new Error(j.e||'Server sibuk ('+r.status+'). Coba lagi sebentar.');await new Promise(z=>setTimeout(z,Math.min(6000,800*fail)));continue}
+   if(!r.ok)throw new Error(j.e||'Upload ditolak ('+r.status+')');
+   fail=0;off=j.size;}
+  return id};
  const pay=async k=>{const s=E[k];if(!s||!s.k)return null;const o={k:s.k,t:s.t,tp:s.tp,ts:s.ts,z:s.z,x:s.x,y:s.y,st:s.st,en:s.en,mu:s.mu};
-  if(s.k==='link')o.src=s.src;else if(s._f){if(s._f.size>30*1048576)throw new Error('File lebih dari 30 MB.');if(!s._up){const r=await fetch(API+'/api/wpup',{method:'POST',headers:{authorization:'Bearer '+tok(),'x-mime':s._f.type},body:s._f});let j={};try{j=await r.json()}catch(e){}if(!r.ok)throw new Error(j.e||'Upload gagal ('+r.status+')');s._up=j.fid}o.fid=s._up;o.mime=s._f.type}else{o.fid=s.fid;o.mime=s.mime}return o};
+  if(s.k==='link')o.src=s.src;else if(s._f){if(s._f.size>30*1048576)throw new Error('File lebih dari 30 MB.');if(!s._up)s._up=await upl(s._f);o.fid=s._up;o.mime=s._f.type}else{o.fid=s.fid;o.mime=s.mime}return o};
  const save=async()=>{if(busy)return;const er=$('#wer',root),b=$('#wsv',root);er.textContent='';busy=1;b.disabled=true;const lab=b.textContent;b.innerHTML='<i class="dcspin"></i> Mengunggah & menyimpan...';
-  try{const A=await pay('a'),B=E.mode==='split'?await pay('b'):null;const r=await api('admin/wallpaper','POST',{act:'set',mode:E.mode,a:A,b:B},1,0,120000);
-   toast('Diterapkan ke semua pengguna. Video lama otomatis dihapus dari server.');await load();await wpLoad()}catch(e){er.textContent=e.message}
+  try{let r;for(let t=0;;t++){try{const A=await pay('a'),B=E.mode==='split'?await pay('b'):null;r=await api('admin/wallpaper','POST',{act:'set',mode:E.mode,a:A,b:B},1,0,120000);break}catch(e){if(t<1&&/tidak ditemukan|hilang/i.test(e.message)){['a','b'].forEach(x=>{if(E[x]&&E[x]._f)E[x]._up=''});continue}throw e}}
+   toast('Diterapkan ke semua pengguna. Video lama otomatis dihapus dari server.');await load();await wpLoad()}catch(e){er.textContent=e.message||'Gagal menyimpan, coba lagi.'}
   busy=0;const bb=$('#wsv',root);if(bb){bb.disabled=false;bb.textContent=lab}};
  const reset=async()=>{if(busy||!confirm('Kembali ke video bawaan untuk semua pengguna?'))return;try{await api('admin/wallpaper','POST',{act:'reset'},1);toast('Kembali ke video bawaan');await load();await wpLoad()}catch(e){$('#wer',root).textContent=e.message}};
  const load=async()=>{root.innerHTML='<p class="mt">Memuat...</p>';try{const r=await api('admin/wallpaper','POST',{act:'get'},1),w=r.wp;E=w?{mode:w.mode,a:w.a,b:w.b}:{mode:'same',a:null,b:null};if(E.mode==='split'&&focus==='upgrade')cur='b'}catch(e){root.innerHTML='<p class="mt">'+e.message+'</p>';return}draw()};
