@@ -1755,7 +1755,7 @@ let rcv;function recoverOnce(){return rcv||(rcv=(async()=>{const c=DB.get('cred'
   if(S.user){S.user.uid=o.user.id;saveUser()}toast('Akunmu dipulihkan otomatis');return true}catch(e){if(e.st&&e.st!==401&&e.st!==409)return false}}return false})().finally(()=>setTimeout(()=>rcv=null,3000)))}
 function adopt(o,em,first){DB.set('tok',o.token);DB.set('session',em);const us=DB.get('users',{}),old=us[em]||{},la=old.avatar;
  const u=Object.assign({email:em,created:Date.now(),plan:'free',seenUpsell:false},old,pullData(o.data,em),{email:em,uid:o.user.id,name:o.user.name,avatar:o.user.avatar,welcome:first?1:old.welcome});
- us[em]=u;DB.set('users',us);DB.set('ouser',o.user);S.user=u;if(!o.user.avatar&&la){u.avatar=la;healAvatar(la)}saveUser();$('#auth').hidden=true;applyLook();enter(first)}
+ if(o.user.adm)u.unlimited=true;us[em]=u;DB.set('users',us);DB.set('ouser',o.user);S.user=u;if(!o.user.avatar&&la){u.avatar=la;healAvatar(la)}saveUser();$('#auth').hidden=true;applyLook();enter(first)}
 function healAvatar(a){api('profile','POST',{avatar:a},1).then(x=>{DB.set('ouser',x);applyLook()}).catch(()=>{})}
 const packData=()=>{const e=S.user.email,d={...S.user};delete d.pass;delete d.avatar;d.__usage=DB.get('usage:'+e,null);d.__mem=DB.get('mem:'+e,null);d.__red=DB.get('redeemed',null);d.__set=DB.get('settings',null);d.__voice=DB.get('voice',null);d.__web=DB.get('web',null);if(JSON.stringify(d).length>55e4)delete d.__mem;return d};
 const pullData=(d,e)=>{const x={...(d||{})};if(x.__usage)DB.set('usage:'+e,x.__usage);if(x.__mem)DB.set('mem:'+e,x.__mem);if(x.__red)DB.set('redeemed',x.__red);if(x.__set){DB.set('settings',x.__set);Object.assign(S,{lang:x.__set.lang||S.lang,theme:x.__set.theme||S.theme,mode:x.__set.mode||S.mode})}if(x.__voice)DB.set('voice',x.__voice);if(x.__web!=null){DB.set('web',x.__web);S.web=!!x.__web}delete x.__usage;delete x.__mem;delete x.__red;delete x.__set;delete x.__voice;delete x.__web;return x};
@@ -2328,11 +2328,12 @@ let pill=null,lastBan=0;
 const showPill=L=>{if(!L||!L.on||WATCH){if(pill){pill.remove();pill=null}return}
  if(!pill){pill=document.createElement('button');pill.id='livePill';document.body.appendChild(pill);pill.onclick=()=>{if(X.isRootU()){HOST?HOST.show():studio()}else api('live/status','GET',null,1).then(r=>r.live?watch(r.live):toast('Live sudah selesai')).catch(e=>toast(e.message))}}
  pill.innerHTML=`<i></i><span>LIVE · ${esc(L.title)}${X.isRootU()?'':' · tonton'}</span>`};
-const applyGift=g=>{if(!g||!g.plan)return;const now=Date.now();
- if(g.rev||g.plan==='free'){S.user.plan='free';S.user.planExp=0;toast('Premium kamu dicabut oleh Owner')}
- else{const same=S.user.plan===g.plan&&S.user.planExp&&S.user.planExp>now;const base=same?S.user.planExp:now;S.user.plan=g.plan;S.user.planExp=g.days?base+g.days*864e5:0;const p=PLANS.find(x=>x.id===g.plan)||{};if(p.modes&&!p.modes.includes(S.mode))S.mode='fast';toast('🎁 '+esc(g.from||'Seseorang')+' menghadiahkan role '+(p.name||g.plan)+' untukmu!')}
- saveUser();try{saveSettings()}catch(e){}api('gift/ack','POST',{},1).catch(()=>{})};
-let lastPr='',lastPv=-1;const beat=()=>{if(!tok()||!S.user||document.hidden)return;api('hb','GET',null,1).then(r=>{const pj=JSON.stringify(r.pr||{});if(pj!==lastPr){lastPr=pj;__lv.applyPrices(r.pr)}if(r.payv!==lastPv){lastPv=r.payv;api('pay','GET',null,1).then(m=>__lv.applyPay(m.pay)).catch(()=>{lastPv=-1})}showPill(r.live);if(r.gift)applyGift(r.gift);if(r.maint&&!X.isAdmU()&&Date.now()-lastBan>3e5){lastBan=Date.now();toast('Server pemeliharaan: '+r.maint)}if(r.ban&&Date.now()-lastBan>6e5){lastBan=Date.now();toast('Akunmu sedang di-BAN dari komunitas')}}).catch(()=>{})};
+const applyGift=g=>{if(!g||!g.plan)return;
+ if(g.rev||g.plan==='free')toast('Premium kamu dicabut oleh Owner');else{const p=PLANS.find(x=>x.id===g.plan)||{};toast('🎁 '+esc(g.from||'Seseorang')+' menghadiahkan role '+(p.name||g.plan)+' untukmu!')}
+ api('gift/ack','POST',{},1).catch(()=>{})};
+const syncPl=r=>{let ch=0;if(r.pl&&(S.user.plan!==r.pl.id||(S.user.planExp||0)!==(r.pl.exp||0))){S.user.plan=r.pl.id;S.user.planExp=r.pl.exp||0;if(!(PLANS.find(p=>p.id===r.pl.id)||{modes:['fast']}).modes.includes(S.mode))S.mode='fast';ch=1}
+ if(r.adm&&!S.user.unlimited){S.user.unlimited=true;ch=1}if(ch){saveUser();try{refreshChrome()}catch(e){}}};
+const beat=()=>{if(!tok()||!S.user||document.hidden)return;api('hb','GET',null,1).then(r=>{syncPl(r);const pj=JSON.stringify(r.pr||{});if(pj!==lastPr){lastPr=pj;__lv.applyPrices(r.pr)}if(r.payv!==lastPv){lastPv=r.payv;api('pay','GET',null,1).then(m=>__lv.applyPay(m.pay)).catch(()=>{lastPv=-1})}showPill(r.live);if(r.gift)applyGift(r.gift);if(r.maint&&!X.isAdmU()&&Date.now()-lastBan>3e5){lastBan=Date.now();toast('Server pemeliharaan: '+r.maint)}if(r.ban&&Date.now()-lastBan>6e5){lastBan=Date.now();toast('Akunmu sedang di-BAN dari komunitas')}}).catch(()=>{})};
 setInterval(beat,12000);setTimeout(beat,2500);
 window.__ext.watch=watch;window.__ext.studio=studio;window.__ext.hub=hub;
 })();
