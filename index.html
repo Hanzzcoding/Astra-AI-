@@ -314,6 +314,10 @@ select{background:var(--card2);border:1px solid var(--line);border-radius:10px;p
 .wlab.iklan{background:#ffd400;color:#111}.wlab.glass{background:rgba(0,0,0,.42);color:#fff;backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.25)}.wlab.neon{color:#5ff;border:1px solid #5ff;box-shadow:0 0 10px #5ff8,inset 0 0 8px #5ff4;text-shadow:0 0 8px #5ff}.wlab.plain{color:#fff;text-shadow:0 1px 6px rgba(0,0,0,.8);padding:0}
 .wvid.wmedia{border:0;pointer-events:none;object-fit:cover}
 .wedit{position:absolute;z-index:4;right:10px;top:50%;transform:translateY(-50%);width:34px;height:34px;border-radius:50%;border:0;background:rgba(0,0,0,.55);color:#fff;font-size:15px;cursor:pointer}
+.wcrop{position:relative;margin:8px auto;background:#000;border-radius:12px;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none}
+.wcrop .cvv{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;pointer-events:none}
+.wcrop .crect{position:absolute;border:2px solid #fff;box-shadow:0 0 0 999px rgba(0,0,0,.58);cursor:move;border-radius:4px;touch-action:none;background:linear-gradient(rgba(255,255,255,.35),rgba(255,255,255,.35)) 33.3% 0/1px 100% no-repeat,linear-gradient(rgba(255,255,255,.35),rgba(255,255,255,.35)) 66.6% 0/1px 100% no-repeat,linear-gradient(rgba(255,255,255,.35),rgba(255,255,255,.35)) 0 33.3%/100% 1px no-repeat,linear-gradient(rgba(255,255,255,.35),rgba(255,255,255,.35)) 0 66.6%/100% 1px no-repeat}
+.wcrop .ch{position:absolute;right:4px;bottom:4px;width:26px;height:26px;border-radius:50%;background:#fff;border:3px solid #4da3ff;cursor:nwse-resize;touch-action:none}
 .wpf{position:relative;overflow:hidden;border-radius:14px;background:#000;width:100%}
 .wpf .wvid{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .wpe label{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--muted);margin:8px 0}.wpe label b{color:var(--text,inherit);font-weight:600}
@@ -2568,11 +2572,12 @@ const mmss=v=>{v=Math.max(0,+v||0);return Math.floor(v/60)+':'+String(Math.floor
 const rd=f=>new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(String(r.result));r.onerror=()=>rej(new Error('Gagal membaca file'));r.readAsDataURL(f)});
 function wpEditor(root,focus){
  root.classList.add('wpe');
- let E={mode:'same',a:null,b:null},cur='a',dur={a:0,b:0},busy=0;
+ let E={mode:'same',a:null,b:null,ref:'p'},cur='a',dur={a:0,b:0},busy=0;
+ const RR=()=>((E.mode==='split'&&cur==='a')||(E.mode==='same'&&E.ref==='s'))?1.7:16/9;
  const sl=k=>E[k]||(E[k]=DEF());
  const draw=()=>{
   const split=E.mode==='split',slot=n=>n==='saldo'?E.a:(split?E.b:E.a);
-  root.innerHTML=`<p class="xsm" style="margin:0 0 8px">Ganti video di kartu <b>Saldo Astra</b> dan <b>GO ASTRA Premium</b>. Tersimpan di server dan tampil ke semua pengguna. Kalau dikosongkan, video bawaan dipakai.</p>
+  root.innerHTML=`<p class="xsm" style="margin:0 0 8px">Ganti video di kartu <b>Saldo Astra</b> dan <b>GO ASTRA Premium</b>. Maks 30 MB. Tersimpan di server dan tampil ke semua pengguna; setiap kali diganti, video lama otomatis dihapus dari server. Kalau dikosongkan, video bawaan dipakai.</p>
   <div class="seg" id="wmd"><button data-m="same" class="${split?'':'on'}">Video sama</button><button data-m="split" class="${split?'on':''}">Beda tiap kartu</button></div>
   <div class="st">Pratinjau persis seperti yang dilihat pengguna</div>
   <div class="xrow" style="align-items:stretch"><div style="flex:1 1 150px"><small class="mut">Kartu Saldo</small><div class="wpf" data-wp="saldo" style="aspect-ratio:17/10"><video class="wvid" loop playsinline muted></video></div></div><div style="flex:1 1 150px"><small class="mut">Kartu Premium</small><div class="wpf" data-wp="upgrade" style="aspect-ratio:16/9"><video class="wvid" loop playsinline muted></video></div></div></div>
@@ -2592,6 +2597,9 @@ function wpEditor(root,focus){
   <input id="wlk" class="oin" style="flex:1 1 160px" placeholder="atau tempel link (YouTube, Vimeo, .mp4, .jpg)" value="${s.k==='link'?s.src.replace(/"/g,'&quot;'):''}"><button class="btn" id="wlg">Pakai</button></div>
   <div class="st">${s.k==='file'?'File: '+(s.name||'tersimpan di server')+' · '+(s.mime||''):s.k==='link'?'Link dipakai':'Memakai video bawaan'}</div>
   ${has?`<div class="sec-t">Pangkas &amp; sesuaikan ukuran</div>
+  <div class="st">Geser kotak putih untuk memilih bagian video, tarik bulatan di sudut kanan-bawah untuk memperbesar/memperkecil (seperti memangkas foto).</div>
+  ${E.mode==='same'?`<div class="xrow"><small class="mut">Bingkai ikut:</small><button class="chip ${E.ref==='p'?'on':''}" data-ref="p">Kartu Premium 16:9</button><button class="chip ${E.ref==='s'?'on':''}" data-ref="s">Kartu Saldo</button></div>`:''}
+  <div class="wcrop" id="wcr"></div>
   <label><span>Zoom <b id="vz">${s.z.toFixed(2)}x</b></span><input type="range" id="wz" min="1" max="4" step=".05" value="${s.z}"></label>
   <label><span>Geser kiri–kanan <b id="vx">${Math.round(s.x)}%</b></span><input type="range" id="wx" min="0" max="100" value="${s.x}"></label>
   <label><span>Geser atas–bawah <b id="vy">${Math.round(s.y)}%</b></span><input type="range" id="wy" min="0" max="100" value="${s.y}"></label>
@@ -2606,13 +2614,12 @@ function wpEditor(root,focus){
   <select id="wts" class="oin" style="flex:1">${[['iklan','Kuning IKLAN'],['glass','Kaca'],['neon','Neon'],['plain','Polos']].map(([k,n])=>`<option value="${k}" ${s.ts===k?'selected':''}>${n}</option>`).join('')}</select></div>`:''}
   ${has?'<button class="btn" id="wdf" style="margin-top:8px">Pakai video bawaan untuk ini</button>':''}`;
   bind()};
- const upd=()=>{paintAll()};
+ const upd=()=>{paintAll();E._lay&&E._lay()};
  const bind=()=>{const s=sl(cur),q=x=>$(x,root);
   q('#wfl').onclick=()=>q('#wfi').click();
   q('#wfi').onchange=async e=>{const f=e.target.files[0];if(!f)return;const er=$('#wer',root);er.textContent='';
    if(!/^(video\/(mp4|webm|quicktime)|image\/(png|jpeg|webp|gif))$/.test(f.type)){er.textContent='Format harus MP4/WebM/MOV atau gambar PNG/JPG/WebP/GIF.';return}
-   if(f.size>5e6&&f.type.startsWith('video/')){er.textContent='File '+(f.size/1e6).toFixed(1)+' MB terlalu besar (maks 5 MB). Tekan "Pangkas permanen & kompres" untuk memperkecilnya, atau pakai link.';/* tetap izinkan untuk dikompres */}
-   else if(f.size>5e6){er.textContent='Gambar maksimal 5 MB.';return}
+   if(f.size>30*1048576){er.textContent='File '+(f.size/1048576).toFixed(0)+' MB melebihi batas 30 MB. Pangkas dulu, atau pakai link.';return}
    const n={...DEF(),...{t:s.t,tp:s.tp,ts:s.ts},k:'file',mime:f.type,name:f.name,_f:f,_url:URL.createObjectURL(f)};E[cur]=n;dur[cur]=0;draw()};
   q('#wlg').onclick=()=>{let u=q('#wlk').value.trim();const er=$('#wer',root);er.textContent='';if(!u)return;if(!/^https?:\/\//i.test(u))u='https://'+u;u=u.replace(/^http:\/\//i,'https://');
    if(/tiktok\.com|instagram\.com/i.test(u)){er.textContent='TikTok/Instagram tidak bisa jadi wallpaper. Unduh videonya lalu pilih sebagai file, atau pakai link langsung .mp4.';return}
@@ -2628,7 +2635,26 @@ function wpEditor(root,focus){
   const tx=q('#wtx');if(tx)tx.oninput=()=>{s.t=tx.value.slice(0,40);root.querySelectorAll('.chip[data-t]').forEach(x=>x.classList.toggle('on',x.dataset.t===s.t));upd()};
   const tp=q('#wtp'),ts=q('#wts');if(tp)tp.onchange=()=>{s.tp=tp.value;upd()};if(ts)ts.onchange=()=>{s.ts=ts.value;upd()};
   const df=q('#wdf');if(df)df.onclick=()=>{E[cur]=null;dur[cur]=0;draw()};
-  const cp=q('#wcp');if(cp)cp.onclick=()=>compress(s)};
+  const cp=q('#wcp');if(cp)cp.onclick=()=>compress(s);
+  root.querySelectorAll('[data-ref]').forEach(c=>c.onclick=()=>{E.ref=c.dataset.ref;draw()});
+  if(s.k)cropUI(s)};
+ const cropUI=s=>{const box=$('#wcr',root);E._lay=null;if(!box)return;const m=wpMedia(s);if(!m||m.t==='iframe'){box.style.display='none';return}
+  const el=document.createElement(m.t==='img'?'img':'video');el.className='cvv';el.src=m.src;
+  if(m.t==='video'){el.muted=true;el.loop=true;el.playsInline=true;el.autoplay=true;el.play&&el.play().catch(()=>{})}
+  const rect=document.createElement('div');rect.className='crect';rect.innerHTML='<i class="ch"></i>';box.append(el,rect);let V=16/9;
+  const size=()=>{box.style.aspectRatio=String(V);box.style.width='min(100%,'+Math.round(300*V)+'px)'};size();
+  const geo=()=>{const R=RR(),fw0=Math.min(1,R/V),fh0=Math.min(1,V/R);return{fw0,fh0,fw:fw0/s.z,fh:fh0/s.z}};
+  const lay=()=>{const g=geo(),l=s.x/100*(1-g.fw),t=s.y/100*(1-g.fh);rect.style.left=l*100+'%';rect.style.top=t*100+'%';rect.style.width=g.fw*100+'%';rect.style.height=g.fh*100+'%'};
+  const sync=()=>{const set=(id,v,f)=>{const e=$(id,root);if(e)e.value=v;const l=$('#v'+id.slice(2),root);if(l)l.textContent=f(v)};set('#wz',s.z,v=>(+v).toFixed(2)+'x');set('#wx',s.x,v=>Math.round(v)+'%');set('#wy',s.y,v=>Math.round(v)+'%');lay();paintAll()};
+  E._lay=lay;
+  const meta=()=>{const w=el.videoWidth||el.naturalWidth,hh=el.videoHeight||el.naturalHeight;if(w&&hh){V=w/hh;size();lay()}};
+  el.onloadedmetadata=meta;el.onload=meta;lay();
+  const cl=(v,a,b)=>Math.min(b,Math.max(a,v));
+  const drag=(node,fn)=>{node.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();const r=box.getBoundingClientRect(),g0=geo(),st={x:e.clientX,y:e.clientY,l:s.x/100*(1-g0.fw),t:s.y/100*(1-g0.fh),fw:g0.fw,fh:g0.fh,z:s.z,g:g0};try{node.setPointerCapture(e.pointerId)}catch(er){}
+   const mv=ev=>{fn(st,(ev.clientX-st.x)/r.width,(ev.clientY-st.y)/r.height);sync()},up=()=>{node.removeEventListener('pointermove',mv);node.removeEventListener('pointerup',up);node.removeEventListener('pointercancel',up)};node.addEventListener('pointermove',mv);node.addEventListener('pointerup',up);node.addEventListener('pointercancel',up)})};
+  drag(rect,(st,dx,dy)=>{const g=geo(),l=cl(st.l+dx,0,1-g.fw),t=cl(st.t+dy,0,1-g.fh);s.x=g.fw<.999?l/(1-g.fw)*100:50;s.y=g.fh<.999?t/(1-g.fh)*100:50});
+  drag(rect.firstChild,(st,dx)=>{const nz=cl(st.g.fw0/Math.max(.05,st.fw+dx*2),1,4),fw=st.g.fw0/nz,fh=st.g.fh0/nz,cx=st.l+st.fw/2,cy=st.t+st.fh/2,l=cl(cx-fw/2,0,1-fw),t=cl(cy-fh/2,0,1-fh);s.z=Math.round(nz*100)/100;s.x=fw<.999?l/(1-fw)*100:50;s.y=fh<.999?t/(1-fh)*100:50});
+  box.addEventListener('wheel',e=>{e.preventDefault();const g=geo(),cx=s.x/100*(1-g.fw)+g.fw/2,cy=s.y/100*(1-g.fh)+g.fh/2;s.z=cl(Math.round(s.z*Math.exp(-e.deltaY*.002)*100)/100,1,4);const g2=geo(),l=cl(cx-g2.fw/2,0,1-g2.fw),t=cl(cy-g2.fh/2,0,1-g2.fh);s.x=g2.fw<.999?l/(1-g2.fw)*100:50;s.y=g2.fh<.999?t/(1-g2.fh)*100:50;sync()},{passive:false})};
  /* pangkas permanen: gambar bagian yang terlihat ke canvas lalu rekam ulang jadi webm kecil */
  const compress=async s=>{if(busy)return;const er=$('#wer',root),bar=$('#wbr',root),tx=$('#wcs',root),fill=bar.firstElementChild;er.textContent='';
   const src=wpMedia(s);if(!src||src.t!=='video')return;
@@ -2636,7 +2662,7 @@ function wpEditor(root,focus){
   busy=1;bar.hidden=false;fill.style.width='0';$('#wcp',root).disabled=true;
   try{const v=document.createElement('video');v.crossOrigin='anonymous';v.playsInline=true;v.muted=false;v.src=src.src;v.preload='auto';
    await new Promise((ok,no)=>{v.onloadedmetadata=ok;v.onerror=()=>no(new Error('Video tidak bisa dibuka (link mungkin memblokir akses). Coba pilih sebagai file.'))});
-   const st=s.st||0,en=Math.min(s.en||v.duration||30,st+30,v.duration||1e9),len=Math.max(.5,en-st),asp=(E.mode==='split'&&cur==='a')?1.7:16/9,W=640,H=Math.round(W/asp),cv=document.createElement('canvas');cv.width=W;cv.height=H;const g=cv.getContext('2d');
+   const st=s.st||0,en=Math.min(s.en||v.duration||30,st+30,v.duration||1e9),len=Math.max(.5,en-st),asp=RR(),W=640,H=Math.round(W/asp),cv=document.createElement('canvas');cv.width=W;cv.height=H;const g=cv.getContext('2d');
    const out=cv.captureStream(30);let aud=null;try{const cs=(v.captureStream||v.mozCaptureStream).call(v);aud=cs.getAudioTracks()[0]}catch(e){}if(aud)out.addTrack(aud);
    const mt=['video/webm;codecs=vp9,opus','video/webm;codecs=vp8,opus','video/webm'].find(m=>MediaRecorder.isTypeSupported(m)),ch=[],rec=new MediaRecorder(out,{mimeType:mt,videoBitsPerSecond:900000,audioBitsPerSecond:64000});
    rec.ondataavailable=e=>e.data.size&&ch.push(e.data);const done=new Promise(r=>rec.onstop=r);
@@ -2645,14 +2671,14 @@ function wpEditor(root,focus){
    rec.start(500);await v.play();
    await new Promise(res=>{const t=()=>{draw1();const p=Math.min(1,(v.currentTime-st)/len);fill.style.width=Math.round(p*100)+'%';tx.textContent='Merekam '+Math.round(p*100)+'%... jangan tutup jendela ini';if(v.currentTime>=en-.05||v.ended||v.paused&&p>0.02){res()}else requestAnimationFrame(t)};requestAnimationFrame(t)});
    v.pause();rec.stop();await done;const blob=new Blob(ch,{type:'video/webm'});
-   if(blob.size>5e6)throw new Error('Hasil masih '+(blob.size/1e6).toFixed(1)+' MB. Pendekkan durasinya.');
-   const f=new File([blob],'wallpaper.webm',{type:'video/webm'});E[cur]={...s,k:'file',fid:'',src:'',mime:'video/webm',name:'wallpaper (terkompres '+(blob.size/1e6).toFixed(2)+' MB)',_f:f,_url:URL.createObjectURL(f),z:1,x:50,y:50,st:0,en:0};dur[cur]=0;busy=0;draw();$('#wer',root).textContent='';$('.st',root.querySelector('#wfm')).textContent='Selesai: '+(blob.size/1e6).toFixed(2)+' MB. Jangan lupa Simpan.'
+   if(blob.size>30*1048576)throw new Error('Hasil masih '+(blob.size/1e6).toFixed(1)+' MB. Pendekkan durasinya.');
+   const f=new File([blob],'wallpaper.webm',{type:'video/webm'});E[cur]={...s,k:'file',fid:'',src:'',mime:'video/webm',name:'wallpaper (terkompres '+(blob.size/1e6).toFixed(2)+' MB)',_f:f,_url:URL.createObjectURL(f),_up:"",z:1,x:50,y:50,st:0,en:0};dur[cur]=0;busy=0;draw();$('#wer',root).textContent='';$('.st',root.querySelector('#wfm')).textContent='Selesai: '+(blob.size/1e6).toFixed(2)+' MB. Jangan lupa Simpan.'
   }catch(e){busy=0;er.textContent=e.message||'Gagal memangkas video';bar.hidden=true;const b=$('#wcp',root);if(b)b.disabled=false}};
  const pay=async k=>{const s=E[k];if(!s||!s.k)return null;const o={k:s.k,t:s.t,tp:s.tp,ts:s.ts,z:s.z,x:s.x,y:s.y,st:s.st,en:s.en,mu:s.mu};
-  if(s.k==='link')o.src=s.src;else if(s._f){if(s._f.size>5e6)throw new Error('File lebih dari 5 MB. Tekan "Pangkas permanen & kompres" dulu, atau pakai link.');o.file=await rd(s._f)}else{o.fid=s.fid;o.mime=s.mime}return o};
- const save=async()=>{if(busy)return;const er=$('#wer',root),b=$('#wsv',root);er.textContent='';busy=1;b.disabled=true;const lab=b.textContent;b.innerHTML='<i class="dcspin"></i> Menyimpan...';
+  if(s.k==='link')o.src=s.src;else if(s._f){if(s._f.size>30*1048576)throw new Error('File lebih dari 30 MB.');if(!s._up){const r=await fetch(API+'/api/wpup',{method:'POST',headers:{authorization:'Bearer '+tok(),'x-mime':s._f.type},body:s._f});let j={};try{j=await r.json()}catch(e){}if(!r.ok)throw new Error(j.e||'Upload gagal ('+r.status+')');s._up=j.fid}o.fid=s._up;o.mime=s._f.type}else{o.fid=s.fid;o.mime=s.mime}return o};
+ const save=async()=>{if(busy)return;const er=$('#wer',root),b=$('#wsv',root);er.textContent='';busy=1;b.disabled=true;const lab=b.textContent;b.innerHTML='<i class="dcspin"></i> Mengunggah & menyimpan...';
   try{const A=await pay('a'),B=E.mode==='split'?await pay('b'):null;const r=await api('admin/wallpaper','POST',{act:'set',mode:E.mode,a:A,b:B},1,0,120000);
-   toast('Video wallpaper diterapkan ke semua pengguna');await load();await wpLoad()}catch(e){er.textContent=e.message}
+   toast('Diterapkan ke semua pengguna. Video lama otomatis dihapus dari server.');await load();await wpLoad()}catch(e){er.textContent=e.message}
   busy=0;const bb=$('#wsv',root);if(bb){bb.disabled=false;bb.textContent=lab}};
  const reset=async()=>{if(busy||!confirm('Kembali ke video bawaan untuk semua pengguna?'))return;try{await api('admin/wallpaper','POST',{act:'reset'},1);toast('Kembali ke video bawaan');await load();await wpLoad()}catch(e){$('#wer',root).textContent=e.message}};
  const load=async()=>{root.innerHTML='<p class="mt">Memuat...</p>';try{const r=await api('admin/wallpaper','POST',{act:'get'},1),w=r.wp;E=w?{mode:w.mode,a:w.a,b:w.b}:{mode:'same',a:null,b:null};if(E.mode==='split'&&focus==='upgrade')cur='b'}catch(e){root.innerHTML='<p class="mt">'+e.message+'</p>';return}draw()};
