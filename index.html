@@ -308,6 +308,17 @@ select{background:var(--card2);border:1px solid var(--line);border-radius:10px;p
 .dc-b.ok{background:var(--accent);border-color:var(--accent);color:#fff}
 .dc-b:disabled{opacity:.4}
 /* SALDO */
+
+.wlab{position:absolute;z-index:3;padding:3px 9px;border-radius:6px;font:800 11px var(--f-b);letter-spacing:.08em;text-transform:uppercase;pointer-events:none;max-width:62%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wlab.tl{top:10px;left:10px}.wlab.tr{top:10px;right:10px}.wlab.bl{bottom:10px;left:10px}.wlab.br{bottom:10px;right:58px}.wlab.tc{top:10px;left:50%;transform:translateX(-50%)}.wlab.bc{bottom:10px;left:50%;transform:translateX(-50%)}
+.wlab.iklan{background:#ffd400;color:#111}.wlab.glass{background:rgba(0,0,0,.42);color:#fff;backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.25)}.wlab.neon{color:#5ff;border:1px solid #5ff;box-shadow:0 0 10px #5ff8,inset 0 0 8px #5ff4;text-shadow:0 0 8px #5ff}.wlab.plain{color:#fff;text-shadow:0 1px 6px rgba(0,0,0,.8);padding:0}
+.wvid.wmedia{border:0;pointer-events:none;object-fit:cover}
+.wedit{position:absolute;z-index:4;right:10px;top:50%;transform:translateY(-50%);width:34px;height:34px;border-radius:50%;border:0;background:rgba(0,0,0,.55);color:#fff;font-size:15px;cursor:pointer}
+.wpf{position:relative;overflow:hidden;border-radius:14px;background:#000;width:100%}
+.wpf .wvid{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.wpe label{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--muted);margin:8px 0}.wpe label b{color:var(--text,inherit);font-weight:600}
+.wpe input[type=range]{width:100%}.wpe .xrow{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.wpe .chip{padding:6px 12px;border-radius:99px;border:1px solid var(--line);background:var(--card);color:inherit;font:600 12px var(--f-b);cursor:pointer}.wpe .chip.on{background:var(--accent,#4da3ff);color:#fff;border-color:transparent}
+.wpe .st{font-size:12px;color:var(--muted);margin:4px 0}.wpe .bar{height:6px;border-radius:9px;background:var(--line);overflow:hidden}.wpe .bar i{display:block;height:100%;width:0;background:#4da3ff;transition:width .2s}
 .wvidbox{position:relative;border-radius:16px;overflow:hidden;background:#000;width:100%;height:0;padding-top:56.25%;margin:0 0 12px}
 .wvidbox .wvid{position:absolute;top:0;left:0;width:100%;height:100%}
 .wplay{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:4;width:64px;height:64px;border-radius:50%;border:0;background:rgba(0,0,0,.6);color:#fff;font-size:24px;display:grid;place-items:center}
@@ -1628,16 +1639,47 @@ function bindRedeem(o){
     btn.disabled=false;btn.innerHTML=lab;
     if(r.err){err.textContent=r.err;return}
     inp.value='';if(r.plan)closeModal();else refreshWallet();refreshChrome();toast(r.ok)}}
-const videoHTML=(src,ov)=>`<div class="wvidbox"><video class="wvid" src="${src}" loop playsinline preload="auto"></video>${ov?'<div class="wshade"></div>'+ovHTML():''}<button class="wmute" aria-label="Suara"></button></div>`;
-function bindVideo(o){const v=o.querySelector('.wvid'),b=o.querySelector('.wmute');if(!v)return;const host=v.parentElement;let ld=null;
+
+/* ===== Video wallpaper yang bisa diganti Owner utama ===== */
+let WPD=null;try{WPD=JSON.parse(localStorage.getItem('astra-wp')||'null')}catch(e){}
+const wpSlotOf=n=>{const w=WPD;if(!w)return null;return n==='saldo'?(w.a||null):(w.mode==='split'?(w.b||null):(w.a||null))};
+function wpMedia(s){if(!s)return null;if(s.k==='file'&&(s.fid||s._url))return{t:/^image\//.test(s.mime||'')?'img':'video',src:s._url||API+'/api/wpfile/'+s.fid};
+ if(s.k==='link'){const u=String(s.src||'');let m;
+  if((m=u.match(/(?:youtube\.com\/(?:watch\?(?:.*&)?v=|shorts\/|embed\/|live\/)|youtu\.be\/)([\w-]{11})/i)))return{t:'iframe',src:'https://www.youtube.com/embed/'+m[1]+'?autoplay=1&mute=1&loop=1&playlist='+m[1]+'&controls=0&playsinline=1&rel=0&modestbranding=1&disablekb=1'};
+  if((m=u.match(/vimeo\.com\/(?:video\/)?(\d+)/i)))return{t:'iframe',src:'https://player.vimeo.com/video/'+m[1]+'?background=1&autoplay=1&loop=1&muted=1'};
+  if(/\.(mp4|webm|ogv|mov|m4v)(\?|#|$)/i.test(u))return{t:'video',src:u};
+  if(/\.(png|jpe?g|gif|webp|avif)(\?|#|$)/i.test(u))return{t:'img',src:u}}
+ return null}
+function wpApply(host,ov){const nm=host.dataset.wp,s=ov!==undefined?ov:wpSlotOf(nm),def=nm==='saldo'?WALL_SALDO:WALL_PREM;
+ host.querySelectorAll('.wlab').forEach(e=>e.remove());
+ let el=host.querySelector('.wvid');if(!el)return;const mute=host.querySelector('.wmute'),md=wpMedia(s);
+ if(ov===undefined&&!host.querySelector('.wedit')&&DB.get('ouser',{}).adm==='root'){const b=document.createElement('button');b.className='wedit';b.type='button';b.title='Ganti video';b.textContent='✎';b.onclick=e=>{e.stopPropagation();window.__wpEd&&window.__wpEd(nm)};host.appendChild(b)}
+ if(!md){if(el.tagName==='VIDEO'){if(el.getAttribute('src')!==def)el.src=def;el.style.objectPosition=el.style.transform=el.style.transformOrigin='';el.loop=true;el._wp=0;el.dataset.mu='0'}return}
+ const pos=s.x+'% '+s.y+'%',tf=s.z>1?'scale('+s.z+')':'none';
+ if(md.t!=='video'||el.tagName!=='VIDEO'){
+  if(md.t==='video'){const n=document.createElement('video');n.className=el.className;n.loop=true;n.playsInline=true;n.preload='auto';el.replaceWith(n);el=n}
+  else{const n=document.createElement(md.t==='img'?'img':'iframe');n.className=el.className.replace(/\bwvid\b/,'wvid wmedia');if(md.t==='iframe'){n.setAttribute('allow','autoplay;encrypted-media');n.setAttribute('frameborder','0');n.setAttribute('tabindex','-1')}else n.alt='';el.replaceWith(n);el=n;if(mute)mute.style.display='none'}}
+ if(el.tagName==='VIDEO'){if(mute)mute.style.display='';if(el.getAttribute('src')!==md.src)el.src=md.src;
+  if(!el._wpb){el._wpb=1;el.addEventListener('loadedmetadata',()=>{const w=el._wp;if(w&&w.st&&el.currentTime<w.st)el.currentTime=w.st});
+   el.addEventListener('timeupdate',()=>{const w=el._wp;if(!w)return;if((w.en>0&&el.currentTime>=w.en)||(w.st&&el.currentTime<w.st-.3))el.currentTime=w.st||0});
+   el.addEventListener('ended',()=>{const w=el._wp;if(w){el.currentTime=w.st||0;el.play().catch(()=>{})}})}
+  el._wp=s;el.loop=!(s.st||s.en);el.dataset.mu=s.mu?'1':'0'}
+ else if(el.getAttribute('src')!==md.src)el.src=md.src;
+ el.style.objectPosition=pos;el.style.transform=tf;el.style.transformOrigin=pos;
+ if(s.t)host.insertAdjacentHTML('beforeend','<div class="wlab '+s.tp+' '+s.ts+'">'+esc(s.t)+'</div>')}
+async function wpLoad(){try{const r=await fetch(API+'/api/wallpaper'),j=await r.json();WPD=j.wp||null;try{localStorage.setItem('astra-wp',JSON.stringify(WPD))}catch(e){}
+ document.querySelectorAll('[data-wp]').forEach(h=>{if(!h.classList.contains('wpf')){const v=h.querySelector('.wvid');if(v&&v.tagName==='VIDEO')wpApply(h)}})}catch(e){}}
+setTimeout(wpLoad,300);
+const videoHTML=(src,ov)=>`<div class="wvidbox" data-wp="upgrade"><video class="wvid" src="${src}" loop playsinline preload="auto"></video>${ov?'<div class="wshade"></div>'+ovHTML():''}<button class="wmute" aria-label="Suara"></button></div>`;
+function bindVideo(o){o.querySelectorAll('[data-wp]').forEach(h=>wpApply(h));const v=o.querySelector('.wvid'),b=o.querySelector('.wmute');if(!v||v.tagName!=='VIDEO')return;const host=v.parentElement;let ld=null;
   const show=()=>{if(!ld){ld=document.createElement('span');ld.className='wload';ld.textContent='Memuat video...';host.appendChild(ld)}},hide=()=>{if(ld){ld.remove();ld=null}};
   const set=()=>b.innerHTML=ic(v.muted?'mute':'volume');
   v.disablePictureInPicture=true;v.setAttribute('disableRemotePlayback','');v.preload='auto';
   ['loadstart','waiting','stalled'].forEach(e=>v.addEventListener(e,show));v.addEventListener('canplay',hide);
   v.addEventListener('playing',()=>{hide();v.classList.add('rdy');const pb=host.querySelector('.wplay');if(pb)pb.remove()});
-  v.onerror=()=>{hide();if(host.classList.contains('wvidbox'))host.style.display='none';else v.style.display='none'};
+  v.onerror=()=>{if(v._wp){v._wp=0;v.loop=true;v.style.transform='';host.querySelectorAll('.wlab').forEach(e=>e.remove());v.src=host.dataset.wp==='saldo'?WALL_SALDO:WALL_PREM;v.play().catch(()=>{});return}hide();if(host.classList.contains('wvidbox'))host.style.display='none';else v.style.display='none'};
   const showPlay=()=>{if(host.querySelector('.wplay')||v.classList.contains('rdy'))return;const pb=document.createElement('button');pb.className='wplay';pb.setAttribute('aria-label','Putar video');pb.textContent='▶';pb.onclick=()=>{v.muted=false;set();v.play().catch(()=>{v.muted=true;set();v.play().catch(()=>{})});pb.remove()};host.appendChild(pb)};
-  v.muted=false;set();const p=v.play();if(p&&p.catch)p.catch(()=>{v.muted=true;set();v.play().catch(()=>{})});
+  v.muted=v.dataset.mu==='1';set();const p=v.play();if(p&&p.catch)p.catch(()=>{v.muted=true;set();v.play().catch(()=>{})});
   setTimeout(()=>{if(document.body.contains(host)&&v.paused)showPlay()},1500);
   setTimeout(()=>{if(document.body.contains(host)&&!v.classList.contains('rdy')&&!v.error)showPlay()},6000);
   b.onclick=()=>{v.muted=!v.muted;if(v.paused)v.play().catch(()=>{});set()}}
@@ -1652,7 +1694,7 @@ function ovRun(o){ovTick(o);const iv=setInterval(()=>{if(!document.body.contains
 function refreshWallet(){expireOrders();document.querySelectorAll('#ov').forEach(ovTick);const h=$('#walHist');if(h)renderHist(h)}
 function openWallet(){
   expireOrders();
-  const o=modal(`<div class="mh"><h3>Saldo Astra</h3><button class="ibtn" data-close>${ic('x')}</button></div><div class="wcard wv"><video class="wvid bgv" src="${WALL_SALDO}" loop playsinline preload="auto"></video><div class="wshade"></div>
+  const o=modal(`<div class="mh"><h3>Saldo Astra</h3><button class="ibtn" data-close>${ic('x')}</button></div><div class="wcard wv" data-wp="saldo"><video class="wvid bgv" src="${WALL_SALDO}" loop playsinline preload="auto"></video><div class="wshade"></div>
     ${ovHTML()}<button class="wmute" aria-label="Suara"></button></div>
    <div class="sec-t">Top up saldo</div><div class="amts">${TOPUP.map(a=>`<button class="amt" data-amt="${a}">${rp(a)}</button>`).join('')}</div>
    <small class="mut">Bayar lewat DANA atau QR. Saldo dipakai untuk membeli GO ASTRA.</small>
@@ -2263,13 +2305,14 @@ async function giftSheet(W,getWs){
 
 /* ====================== HUB OWNER ====================== */
 function hub(){
- const secs=[['ov','dash','Ringkasan'],['us','users','Pengguna'],['cd','key','Kode redeem'],['cm','chat','Komunitas'],['lv','live','Live'],['pr','tag','Harga & pembayaran'],['bk','lock','Penyimpanan & cadangan'],['sd','coin','Top saldo'],['tx','list','Transaksi'],['tl','dash','Alat server'],['wd','flag','Kata terlarang'],['rg','lock','Pendaftaran'],['lg','list','Log']];
+ const secs=[['ov','dash','Ringkasan'],['us','users','Pengguna'],['cd','key','Kode redeem'],['cm','chat','Komunitas'],['lv','live','Live'],['pr','tag','Harga & pembayaran'],...(X.isRootU()?[['wp','live','Video wallpaper']]:[]),['bk','lock','Penyimpanan & cadangan'],['sd','coin','Top saldo'],['tx','list','Transaksi'],['tl','dash','Alat server'],['wd','flag','Kata terlarang'],['rg','lock','Pendaftaran'],['lg','list','Log']];
  const o=modal(`<div class="mh"><h3>Hub Owner</h3><button class="ibtn" data-close>${ic('x')}</button></div><div class="xnav">${secs.map(([k,i,n])=>`<button data-k="${k}">${ic(i)} ${n}</button>`).join('')}</div><div id="hv"></div>`,'omod tfm'),v=o.querySelector('#hv');
  const go=async k=>{o.querySelectorAll('.xnav button').forEach(b=>b.classList.toggle('on',b.dataset.k===k));v.innerHTML='<p class="mt">Memuat...</p>';
   try{await V[k]()}catch(e){v.innerHTML='<p class="mt">'+esc(e.message)+'</p>'}};
  const P=(p,b)=>api('admin/'+p,'POST',b||{},1);
  const V={
   async ov(){const s=await P('stats');v.innerHTML=`<div class="xgrid"><div class="xst"><b>${num(s.users)}</b><span>Total akun</span></div><div class="xst"><b>${num(s.online)}</b><span>Online</span></div><div class="xst"><b>${num(s.banned)}</b><span>Di-ban</span></div><div class="xst"><b>${num(s.muted)}</b><span>Di-mute</span></div><div class="xst"><b>${rp(s.saldo)}</b><span>Total saldo beredar</span></div><div class="xst"><b>${num(s.codes.free)} / ${num(s.codes.used)}</b><span>Kode bebas / terpakai</span></div><div class="xst"><b>${num(s.com)}</b><span>Pesan komunitas</span></div><div class="xst"><b>${s.live?'LIVE':'Off'}</b><span>Status live</span></div></div><div class="xsm" style="margin-top:8px">Server aktif ${Math.floor(s.up/3600)} jam ${Math.floor(s.up%3600/60)} mnt · memori ${s.mem} MB · ${s.gifts} jenis gift${s.lastLive?` · live terakhir ${fdt(s.lastLive.t)}: ${rp(s.lastLive.gifts)}`:''}</div>`},
+  async wp(){window.__wpEditor(v)},
   async us(){let f='all',qs='',off=0,list=[],tot=0,tm=0;v.innerHTML=`<input id="uq" class="oin" placeholder="Cari nama, email, atau ID"><div class="seg" id="uf"><button data-f="all" class="on">Semua</button><button data-f="on">Online</button><button data-f="ban">Di-ban</button><button data-f="adm">Admin</button></div><div id="ul" class="tlist"></div><button class="btn" id="um" hidden>Muat lebih banyak</button>`;
    const ul=v.querySelector('#ul'),um=v.querySelector('#um');
    const paint=()=>{ul.innerHTML=list.length?list.map((x,i)=>`<button class="xu" data-i="${i}">${avU(x)}<span class="tri"><b>${esc(x.name)} ${roleHTML(x.role)}</b><small>ID ${x.id} · ${esc(x.email)} · ${rp(x.sal)}</small></span>${x.ban?'<span class="bd">BAN</span>':x.mute?'<span class="bd">MUTE</span>':x.on?'<i class="dot on"></i>':''}</button>`).join(''):'<p class="mt">Tidak ada pengguna.</p>';um.hidden=list.length>=tot;ul.querySelectorAll('.xu').forEach(b=>b.onclick=()=>{const x=list[b.dataset.i];X.ownerUser({...x,avatar:null},()=>ld(1))})};
@@ -2333,7 +2376,7 @@ const applyGift=g=>{if(!g||!g.plan)return;
  api('gift/ack','POST',{},1).catch(()=>{})};
 const syncPl=r=>{let ch=0;if(r.pl&&(S.user.plan!==r.pl.id||(S.user.planExp||0)!==(r.pl.exp||0))){S.user.plan=r.pl.id;S.user.planExp=r.pl.exp||0;if(!(PLANS.find(p=>p.id===r.pl.id)||{modes:['fast']}).modes.includes(S.mode))S.mode='fast';ch=1}
  if(r.adm&&!S.user.unlimited){S.user.unlimited=true;ch=1}if(ch){saveUser();try{refreshChrome()}catch(e){}}};
-const beat=()=>{if(!tok()||!S.user||document.hidden)return;api('hb','GET',null,1).then(r=>{syncPl(r);const pj=JSON.stringify(r.pr||{});if(pj!==lastPr){lastPr=pj;__lv.applyPrices(r.pr)}if(r.payv!==lastPv){lastPv=r.payv;api('pay','GET',null,1).then(m=>__lv.applyPay(m.pay)).catch(()=>{lastPv=-1})}showPill(r.live);if(r.gift)applyGift(r.gift);if(r.maint&&!X.isAdmU()&&Date.now()-lastBan>3e5){lastBan=Date.now();toast('Server pemeliharaan: '+r.maint)}if(r.ban&&Date.now()-lastBan>6e5){lastBan=Date.now();toast('Akunmu sedang di-BAN dari komunitas')}}).catch(()=>{})};
+const beat=()=>{if(!tok()||!S.user||document.hidden)return;api('hb','GET',null,1).then(r=>{syncPl(r);if(r.wpv!=null&&r.wpv!==window.__wpv){window.__wpv=r.wpv;wpLoad()}const pj=JSON.stringify(r.pr||{});if(pj!==lastPr){lastPr=pj;__lv.applyPrices(r.pr)}if(r.payv!==lastPv){lastPv=r.payv;api('pay','GET',null,1).then(m=>__lv.applyPay(m.pay)).catch(()=>{lastPv=-1})}showPill(r.live);if(r.gift)applyGift(r.gift);if(r.maint&&!X.isAdmU()&&Date.now()-lastBan>3e5){lastBan=Date.now();toast('Server pemeliharaan: '+r.maint)}if(r.ban&&Date.now()-lastBan>6e5){lastBan=Date.now();toast('Akunmu sedang di-BAN dari komunitas')}}).catch(()=>{})};
 setInterval(beat,12000);setTimeout(beat,2500);
 window.__ext.watch=watch;window.__ext.studio=studio;window.__ext.hub=hub;
 })();
@@ -2515,5 +2558,106 @@ setTimeout(connect,3000);
 const _a=account;account=function(){_a();const m=document.querySelector('#ov .modal'),b=m&&m.querySelector('#aa');if(!b||m.querySelector('#nsd'))return;
  b.insertAdjacentHTML('beforebegin',`<label style="flex-direction:row;align-items:center;gap:10px"><input type="checkbox" id="nsd" ${on()?'checked':''}> Suara notifikasi</label>`);
  m.querySelector('#nsd').onchange=e=>{try{localStorage.setItem(KEY,e.target.checked?'1':'0')}catch(er){}if(e.target.checked)playNotif(true)}};
+})();
+</script>
+<script>
+/* ===== Editor video wallpaper (Owner utama) ===== */
+(function(){
+const $=(s,r)=>(r||document).querySelector(s),DEF=()=>({k:'',src:'',fid:'',mime:'',t:'IKLAN',tp:'tr',ts:'iklan',z:1,x:50,y:50,st:0,en:0,mu:0});
+const mmss=v=>{v=Math.max(0,+v||0);return Math.floor(v/60)+':'+String(Math.floor(v%60)).padStart(2,'0')+(v%1?'.'+String(Math.round(v%1*10)):'')};
+const rd=f=>new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(String(r.result));r.onerror=()=>rej(new Error('Gagal membaca file'));r.readAsDataURL(f)});
+function wpEditor(root,focus){
+ root.classList.add('wpe');
+ let E={mode:'same',a:null,b:null},cur='a',dur={a:0,b:0},busy=0;
+ const sl=k=>E[k]||(E[k]=DEF());
+ const draw=()=>{
+  const split=E.mode==='split',slot=n=>n==='saldo'?E.a:(split?E.b:E.a);
+  root.innerHTML=`<p class="xsm" style="margin:0 0 8px">Ganti video di kartu <b>Saldo Astra</b> dan <b>GO ASTRA Premium</b>. Tersimpan di server dan tampil ke semua pengguna. Kalau dikosongkan, video bawaan dipakai.</p>
+  <div class="seg" id="wmd"><button data-m="same" class="${split?'':'on'}">Video sama</button><button data-m="split" class="${split?'on':''}">Beda tiap kartu</button></div>
+  <div class="st">Pratinjau persis seperti yang dilihat pengguna</div>
+  <div class="xrow" style="align-items:stretch"><div style="flex:1 1 150px"><small class="mut">Kartu Saldo</small><div class="wpf" data-wp="saldo" style="aspect-ratio:17/10"><video class="wvid" loop playsinline muted></video></div></div><div style="flex:1 1 150px"><small class="mut">Kartu Premium</small><div class="wpf" data-wp="upgrade" style="aspect-ratio:16/9"><video class="wvid" loop playsinline muted></video></div></div></div>
+  ${split?`<div class="seg" id="wtb" style="margin-top:10px"><button data-c="a" class="${cur==='a'?'on':''}">Atur: Saldo</button><button data-c="b" class="${cur==='b'?'on':''}">Atur: Premium</button></div>`:''}
+  <div id="wfm"></div>
+  <div class="xrow" style="margin-top:12px"><button class="btn pri" id="wsv" style="flex:1">Simpan &amp; terapkan ke semua</button><button class="btn" id="wrs">Kembali ke bawaan</button></div><p class="rdErr" id="wer"></p>`;
+  root.querySelectorAll('#wmd button').forEach(b=>b.onclick=()=>{E.mode=b.dataset.m;if(E.mode==='same')cur='a';draw()});
+  root.querySelectorAll('#wtb button').forEach(b=>b.onclick=()=>{cur=b.dataset.c;draw()});
+  paintAll();form();
+  root.querySelector('#wsv').onclick=save;root.querySelector('#wrs').onclick=reset};
+ const paintAll=()=>{const split=E.mode==='split';root.querySelectorAll('.wpf').forEach(h=>{const s=h.dataset.wp==='saldo'?E.a:(split?E.b:E.a);
+   h.querySelectorAll('.wlab').forEach(e=>e.remove());wpApply(h,s&&s.k?s:null);const v=h.querySelector('video');
+   if(v){v.muted=true;v.play&&v.play().catch(()=>{});if(!v._d){v._d=1;v.addEventListener('loadedmetadata',()=>{const k=h.dataset.wp==='saldo'||E.mode==='same'?'a':'b';if(v.duration&&isFinite(v.duration)&&dur[k]!==v.duration){dur[k]=v.duration;const e=$('#wen',root);if(e&&cur===k)form()}})}}})};
+ const form=()=>{const s=sl(cur),has=!!s.k,isV=has&&wpMedia(s)&&wpMedia(s).t==='video',D=dur[cur]||0,mx=Math.max(D,s.en,s.st,10);
+  $('#wfm',root).innerHTML=`<div class="sec-t">Sumber video</div>
+  <div class="xrow"><button class="btn" id="wfl">Pilih file</button><input id="wfi" type="file" accept="video/mp4,video/webm,video/quicktime,image/png,image/jpeg,image/webp,image/gif" hidden>
+  <input id="wlk" class="oin" style="flex:1 1 160px" placeholder="atau tempel link (YouTube, Vimeo, .mp4, .jpg)" value="${s.k==='link'?s.src.replace(/"/g,'&quot;'):''}"><button class="btn" id="wlg">Pakai</button></div>
+  <div class="st">${s.k==='file'?'File: '+(s.name||'tersimpan di server')+' · '+(s.mime||''):s.k==='link'?'Link dipakai':'Memakai video bawaan'}</div>
+  ${has?`<div class="sec-t">Pangkas &amp; sesuaikan ukuran</div>
+  <label><span>Zoom <b id="vz">${s.z.toFixed(2)}x</b></span><input type="range" id="wz" min="1" max="4" step=".05" value="${s.z}"></label>
+  <label><span>Geser kiri–kanan <b id="vx">${Math.round(s.x)}%</b></span><input type="range" id="wx" min="0" max="100" value="${s.x}"></label>
+  <label><span>Geser atas–bawah <b id="vy">${Math.round(s.y)}%</b></span><input type="range" id="wy" min="0" max="100" value="${s.y}"></label>
+  ${isV?`<label><span>Mulai dari <b id="vs">${mmss(s.st)}</b></span><input type="range" id="wst" min="0" max="${mx}" step=".1" value="${s.st}"></label>
+  <label><span>Berhenti di <b id="vn">${s.en?mmss(s.en):'sampai akhir'}</b></span><input type="range" id="wen" min="0" max="${mx}" step=".1" value="${s.en}"></label>
+  <label style="flex-direction:row;align-items:center;gap:8px"><input type="checkbox" id="wmu" ${s.mu?'checked':''}> Mulai tanpa suara</label>
+  <div class="xrow"><button class="btn" id="wcp">Pangkas permanen &amp; kompres</button></div><div class="bar" id="wbr" hidden><i></i></div><div class="st" id="wcs">Memotong video jadi ukuran kartu dan menyimpannya lebih kecil (maks 30 detik, berjalan real-time).</div>`:''}
+  <div class="sec-t">Tulisan di atas video</div>
+  <div class="xrow">${['IKLAN','SPONSOR','PROMO','LIVE'].map(t=>`<button class="chip ${s.t===t?'on':''}" data-t="${t}">${t}</button>`).join('')}<button class="chip" data-t="">Tanpa tulisan</button></div>
+  <input id="wtx" class="oin" maxlength="40" placeholder="Tulisan sendiri" value="${(s.t||'').replace(/"/g,'&quot;')}">
+  <div class="xrow" style="margin-top:6px"><select id="wtp" class="oin" style="flex:1">${[['tr','Kanan atas'],['tl','Kiri atas'],['tc','Tengah atas'],['bl','Kiri bawah'],['bc','Tengah bawah'],['br','Kanan bawah']].map(([k,n])=>`<option value="${k}" ${s.tp===k?'selected':''}>${n}</option>`).join('')}</select>
+  <select id="wts" class="oin" style="flex:1">${[['iklan','Kuning IKLAN'],['glass','Kaca'],['neon','Neon'],['plain','Polos']].map(([k,n])=>`<option value="${k}" ${s.ts===k?'selected':''}>${n}</option>`).join('')}</select></div>`:''}
+  ${has?'<button class="btn" id="wdf" style="margin-top:8px">Pakai video bawaan untuk ini</button>':''}`;
+  bind()};
+ const upd=()=>{paintAll()};
+ const bind=()=>{const s=sl(cur),q=x=>$(x,root);
+  q('#wfl').onclick=()=>q('#wfi').click();
+  q('#wfi').onchange=async e=>{const f=e.target.files[0];if(!f)return;const er=$('#wer',root);er.textContent='';
+   if(!/^(video\/(mp4|webm|quicktime)|image\/(png|jpeg|webp|gif))$/.test(f.type)){er.textContent='Format harus MP4/WebM/MOV atau gambar PNG/JPG/WebP/GIF.';return}
+   if(f.size>5e6&&f.type.startsWith('video/')){er.textContent='File '+(f.size/1e6).toFixed(1)+' MB terlalu besar (maks 5 MB). Tekan "Pangkas permanen & kompres" untuk memperkecilnya, atau pakai link.';/* tetap izinkan untuk dikompres */}
+   else if(f.size>5e6){er.textContent='Gambar maksimal 5 MB.';return}
+   const n={...DEF(),...{t:s.t,tp:s.tp,ts:s.ts},k:'file',mime:f.type,name:f.name,_f:f,_url:URL.createObjectURL(f)};E[cur]=n;dur[cur]=0;draw()};
+  q('#wlg').onclick=()=>{let u=q('#wlk').value.trim();const er=$('#wer',root);er.textContent='';if(!u)return;if(!/^https?:\/\//i.test(u))u='https://'+u;u=u.replace(/^http:\/\//i,'https://');
+   if(/tiktok\.com|instagram\.com/i.test(u)){er.textContent='TikTok/Instagram tidak bisa jadi wallpaper. Unduh videonya lalu pilih sebagai file, atau pakai link langsung .mp4.';return}
+   if(!wpMedia({k:'link',src:u})){er.textContent='Link tidak dikenali. Pakai YouTube/Vimeo atau link langsung .mp4 / .webm / .jpg / .png.';return}
+   E[cur]={...DEF(),t:s.t,tp:s.tp,ts:s.ts,k:'link',src:u};dur[cur]=0;draw()};
+  const num=(id,key,fmt)=>{const e=q(id);if(!e)return;e.oninput=()=>{s[key]=+e.value;const lab=q('#v'+id.slice(2));if(lab)lab.textContent=fmt(+e.value);upd()}};
+  num('#wz','z',v=>v.toFixed(2)+'x');num('#wx','x',v=>Math.round(v)+'%');num('#wy','y',v=>Math.round(v)+'%');
+  const ws=q('#wst'),we=q('#wen');
+  if(ws)ws.oninput=()=>{s.st=+ws.value;if(s.en&&s.en<=s.st+.5){s.en=Math.min(+we.max,s.st+.5);we.value=s.en;q('#vn').textContent=mmss(s.en)}q('#vs').textContent=mmss(s.st);upd()};
+  if(we)we.oninput=()=>{s.en=+we.value;if(s.en&&s.en<=s.st+.5)s.en=s.st+.5;q('#vn').textContent=s.en?mmss(s.en):'sampai akhir';upd()};
+  const mu=q('#wmu');if(mu)mu.onchange=()=>{s.mu=mu.checked?1:0};
+  root.querySelectorAll('.chip[data-t]').forEach(c=>c.onclick=()=>{s.t=c.dataset.t;q('#wtx').value=s.t;root.querySelectorAll('.chip[data-t]').forEach(x=>x.classList.toggle('on',x===c));upd()});
+  const tx=q('#wtx');if(tx)tx.oninput=()=>{s.t=tx.value.slice(0,40);root.querySelectorAll('.chip[data-t]').forEach(x=>x.classList.toggle('on',x.dataset.t===s.t));upd()};
+  const tp=q('#wtp'),ts=q('#wts');if(tp)tp.onchange=()=>{s.tp=tp.value;upd()};if(ts)ts.onchange=()=>{s.ts=ts.value;upd()};
+  const df=q('#wdf');if(df)df.onclick=()=>{E[cur]=null;dur[cur]=0;draw()};
+  const cp=q('#wcp');if(cp)cp.onclick=()=>compress(s)};
+ /* pangkas permanen: gambar bagian yang terlihat ke canvas lalu rekam ulang jadi webm kecil */
+ const compress=async s=>{if(busy)return;const er=$('#wer',root),bar=$('#wbr',root),tx=$('#wcs',root),fill=bar.firstElementChild;er.textContent='';
+  const src=wpMedia(s);if(!src||src.t!=='video')return;
+  if(!window.MediaRecorder||!HTMLCanvasElement.prototype.captureStream){er.textContent='Browser ini belum mendukung kompres video. Pakai Chrome, atau kompres manual.';return}
+  busy=1;bar.hidden=false;fill.style.width='0';$('#wcp',root).disabled=true;
+  try{const v=document.createElement('video');v.crossOrigin='anonymous';v.playsInline=true;v.muted=false;v.src=src.src;v.preload='auto';
+   await new Promise((ok,no)=>{v.onloadedmetadata=ok;v.onerror=()=>no(new Error('Video tidak bisa dibuka (link mungkin memblokir akses). Coba pilih sebagai file.'))});
+   const st=s.st||0,en=Math.min(s.en||v.duration||30,st+30,v.duration||1e9),len=Math.max(.5,en-st),asp=(E.mode==='split'&&cur==='a')?1.7:16/9,W=640,H=Math.round(W/asp),cv=document.createElement('canvas');cv.width=W;cv.height=H;const g=cv.getContext('2d');
+   const out=cv.captureStream(30);let aud=null;try{const cs=(v.captureStream||v.mozCaptureStream).call(v);aud=cs.getAudioTracks()[0]}catch(e){}if(aud)out.addTrack(aud);
+   const mt=['video/webm;codecs=vp9,opus','video/webm;codecs=vp8,opus','video/webm'].find(m=>MediaRecorder.isTypeSupported(m)),ch=[],rec=new MediaRecorder(out,{mimeType:mt,videoBitsPerSecond:900000,audioBitsPerSecond:64000});
+   rec.ondataavailable=e=>e.data.size&&ch.push(e.data);const done=new Promise(r=>rec.onstop=r);
+   v.currentTime=st;await new Promise(r=>{v.onseeked=r;setTimeout(r,2000)});
+   const draw1=()=>{const vw=v.videoWidth||W,vh=v.videoHeight||H,sc=Math.max(W/vw,H/vh)*s.z,dw=vw*sc,dh=vh*sc,ox=-(dw-W)*(s.x/100),oy=-(dh-H)*(s.y/100);g.drawImage(v,ox,oy,dw,dh)};
+   rec.start(500);await v.play();
+   await new Promise(res=>{const t=()=>{draw1();const p=Math.min(1,(v.currentTime-st)/len);fill.style.width=Math.round(p*100)+'%';tx.textContent='Merekam '+Math.round(p*100)+'%... jangan tutup jendela ini';if(v.currentTime>=en-.05||v.ended||v.paused&&p>0.02){res()}else requestAnimationFrame(t)};requestAnimationFrame(t)});
+   v.pause();rec.stop();await done;const blob=new Blob(ch,{type:'video/webm'});
+   if(blob.size>5e6)throw new Error('Hasil masih '+(blob.size/1e6).toFixed(1)+' MB. Pendekkan durasinya.');
+   const f=new File([blob],'wallpaper.webm',{type:'video/webm'});E[cur]={...s,k:'file',fid:'',src:'',mime:'video/webm',name:'wallpaper (terkompres '+(blob.size/1e6).toFixed(2)+' MB)',_f:f,_url:URL.createObjectURL(f),z:1,x:50,y:50,st:0,en:0};dur[cur]=0;busy=0;draw();$('#wer',root).textContent='';$('.st',root.querySelector('#wfm')).textContent='Selesai: '+(blob.size/1e6).toFixed(2)+' MB. Jangan lupa Simpan.'
+  }catch(e){busy=0;er.textContent=e.message||'Gagal memangkas video';bar.hidden=true;const b=$('#wcp',root);if(b)b.disabled=false}};
+ const pay=async k=>{const s=E[k];if(!s||!s.k)return null;const o={k:s.k,t:s.t,tp:s.tp,ts:s.ts,z:s.z,x:s.x,y:s.y,st:s.st,en:s.en,mu:s.mu};
+  if(s.k==='link')o.src=s.src;else if(s._f){if(s._f.size>5e6)throw new Error('File lebih dari 5 MB. Tekan "Pangkas permanen & kompres" dulu, atau pakai link.');o.file=await rd(s._f)}else{o.fid=s.fid;o.mime=s.mime}return o};
+ const save=async()=>{if(busy)return;const er=$('#wer',root),b=$('#wsv',root);er.textContent='';busy=1;b.disabled=true;const lab=b.textContent;b.innerHTML='<i class="dcspin"></i> Menyimpan...';
+  try{const A=await pay('a'),B=E.mode==='split'?await pay('b'):null;const r=await api('admin/wallpaper','POST',{act:'set',mode:E.mode,a:A,b:B},1,0,120000);
+   toast('Video wallpaper diterapkan ke semua pengguna');await load();await wpLoad()}catch(e){er.textContent=e.message}
+  busy=0;const bb=$('#wsv',root);if(bb){bb.disabled=false;bb.textContent=lab}};
+ const reset=async()=>{if(busy||!confirm('Kembali ke video bawaan untuk semua pengguna?'))return;try{await api('admin/wallpaper','POST',{act:'reset'},1);toast('Kembali ke video bawaan');await load();await wpLoad()}catch(e){$('#wer',root).textContent=e.message}};
+ const load=async()=>{root.innerHTML='<p class="mt">Memuat...</p>';try{const r=await api('admin/wallpaper','POST',{act:'get'},1),w=r.wp;E=w?{mode:w.mode,a:w.a,b:w.b}:{mode:'same',a:null,b:null};if(E.mode==='split'&&focus==='upgrade')cur='b'}catch(e){root.innerHTML='<p class="mt">'+e.message+'</p>';return}draw()};
+ load()}
+window.__wpEditor=wpEditor;
+window.__wpEd=f=>{const o=modal('<div class="mh"><h3>Video wallpaper</h3><button class="ibtn" data-close>'+ic('x')+'</button></div><div id="wpx"></div>','omod tfm');wpEditor(o.querySelector('#wpx'),f)};
 })();
 </script>
