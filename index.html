@@ -1431,8 +1431,8 @@ async function imageFlow(chat,raw){
 $('#menuBtn').onclick=e=>{
   e.stopPropagation();if(document.querySelector('.pop'))return closePop();
   const r=e.currentTarget.getBoundingClientRect();const p=document.createElement('div');p.className='pop';
-  const it=[['chat','x','com'],['crown','x','fr'],['zap','x','st'],['settings','x','acc'],'-',['edit','newChat','new'],['hist','history','hist'],['settings','settings','set'],['globe','lang','lang'],['db','storage','store'],'-',['wallet','saldoAstra','wal'],['music','Musik','mus'],['chat','waChannel','chn'],['crown','premium','prem'],['link','logoLink','logo'],'-',['help','help','help'],['info','about','about'],['shield','privacy','priv'],'-',['logout','logout','out']];
-  p.innerHTML=it.map(x=>x==='-'?'<hr>':`<button data-a="${x[2]}">${ic(x[0])}${x[2]==='com'?'Chat Komunitas':x[2]==='fr'?'Chat Pribadi':x[2]==='st'?'Status':x[2]==='acc'?'Pengaturan Akun':x[1]==='saldoAstra'?'Saldo Astra':x[1]==='Musik'?'Musik':x[1]==='waChannel'?'Saluran WhatsApp':t(x[1])}${x[2]==='prem'?'<span class="tag">GO</span>':''}${x[2]==='wal'?'<span class="tag">'+rp(bal())+'</span>':''}${x[2]==='mus'&&!MU.audio.paused?'<span class="tag">Memutar</span>':''}${x[2]==='chn'?'<span class="tag">BARU</span>':''}</button>`).join('');
+  const it=[['chat','x','com'],['crown','x','fr'],['zap','x','st'],['settings','x','acc'],'-',['edit','newChat','new'],['hist','history','hist'],['settings','settings','set'],['globe','lang','lang'],['db','storage','store'],'-',['wallet','saldoAstra','wal'],['spin','x','spin'],['music','Musik','mus'],['chat','waChannel','chn'],['crown','premium','prem'],['link','logoLink','logo'],'-',['help','help','help'],['info','about','about'],['shield','privacy','priv'],'-',['logout','logout','out']];
+  p.innerHTML=it.map(x=>x==='-'?'<hr>':`<button data-a="${x[2]}">${ic(x[0])}${x[2]==='com'?'Chat Komunitas':x[2]==='fr'?'Chat Pribadi':x[2]==='st'?'Status':x[2]==='acc'?'Pengaturan Akun':x[2]==='spin'?'Spin Hadiah':x[1]==='saldoAstra'?'Saldo Astra':x[1]==='Musik'?'Musik':x[1]==='waChannel'?'Saluran WhatsApp':t(x[1])}${x[2]==='prem'?'<span class="tag">GO</span>':''}${x[2]==='wal'?'<span class="tag">'+rp(bal())+'</span>':''}${x[2]==='spin'&&S.spCan?'<span class="tag">GRATIS</span>':''}${x[2]==='mus'&&!MU.audio.paused?'<span class="tag">Memutar</span>':''}${x[2]==='chn'?'<span class="tag">BARU</span>':''}</button>`).join('');
   document.body.appendChild(p);p.style.left='12px';p.style.top=(r.bottom+6)+'px';p.style.maxHeight=(innerHeight-r.bottom-20)+'px';p.style.overflowY='auto';p.style.overscrollBehavior='contain';
   p.querySelectorAll('button').forEach(b=>b.onclick=()=>{closePop();menuAct(b.dataset.a)});
 };
@@ -1443,6 +1443,7 @@ function menuAct(a){
   else if(a==='store')openSettings(true);
   else if(a==='chn'){const o=modal(`<div class="mh"><h3>Saluran WhatsApp</h3><button class="ibtn" data-close>${ic('x')}</button></div>${waChanHTML()}`);bindChan(o)}
   else if(a==='wal')openWallet();
+  else if(a==='spin')openSpin();
   else if(a==='mus')muOpen();
   else if(a==='prem')openPlans(false);
   else if(a==='logo'){copyText(LOGO)}
@@ -1802,7 +1803,7 @@ function openPay(id){
      <div style="display:flex;gap:8px;flex-wrap:wrap"><a class="btn pri" style="flex:1;text-decoration:none" href="${waLink(p)}" target="_blank" rel="noopener">${ic('chat')}Chat WhatsApp</a><button class="btn sec" id="cpWa" style="flex:1">${ic('copy')}${WA_SHOW}</button></div></div>
    <div class="sec-t">3. Masukkan kode redeem</div>${redeemHTML()}
    <button class="btn sec" data-close>${t('close')}</button>`);
-  o.querySelector('#payBal').onclick=e=>{const b=e.currentTarget,price=parseInt(p.price.replace(/\D/g,''));if(bal()<price){toast('Saldo kurang '+rp(price-bal())+'. Top up dulu ya.');openWallet();return}if(!b.dataset.s){b.dataset.s=1;b.textContent='Ketuk lagi untuk konfirmasi';return}b.disabled=true;api('wallet/buyplan','POST',{plan:id},1).then(w=>{applyWallet(w);S.user.plan=id;S.user.planExp=Date.now()+p.days*864e5;saveUser();if(!p.modes.includes(S.mode))S.mode='fast';saveSettings();closeModal();refreshChrome();toast(p.name+' aktif selama '+p.days+' hari. Sisa saldo '+rp(bal()))}).catch(e=>{b.disabled=false;b.dataset.s='';toast(e.message)})};
+  o.querySelector('#payBal').onclick=e=>{const b=e.currentTarget,price=parseInt(p.price.replace(/\D/g,''));if(bal()<price){toast('Saldo kurang '+rp(price-bal())+'. Top up dulu ya.');openWallet();return}if(!b.dataset.s){b.dataset.s=1;b.textContent='Ketuk lagi untuk konfirmasi';return}b.disabled=true;api('wallet/buyplan','POST',{plan:id},1).then(w=>{applyWallet(w);S.dc=w.dc||null;try{__lv.applyPrices(window.__prObj||{})}catch(e){}S.user.plan=id;S.user.planExp=Date.now()+p.days*864e5;saveUser();if(!p.modes.includes(S.mode))S.mode='fast';saveSettings();closeModal();refreshChrome();toast(p.name+' aktif selama '+p.days+' hari. Sisa saldo '+rp(bal()))}).catch(e=>{b.disabled=false;b.dataset.s='';toast(e.message)})};
   o.querySelectorAll('[data-na]').forEach(b=>b.onclick=()=>toast('Pembayaran '+b.dataset.na+' untuk '+p.name+' belum tersedia.'));
   const qb=o.querySelector('#qrBtn');if(qb)qb.onclick=()=>o.querySelector('#qrBox').hidden=!o.querySelector('#qrBox').hidden;
   const im=o.querySelector('#qrImg');im.onerror=()=>{im.hidden=true;o.querySelector('#qrLink').hidden=false};
@@ -2353,7 +2354,7 @@ async function giftSheet(W,getWs){
 
 /* ====================== HUB OWNER ====================== */
 function hub(){
- const secs=[['ov','dash','Ringkasan'],['us','users','Pengguna'],['cd','key','Kode redeem'],['cm','chat','Komunitas'],['lv','live','Live'],['pr','tag','Harga & pembayaran'],...(X.isRootU()?[['wp','live','Video wallpaper']]:[]),['bk','lock','Penyimpanan & cadangan'],['sd','coin','Top saldo'],['tx','list','Transaksi'],['tl','dash','Alat server'],['wd','flag','Kata terlarang'],['rg','lock','Pendaftaran'],['lg','list','Log']];
+ const secs=[['ov','dash','Ringkasan'],['us','users','Pengguna'],['cd','key','Kode redeem'],['cm','chat','Komunitas'],['lv','live','Live'],['pr','tag','Harga & pembayaran'],...(X.isRootU()?[['wp','live','Video wallpaper'],['sp','spin','Event Spin']]:[]),['bk','lock','Penyimpanan & cadangan'],['sd','coin','Top saldo'],['tx','list','Transaksi'],['tl','dash','Alat server'],['wd','flag','Kata terlarang'],['rg','lock','Pendaftaran'],['lg','list','Log']];
  const o=modal(`<div class="mh"><h3>Hub Owner</h3><button class="ibtn" data-close>${ic('x')}</button></div><div class="xnav">${secs.map(([k,i,n])=>`<button data-k="${k}">${ic(i)} ${n}</button>`).join('')}</div><div id="hv"></div>`,'omod tfm'),v=o.querySelector('#hv');
  const go=async k=>{o.querySelectorAll('.xnav button').forEach(b=>b.classList.toggle('on',b.dataset.k===k));v.innerHTML='<p class="mt">Memuat...</p>';
   try{await V[k]()}catch(e){v.innerHTML='<p class="mt">'+esc(e.message)+'</p>'}};
@@ -2361,6 +2362,7 @@ function hub(){
  const V={
   async ov(){const s=await P('stats');v.innerHTML=`<div class="xgrid"><div class="xst"><b>${num(s.users)}</b><span>Total akun</span></div><div class="xst"><b>${num(s.online)}</b><span>Online</span></div><div class="xst"><b>${num(s.banned)}</b><span>Di-ban</span></div><div class="xst"><b>${num(s.muted)}</b><span>Di-mute</span></div><div class="xst"><b>${rp(s.saldo)}</b><span>Total saldo beredar</span></div><div class="xst"><b>${num(s.codes.free)} / ${num(s.codes.used)}</b><span>Kode bebas / terpakai</span></div><div class="xst"><b>${num(s.com)}</b><span>Pesan komunitas</span></div><div class="xst"><b>${s.live?'LIVE':'Off'}</b><span>Status live</span></div></div><div class="xsm" style="margin-top:8px">Server aktif ${Math.floor(s.up/3600)} jam ${Math.floor(s.up%3600/60)} mnt · memori ${s.mem} MB · ${s.gifts} jenis gift${s.lastLive?` · live terakhir ${fdt(s.lastLive.t)}: ${rp(s.lastLive.gifts)}`:''}</div>`},
   async wp(){window.__wpEditor(v)},
+  async sp(){window.__spEditor(v)},
   async us(){let f='all',qs='',off=0,list=[],tot=0,tm=0;v.innerHTML=`<input id="uq" class="oin" placeholder="Cari nama, email, atau ID"><div class="seg" id="uf"><button data-f="all" class="on">Semua</button><button data-f="on">Online</button><button data-f="ban">Di-ban</button><button data-f="adm">Admin</button></div><div id="ul" class="tlist"></div><button class="btn" id="um" hidden>Muat lebih banyak</button>`;
    const ul=v.querySelector('#ul'),um=v.querySelector('#um');
    const paint=()=>{ul.innerHTML=list.length?list.map((x,i)=>`<button class="xu" data-i="${i}">${avU(x)}<span class="tri"><b>${esc(x.name)} ${roleHTML(x.role)}</b><small>ID ${x.id} · ${esc(x.email)} · ${rp(x.sal)}</small></span>${x.ban?'<span class="bd">BAN</span>':x.mute?'<span class="bd">MUTE</span>':x.on?'<i class="dot on"></i>':''}</button>`).join(''):'<p class="mt">Tidak ada pengguna.</p>';um.hidden=list.length>=tot;ul.querySelectorAll('.xu').forEach(b=>b.onclick=()=>{const x=list[b.dataset.i];X.ownerUser({...x,avatar:null},()=>ld(1))})};
@@ -2424,7 +2426,7 @@ const applyGift=g=>{if(!g||!g.plan)return;
  api('gift/ack','POST',{},1).catch(()=>{})};
 const syncPl=r=>{let ch=0;if(r.pl&&(S.user.plan!==r.pl.id||(S.user.planExp||0)!==(r.pl.exp||0))){S.user.plan=r.pl.id;S.user.planExp=r.pl.exp||0;if(!(PLANS.find(p=>p.id===r.pl.id)||{modes:['fast']}).modes.includes(S.mode))S.mode='fast';ch=1}
  if(r.adm&&!S.user.unlimited){S.user.unlimited=true;ch=1}if(ch){saveUser();try{refreshChrome()}catch(e){}}};
-const beat=()=>{if(!tok()||!S.user||document.hidden)return;api('hb','GET',null,1).then(r=>{if(r.ab)banScreen(r.ab);else if(window.__banOn)banLift();syncPl(r);if(r.wpv!=null&&r.wpv!==window.__wpv){window.__wpv=r.wpv;wpLoad()}const pj=JSON.stringify(r.pr||{});if(pj!==lastPr){lastPr=pj;__lv.applyPrices(r.pr)}if(r.payv!==lastPv){lastPv=r.payv;api('pay','GET',null,1).then(m=>__lv.applyPay(m.pay)).catch(()=>{lastPv=-1})}showPill(r.live);if(r.gift)applyGift(r.gift);if(r.maint&&!X.isAdmU()&&Date.now()-lastBan>3e5){lastBan=Date.now();toast('Server pemeliharaan: '+r.maint)}if(r.ban&&Date.now()-lastBan>6e5){lastBan=Date.now();toast('Akunmu sedang di-BAN dari komunitas')}}).catch(()=>{})};
+const beat=()=>{if(!tok()||!S.user||document.hidden)return;api('hb','GET',null,1).then(r=>{if(r.ab)banScreen(r.ab);else if(window.__banOn)banLift();syncPl(r);if(r.sp)spSync(r.sp);if(r.wpv!=null&&r.wpv!==window.__wpv){window.__wpv=r.wpv;wpLoad()}const pj=JSON.stringify(r.pr||{});if(pj!==lastPr){lastPr=pj;__lv.applyPrices(r.pr)}if(r.payv!==lastPv){lastPv=r.payv;api('pay','GET',null,1).then(m=>__lv.applyPay(m.pay)).catch(()=>{lastPv=-1})}showPill(r.live);if(r.gift)applyGift(r.gift);if(r.maint&&!X.isAdmU()&&Date.now()-lastBan>3e5){lastBan=Date.now();toast('Server pemeliharaan: '+r.maint)}if(r.ban&&Date.now()-lastBan>6e5){lastBan=Date.now();toast('Akunmu sedang di-BAN dari komunitas')}}).catch(()=>{})};
 setInterval(beat,12000);setTimeout(beat,2500);
 window.__ext.watch=watch;window.__ext.studio=studio;window.__ext.hub=hub;
 })();
@@ -2569,7 +2571,11 @@ function adManager(ctx){const A={q:[],now:null,auto:false,tm:0,node:null};
  return A}
 
 /* ---------- harga langganan promo ---------- */
-function applyPrices(pr){pr=pr||{};PLANS.forEach(p=>{if(p.id==='free'||p.id==='owner')return;if(p._b==null)p._b=p.price;p.price=p._b;p.was=0;p.note='';p.pct=0;p.until=0;const o=pr[p.id];if(o){const base=parseInt(p._b.replace(/\D/g,''));p.price='Rp'+Number(o.p).toLocaleString('id-ID');if(o.p<base){p.was=1;p.pct=Math.round((1-o.p/base)*100)}p.note=o.note||'';p.until=o.until||0}})}
+function spDisc(p){const d=S.dc;if(!d||d.exp<=Date.now())return;const base=parseInt(p._b.replace(/\D/g,'')),cur=parseInt(p.price.replace(/\D/g,'')),sp=Math.max(0,Math.floor(base*(1-d.pct/100)));if(sp<cur){p.price='Rp'+sp.toLocaleString('id-ID');p.was=1;p.pct=Math.round((1-sp/base)*100);p.note='🎡 Diskon Spin '+d.pct+'% untuk kamu';p.until=d.exp}}
+let lastDc='';function spSync(sp){S.spCan=!!sp.can;const dj=JSON.stringify(sp.dc||null);S.dc=sp.dc||null;if(dj!==lastDc){lastDc=dj;try{applyPrices(window.__prObj||{})}catch(e){}}
+ if(sp.can&&sp.on!==false){const k='astra-spn-'+new Date().toDateString();try{if(!localStorage.getItem(k)){localStorage.setItem(k,'1');setTimeout(()=>toast('🎡 Kamu punya 1 Spin gratis hari ini! Buka menu → Spin Hadiah'),2500)}}catch(e){}}}
+window.spSync=spSync;
+function applyPrices(pr){pr=pr||{};window.__prObj=pr;PLANS.forEach(p=>{if(p.id==='free'||p.id==='owner')return;if(p._b==null)p._b=p.price;p.price=p._b;p.was=0;p.note='';p.pct=0;p.until=0;const o=pr[p.id];if(o){const base=parseInt(p._b.replace(/\D/g,''));p.price='Rp'+Number(o.p).toLocaleString('id-ID');if(o.p<base){p.was=1;p.pct=Math.round((1-o.p/base)*100)}p.note=o.note||'';p.until=o.until||0}spDisc(p)})}
 window.promoHTML=p=>p.was?`<s class="pwas">${p._b}</s><span class="pnew">${p.price}</span><span class="pdisc">-${p.pct}%</span>`:p.price;
 window.promoNote=p=>p.note?`<div class="pnote">${esc(p.note)}${p.until?' · sampai '+fdt(p.until):''}</div>`:'';
 
@@ -2747,5 +2753,103 @@ function wpEditor(root,focus){
  load()}
 window.__wpEditor=wpEditor;
 window.__wpEd=f=>{const o=modal('<div class="mh"><h3>Video wallpaper</h3><button class="ibtn" data-close>'+ic('x')+'</button></div><div id="wpx"></div>','omod tfm');wpEditor(o.querySelector('#wpx'),f)};
+})();
+</script>
+<script>
+/* ===== EVENT SPIN: roda hadiah harian + editor Owner ===== */
+(function(){
+const $=(s,r)=>(r||document).querySelector(s),RP=n=>'Rp'+Number(n).toLocaleString('id-ID');
+const st=document.createElement('style');st.textContent=`
+.spw{position:relative;width:min(300px,78vw);aspect-ratio:1;margin:6px auto 2px}
+.spw canvas{width:100%;height:100%;display:block;border-radius:50%;box-shadow:0 0 0 6px rgba(255,255,255,.08),0 10px 40px rgba(60,100,255,.35)}
+.spw .ptr{position:absolute;left:50%;top:-8px;transform:translateX(-50%);width:0;height:0;border-left:13px solid transparent;border-right:13px solid transparent;border-top:26px solid #ff4d6a;filter:drop-shadow(0 3px 4px rgba(0,0,0,.45));z-index:3}
+.spw .hub{position:absolute;left:50%;top:50%;width:26%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;border:4px solid #fff;background:linear-gradient(135deg,#2a6df4,#00c2ff);color:#fff;font:800 14px var(--f-b);cursor:pointer;z-index:2;box-shadow:0 4px 18px rgba(0,0,0,.4)}
+.spw .hub:disabled{filter:grayscale(.7);cursor:default}
+.spw.go .hub{animation:none}.spw:not(.go) .hub:not(:disabled){animation:spPulse 1.6s infinite}
+@keyframes spPulse{0%,100%{box-shadow:0 4px 18px rgba(0,0,0,.4),0 0 0 0 rgba(0,194,255,.6)}50%{box-shadow:0 4px 18px rgba(0,0,0,.4),0 0 0 14px rgba(0,194,255,0)}}
+.spr{margin:10px 0;padding:14px;border-radius:16px;text-align:center;background:linear-gradient(135deg,rgba(42,109,244,.18),rgba(0,194,255,.12));border:1px solid rgba(77,163,255,.4);animation:spPop .45s cubic-bezier(.2,1.4,.4,1)}
+.spr b{display:block;font-size:20px;margin-bottom:4px}.spr.zz{background:rgba(120,120,140,.12);border-color:rgba(150,150,170,.35)}
+@keyframes spPop{from{transform:scale(.6);opacity:0}to{transform:scale(1);opacity:1}}
+.spl{display:grid;grid-template-columns:repeat(auto-fill,minmax(128px,1fr));gap:6px;margin-top:8px}.spl div{display:flex;align-items:center;gap:7px;padding:6px 9px;border-radius:10px;background:var(--card);border:1px solid var(--line);font-size:12px}.spl i{width:10px;height:10px;border-radius:50%;flex:none}
+.spd{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 12px;border-radius:12px;background:rgba(255,184,0,.12);border:1px solid rgba(255,184,0,.4);font-size:13px;margin:8px 0}
+.spc{font:700 15px var(--f-b);font-variant-numeric:tabular-nums}
+.cfx{position:fixed;inset:0;pointer-events:none;z-index:420;overflow:hidden}.cfx i{position:absolute;top:-20px;font-style:normal;animation:cfFall linear forwards}
+@keyframes cfFall{to{transform:translateY(105vh) rotate(720deg);opacity:.9}}
+.spe .row{display:grid;grid-template-columns:1.2fr 1fr .8fr .8fr auto;gap:5px;align-items:center;margin:5px 0}.spe .row input,.spe .row select{min-width:0;padding:7px 8px;font-size:12px}.spe .pc{font-size:11px;opacity:.7;grid-column:1/-1;margin:-2px 0 4px}
+.spe .h{font-size:10px;text-transform:uppercase;letter-spacing:.05em;opacity:.55;margin-top:8px}.spe .row .x{border:0;background:transparent;color:var(--bad,#f55);font-size:18px;cursor:pointer}
+.spe .stt{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:6px 0}.spe .stt div{padding:8px;border-radius:10px;background:var(--card);border:1px solid var(--line);text-align:center}.spe .stt b{display:block;font-size:17px}.spe .stt small{opacity:.6;font-size:10px}
+`;document.head.appendChild(st);
+IC.spin='<circle cx="12" cy="12" r="9"/><path d="M12 3v9l6.4 3.7M12 12L5.6 15.7M12 3a9 9 0 0 1 0 0"/><circle cx="12" cy="12" r="1.6"/>';
+const COL={disc:['#4d7cff','#3a63d6'],bal:['#f5a524','#d98d10'],plan:['#ff4d8d','#d93a73'],none:['#7b8190','#626877']};
+const short=p=>p.t==='disc'?p.v+'%':p.t==='bal'?(p.v>=1000?'Rp'+(p.v/1000).toString().replace('.',',')+'k':'Rp'+p.v):p.t==='plan'?p.v+' hari':'Zonk';
+const icon=p=>p.t==='disc'?'🏷️':p.t==='bal'?'💰':p.t==='plan'?'👑':'😅';
+function drawWheel(cv,pr){const dpr=Math.min(2,devicePixelRatio||1),S=300;cv.width=cv.height=S*dpr;const g=cv.getContext('2d');g.scale(dpr,dpr);const n=pr.length,a=2*Math.PI/n,R=S/2;
+ pr.forEach((p,i)=>{g.beginPath();g.moveTo(R,R);g.arc(R,R,R-2,-Math.PI/2+i*a,-Math.PI/2+(i+1)*a);g.closePath();g.fillStyle=COL[p.t][i%2];g.fill();g.strokeStyle='rgba(255,255,255,.35)';g.lineWidth=1.5;g.stroke();
+  g.save();g.translate(R,R);g.rotate(-Math.PI/2+(i+.5)*a);g.textAlign='right';g.fillStyle='#fff';g.shadowColor='rgba(0,0,0,.45)';g.shadowBlur=3;g.font='800 '+(n>9?13:15)+'px system-ui,sans-serif';g.textBaseline='middle';g.fillText(short(p),R-16,0);g.font='16px serif';g.textAlign='left';g.shadowBlur=0;g.fillText(icon(p),R*.34,0);g.restore()});
+ g.beginPath();g.arc(R,R,R-2,0,7);g.lineWidth=4;g.strokeStyle='rgba(255,255,255,.7)';g.stroke()}
+function confetti(){const d=document.createElement('div');d.className='cfx';const E=['🎉','✨','🎊','⭐','💫'];for(let i=0;i<46;i++){const s=document.createElement('i');s.textContent=E[i%E.length];s.style.left=Math.random()*100+'%';s.style.fontSize=(14+Math.random()*16)+'px';s.style.animationDuration=(1.8+Math.random()*1.8)+'s';s.style.animationDelay=Math.random()*.5+'s';d.appendChild(s)}document.body.appendChild(d);setTimeout(()=>d.remove(),4500)}
+const fmtLeft=ms=>{ms=Math.max(0,ms);const h=Math.floor(ms/36e5),m=Math.floor(ms%36e5/6e4),s=Math.floor(ms%6e4/1e3);return [h,m,s].map(x=>String(x).padStart(2,'0')).join(':')};
+async function openSpin(){
+ const o=modal('<div class="mh"><h3>🎡 Spin Hadiah</h3><button class="ibtn" data-close>'+ic('x')+'</button></div><div id="spb"><p class="mt">Memuat...</p></div>','');
+ const box=$('#spb',o);let D;try{D=await api('spin','GET',null,1)}catch(e){box.innerHTML='<p class="mt">'+esc(e.message)+'</p>';return}
+ let tm=null,spinning=0,rot=0,next=Date.now()+D.next;
+ const render=()=>{const pr=D.pr;
+  box.innerHTML=`${D.dc?`<div class="spd"><span>🏷️ Diskon aktif <b>${D.dc.pct}%</b> untuk beli role<br><small>berlaku sampai ${fdt(D.dc.exp)}</small></span><button class="btn pri" id="spUse" style="flex:none">Pakai</button></div>`:''}
+  ${D.on?'':'<p class="mt" style="text-align:center">Event Spin sedang tidak aktif. Tunggu pengumuman dari Owner.</p>'}
+  <div class="spw" id="spw"><div class="ptr"></div><canvas id="spc"></canvas><button class="hub" id="spg" ${D.on&&D.can?'':'disabled'}>${D.can&&D.on?'SPIN':'✔'}</button></div>
+  <div id="spr"></div>
+  <p class="mt" style="text-align:center;margin:6px 0">${D.on?(D.can?'Kamu punya <b>1 spin gratis</b> hari ini!':'Spin berikutnya dalam <span class="spc" id="spt"></span>'):''}</p>
+  <div class="sec-t">Hadiah di roda</div><div class="spl">${pr.map(p=>`<div><i style="background:${COL[p.t][0]}"></i>${esc(p.l)}</div>`).join('')}</div>
+  <p class="xsm" style="opacity:.65;margin-top:8px">1x per hari untuk tiap akun, reset tengah malam WIB. Diskon berlaku untuk satu pembelian role dan tidak digabung dengan promo harga (diambil yang paling murah).</p>
+  ${D.hist&&D.hist.length?`<div class="sec-t">Pemenang terbaru</div>${D.hist.map(h=>`<div class="xsm" style="padding:3px 0">🎉 <b>${esc(h.u)}</b> dapat ${esc(h.l)}</div>`).join('')}`:''}
+  <button class="btn" data-close style="margin-top:10px">Tutup</button>`;
+  drawWheel($('#spc',box),pr);const cv=$('#spc',box);cv.style.transform='rotate('+rot+'deg)';
+  const t=()=>{const e=$('#spt',box);if(e)e.textContent=fmtLeft(next-Date.now());if(next-Date.now()<=0&&!D.can){clearInterval(tm);openSpin_reload()}};clearInterval(tm);tm=setInterval(t,1000);t();
+  const u=$('#spUse',box);if(u)u.onclick=()=>{closeModal();openPlans()};
+  const go=$('#spg',box);if(go)go.onclick=spin};
+ const openSpin_reload=async()=>{try{D=await api('spin','GET',null,1);next=Date.now()+D.next;render()}catch(e){}};
+ const spin=async()=>{if(spinning||!D.can)return;spinning=1;const go=$('#spg',box);go.disabled=true;go.textContent='...';let r;
+  try{r=await api('spin/go','POST',{},1)}catch(e){spinning=0;toast(e.message);openSpin_reload();return}
+  const n=D.pr.length,a=360/n,jit=(Math.random()-.5)*a*.7,target=360*6+(360-(r.idx+.5)*a)+jit,start=rot%360,from=rot,to=from+(target-start+(target<start?360:0))-(target-start>=0?0:0);
+  const total=360*6+((360-(r.idx+.5)*a+jit)-(from%360)+720)%360,end=from+total,dur=5200,t0=performance.now(),cv=$('#spc',box);$('#spw',box).classList.add('go');
+  const ease=x=>1-Math.pow(1-x,4);
+  await new Promise(res=>{const f=now=>{const k=Math.min(1,(now-t0)/dur);rot=from+(end-from)*ease(k);cv.style.transform='rotate('+rot+'deg)';k<1?requestAnimationFrame(f):res()};requestAnimationFrame(f)});
+  rot=end%360;cv.style.transform='rotate('+rot+'deg)';
+  try{applyWallet(r);if(typeof syncPl==='function')syncPl({pl:r.pl});S.dc=r.dc||null;__lv.applyPrices(window.__prObj||{});S.spCan=false}catch(e){}
+  D.can=false;D.dc=r.dc||D.dc;next=Date.now()+r.next;spinning=0;
+  const win=r.prize.t!=='none';$('#spg',box).textContent='✔';
+  const res=$('#spr',box);res.innerHTML=`<div class="spr ${win?'':'zz'}"><b>${win?'🎉 Selamat! '+esc(r.prize.l):'😅 '+esc(r.prize.l)}</b>${esc(r.msg)}</div>`;
+  if(win){confetti();try{playNotif()}catch(e){}}
+  const tt=$('#spt',box);setTimeout(()=>{const p=box.querySelector('.mt');if(p)p.innerHTML='Spin berikutnya dalam <span class="spc" id="spt"></span>';clearInterval(tm);tm=setInterval(()=>{const e=$('#spt',box);if(e)e.textContent=fmtLeft(next-Date.now())},1000)},50);
+  const dd=$('.spd',box);if(r.dc&&!dd){const x=document.createElement('div');x.className='spd';x.innerHTML=`<span>🏷️ Diskon aktif <b>${r.dc.pct}%</b> untuk beli role<br><small>berlaku sampai ${fdt(r.dc.exp)}</small></span><button class="btn pri" id="spUse2" style="flex:none">Pakai</button>`;box.insertBefore(x,box.firstChild);$('#spUse2',box).onclick=()=>{closeModal();openPlans()}}}
+ render();
+ const mo=new MutationObserver(()=>{if(!document.body.contains(o)){clearInterval(tm);mo.disconnect()}});mo.observe(document.body,{childList:true,subtree:true});
+}
+window.openSpin=openSpin;
+/* ---------- editor Owner ---------- */
+function spEditor(root){root.classList.add('spe');let C=null,ST=null,US=0;
+ const typ=[['disc','Diskon %'],['bal','Saldo Rp'],['plan','Premium hari'],['none','Zonk']];
+ const load=async(act,extra)=>{try{const r=await api('admin/spin','POST',{act:act||'get',...(extra||{})},1);C=r.cfg;ST=r.stat;US=r.users;draw()}catch(e){root.innerHTML='<p class="mt">'+esc(e.message)+'</p>'}};
+ const draw=()=>{const tw=C.pr.reduce((a,p)=>a+(+p.w||0),0)||1;
+  root.innerHTML=`<p class="xsm" style="margin:0 0 6px">Atur hadiah Spin harian. Undian dilakukan di server. Peluang dihitung dari bobot: makin besar bobot, makin sering keluar.</p>
+  <div class="stt"><div><b>${ST.n}</b><small>spin hari ini</small></div><div><b>${US}</b><small>pemutar unik</small></div><div><b>${RP(ST.bal)}</b><small>saldo dibagikan</small></div></div>
+  <div class="xrow"><label class="xrow" style="gap:8px;margin:0"><input type="checkbox" id="spon" ${C.on?'checked':''}> <b>Event aktif</b></label></div>
+  <div class="xrow"><label style="flex:1;margin:6px 0 0;display:block"><small class="mut">Masa berlaku diskon (jam)</small><input id="spttl" class="oin" inputmode="numeric" value="${C.ttl}"></label><label style="flex:1;margin:6px 0 0;display:block"><small class="mut">Batas saldo bonus / hari (Rp, 0 = tanpa batas)</small><input id="spcap" class="oin" inputmode="numeric" value="${C.capBal}"></label></div>
+  <div class="h">Hadiah (maks 12)</div><div class="row h" style="margin:0"><span>Jenis</span><span>Nilai</span><span>Bobot</span><span>Maks/hari</span><span></span></div>
+  ${C.pr.map((p,i)=>`<div class="row" data-i="${i}"><select class="oin" data-k="t">${typ.map(([k,n])=>`<option value="${k}" ${p.t===k?'selected':''}>${n}</option>`).join('')}</select><input class="oin" data-k="v" inputmode="numeric" value="${p.v}" ${p.t==='none'?'disabled':''}><input class="oin" data-k="w" inputmode="decimal" value="${p.w}"><input class="oin" data-k="mx" inputmode="numeric" value="${p.mx}"><button class="x" data-del="${i}" title="Hapus">×</button>
+   <div class="pc">${esc(p.cl||p.l)} · peluang ${((+p.w||0)/tw*100).toFixed(1)}%${(ST.c[p.id]?' · keluar hari ini: '+ST.c[p.id]:'')}</div></div>`).join('')}
+  <div class="xrow" style="margin-top:8px"><button class="btn" id="spadd" ${C.pr.length>=12?'disabled':''}>+ Tambah hadiah</button><button class="btn pri" id="spsv" style="flex:1">Simpan pengaturan</button></div>
+  <div class="xrow" style="margin-top:6px"><button class="btn" id="sprs">Kembalikan bawaan</button><button class="btn" id="spcl">Reset statistik hari ini</button></div><p class="rdErr" id="sper"></p>
+  ${ST.log.length?`<div class="h">Pemenang terbaru</div>${ST.log.map(h=>`<div class="xsm" style="padding:2px 0">${new Date(h.t).toLocaleTimeString('id-ID',{timeZone:'Asia/Jakarta',hour:'2-digit',minute:'2-digit'})} · <b>${esc(h.u)}</b> (ID ${h.id}) · ${esc(h.l)}</div>`).join('')}`:''}`;
+  const read=()=>{C.on=$('#spon',root).checked;C.ttl=+$('#spttl',root).value||24;C.capBal=+$('#spcap',root).value||0;root.querySelectorAll('.row[data-i]').forEach(r=>{const p=C.pr[+r.dataset.i];r.querySelectorAll('[data-k]').forEach(e=>{const k=e.dataset.k;p[k]=k==='t'?e.value:(+e.value||0)})})};
+  root.querySelectorAll('.row select[data-k=t]').forEach(s=>s.onchange=()=>{read();draw()});
+  root.querySelectorAll('.row input[data-k=w]').forEach(s=>s.onchange=()=>{read();draw()});
+  root.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{read();if(C.pr.length<=2)return toast('Minimal 2 hadiah');C.pr.splice(+b.dataset.del,1);draw()});
+  $('#spadd',root).onclick=()=>{read();C.pr.push({id:'n'+Date.now().toString(36).slice(-5),t:'bal',v:1000,w:5,mx:0,l:'',cl:''});draw()};
+  $('#spsv',root).onclick=async()=>{read();const b=$('#spsv',root);b.disabled=true;try{const r=await api('admin/spin','POST',{act:'set',on:C.on,ttl:C.ttl,capBal:C.capBal,pr:C.pr.map(p=>({id:p.id,t:p.t,v:p.v,w:p.w,mx:p.mx,l:p.cl||''}))},1);C=r.cfg;ST=r.stat;US=r.users;toast('Pengaturan Spin disimpan');draw()}catch(e){$('#sper',root).textContent=e.message;b.disabled=false}};
+  $('#sprs',root).onclick=()=>{if(confirm('Kembalikan semua hadiah ke pengaturan bawaan?'))load('reset')};
+  $('#spcl',root).onclick=()=>{if(confirm('Reset statistik hari ini? Batas hadiah harian ikut direset.'))load('clear')}};
+ root.innerHTML='<p class="mt">Memuat...</p>';load()}
+window.__spEditor=spEditor;
 })();
 </script>
