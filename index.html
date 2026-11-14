@@ -314,6 +314,23 @@ select{background:var(--card2);border:1px solid var(--line);border-radius:10px;p
 .wlab.iklan{background:#ffd400;color:#111}.wlab.glass{background:rgba(0,0,0,.42);color:#fff;backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.25)}.wlab.neon{color:#5ff;border:1px solid #5ff;box-shadow:0 0 10px #5ff8,inset 0 0 8px #5ff4;text-shadow:0 0 8px #5ff}.wlab.plain{color:#fff;text-shadow:0 1px 6px rgba(0,0,0,.8);padding:0}
 .wvid.wmedia{border:0;pointer-events:none;object-fit:cover}
 .wedit{position:absolute;z-index:4;right:10px;top:50%;transform:translateY(-50%);width:34px;height:34px;border-radius:50%;border:0;background:rgba(0,0,0,.55);color:#fff;font-size:15px;cursor:pointer}
+
+#banScr{position:fixed;inset:0;z-index:400;background:radial-gradient(ellipse at 50% 20%,#3a0d16 0%,#0b0408 70%);color:#fff;display:flex;flex-direction:column;align-items:center;overflow:auto;padding:28px 18px calc(28px + env(safe-area-inset-bottom));-webkit-overflow-scrolling:touch}
+:root[data-theme="light"] #banScr{background:radial-gradient(ellipse at 50% 20%,#ffe3e6 0%,#fff 70%);color:#2a0a10}
+#banScr .bc{width:100%;max-width:440px;margin:auto;display:flex;flex-direction:column;gap:14px;text-align:center}
+#banScr .bi{width:84px;height:84px;margin:0 auto;border-radius:50%;display:grid;place-items:center;background:rgba(255,70,90,.16);border:2px solid rgba(255,90,110,.6);color:#ff5a6e;box-shadow:0 0 40px rgba(255,60,80,.35)}
+#banScr .bi svg{width:40px;height:40px}
+#banScr h2{margin:0;font-size:24px}#banScr p{margin:0;opacity:.8;font-size:14px;line-height:1.5}
+#banScr .bx{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);border-radius:14px;padding:12px 14px;text-align:left;font-size:14px}
+:root[data-theme="light"] #banScr .bx{background:rgba(0,0,0,.04);border-color:rgba(0,0,0,.12)}
+#banScr .bx small{display:block;opacity:.6;font-size:11px;text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px}
+#banScr .bx b{font-size:15px}#banScr .cd{font:700 22px var(--f-b);font-variant-numeric:tabular-nums}
+#banScr .bb{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+#banScr .bchat{display:flex;flex-direction:column;gap:8px;text-align:left}
+#banScr .bl{max-height:min(38vh,300px);min-height:110px;overflow:auto;display:flex;flex-direction:column;gap:6px;padding:10px;border-radius:14px;background:rgba(0,0,0,.28);border:1px solid rgba(255,255,255,.12)}
+#banScr .bm{max-width:84%;padding:7px 11px;border-radius:14px;font-size:14px;line-height:1.4;word-break:break-word;background:rgba(255,255,255,.12)}
+#banScr .bm.me{align-self:flex-end;background:#2a6df4;color:#fff}#banScr .bm small{display:block;opacity:.55;font-size:10px;margin-top:2px}
+#banScr .bf{display:flex;gap:8px}#banScr .bf input{flex:1;min-width:0;padding:11px 13px;border-radius:12px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);color:inherit;font:inherit}
 .wcrop{position:relative;margin:8px auto;background:#000;border-radius:12px;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none}
 .wcrop .cvv{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;pointer-events:none}
 .wcrop .crect{position:absolute;border:2px solid #fff;box-shadow:0 0 0 999px rgba(0,0,0,.58);cursor:move;border-radius:4px;touch-action:none;background:linear-gradient(rgba(255,255,255,.35),rgba(255,255,255,.35)) 33.3% 0/1px 100% no-repeat,linear-gradient(rgba(255,255,255,.35),rgba(255,255,255,.35)) 66.6% 0/1px 100% no-repeat,linear-gradient(rgba(255,255,255,.35),rgba(255,255,255,.35)) 0 33.3%/100% 1px no-repeat,linear-gradient(rgba(255,255,255,.35),rgba(255,255,255,.35)) 0 66.6%/100% 1px no-repeat}
@@ -725,7 +742,7 @@ $('#authForm').addEventListener('submit',e=>{e.preventDefault();authGo(false)});
 function saveUser(){const u=DB.get('users',{});u[S.user.email]=S.user;DB.set('users',u)}
 
 function enter(first){
-  $('#auth').hidden=true;$('#app').hidden=false;
+  $('#auth').hidden=true;$('#app').hidden=false;setTimeout(()=>{try{beat()}catch(e){}},500);
   S.chats=DB.get('chats:'+S.user.email,[]);
   newChat();refreshChrome();
   if(!S.user.seenUpsell){S.user.seenUpsell=true;saveUser();setTimeout(()=>openPlans(true),500)}
@@ -1644,6 +1661,29 @@ function bindRedeem(o){
     if(r.err){err.textContent=r.err;return}
     inp.value='';if(r.plan)closeModal();else refreshWallet();refreshChrome();toast(r.ok)}}
 
+
+/* ===== Layar BAN akun (muncul setelah logo Astra) ===== */
+const fdtWIB=t=>new Date(t).toLocaleString('id-ID',{timeZone:'Asia/Jakarta',day:'numeric',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'})+' WIB';
+const leftTxt=ms=>{ms=Math.max(0,ms);const d=Math.floor(ms/864e5),h=Math.floor(ms%864e5/36e5),m=Math.floor(ms%36e5/6e4),s=Math.floor(ms%6e4/1e3);return (d?d+'h ':'')+(d||h?h+'j ':'')+m+'m '+String(s).padStart(2,'0')+'d'};
+function banLift(){const o=document.getElementById('banScr');if(o){clearInterval(o._tm);clearInterval(o._pl);o.remove();document.documentElement.style.overflow=''}window.__banOn=0;try{toast('Banmu sudah dibuka. Selamat datang kembali!')}catch(e){}}
+function banScreen(info){if(!info)return banLift();window.__banOn=1;let o=document.getElementById('banScr');
+ if(o&&o._k===JSON.stringify(info))return;if(o){clearInterval(o._tm);clearInterval(o._pl);o.remove()}
+ o=document.createElement('div');o.id='banScr';o._k=JSON.stringify(info);document.documentElement.style.overflow='hidden';
+ const perm=!info.u,oid=info.id||'100001';
+ o.innerHTML=`<div class="bc"><div class="bi">${ic('ban')}</div><h2>Akunmu Dibanned</h2><p>${esc(info.n||'Kamu')}, akunmu tidak bisa dipakai ${perm?'lagi':'untuk sementara'} karena dibanned oleh Owner Astra AI.</p>
+ <div class="bx"><small>Alasan</small><b>${esc(info.w||'Melanggar ketentuan Astra AI')}</b></div>
+ <div class="bx"><small>Durasi</small>${perm?'<b>Permanen</b>':`<b>Sampai ${fdtWIB(info.u)}</b><div class="cd" id="bcd"></div>`}</div>
+ <div class="bb"><button class="btn pri" id="bco">Chat Owner Astra AI (ID ${esc(oid)})</button><button class="btn" id="blo">Keluar</button></div>
+ <div class="bchat" id="bch" hidden><p>Kamu bisa menjelaskan atau mengajukan banding langsung ke Owner. Hanya pesan teks.</p><div class="bl" id="bls"></div><form class="bf" id="bfm"><input id="bin" maxlength="500" placeholder="Tulis pesan ke Owner..." autocomplete="off"><button class="btn pri" type="submit">Kirim</button></form></div></div>`;
+ document.body.appendChild(o);const q=x=>o.querySelector(x);
+ if(!perm){const t=()=>{const l=info.u-Date.now();const e=q('#bcd');if(e)e.textContent='Sisa '+leftTxt(l);if(l<=0){clearInterval(o._tm);setTimeout(()=>{try{beat()}catch(e){}},800)}};t();o._tm=setInterval(t,1000)}
+ q('#blo').onclick=()=>{try{DB.del('tok');DB.del('session');DB.del('cred')}catch(e){}location.reload()};
+ let last=0,seen=new Set();
+ const paint=m=>{const box=q('#bls');if(!box)return;const near=box.scrollHeight-box.scrollTop-box.clientHeight<60;m.forEach(x=>{if(seen.has(x.i))return;seen.add(x.i);const d=document.createElement('div');d.className='bm'+(x.u!==oid?' me':'');d.innerHTML=esc(x.b)+'<small>'+new Date(x.t).toLocaleTimeString('id-ID',{timeZone:'Asia/Jakarta',hour:'2-digit',minute:'2-digit'})+'</small>';box.appendChild(d);last=Math.max(last,x.t)});if(near||!box.dataset.f){box.scrollTop=box.scrollHeight;box.dataset.f=1}if(!seen.size)box.innerHTML='<p style="opacity:.6;text-align:center;margin:auto">Belum ada pesan. Tulis pesan pertamamu.</p>'};
+ const load=async()=>{try{const r=await api('dm/'+oid+(last?'?since='+last:''),'GET',null,1);if(r.m&&r.m.length){const b=q('#bls');if(b&&!seen.size)b.innerHTML='';paint(r.m)}else if(!last)paint([])}catch(e){}};
+ q('#bco').onclick=()=>{const c=q('#bch');c.hidden=!c.hidden;if(!c.hidden){load();q('#bin').focus();o._pl=o._pl||setInterval(load,5000);setTimeout(()=>c.scrollIntoView({behavior:'smooth',block:'nearest'}),50)}};
+ q('#bfm').onsubmit=async e=>{e.preventDefault();const i=q('#bin'),v=i.value.trim();if(!v)return;i.disabled=true;try{const r=await api('dm/'+oid,'POST',{k:'text',b:v},1);i.value='';const b=q('#bls');if(b&&!seen.size)b.innerHTML='';paint(r.m||[])}catch(er){try{toast(er.message)}catch(x){}}i.disabled=false;i.focus()}}
+
 /* ===== Video wallpaper yang bisa diganti Owner utama ===== */
 let WPD=null;try{WPD=JSON.parse(localStorage.getItem('astra-wp')||'null')}catch(e){}
 const wpSlotOf=n=>{const w=WPD;if(!w)return null;return n==='saldo'?(w.a||null):(w.mode==='split'?(w.b||null):(w.a||null))};
@@ -1667,7 +1707,10 @@ function wpApply(host,ov){const nm=host.dataset.wp,s=ov!==undefined?ov:wpSlotOf(
   if(!el._wpb){el._wpb=1;el.addEventListener('loadedmetadata',()=>{const w=el._wp;if(w&&w.st&&el.currentTime<w.st)el.currentTime=w.st});
    el.addEventListener('timeupdate',()=>{const w=el._wp;if(!w)return;if((w.en>0&&el.currentTime>=w.en)||(w.st&&el.currentTime<w.st-.3))el.currentTime=w.st||0});
    el.addEventListener('ended',()=>{const w=el._wp;if(w){el.currentTime=w.st||0;el.play().catch(()=>{})}})}
-  el._wp=s;el.loop=!(s.st||s.en);el.dataset.mu=s.mu?'1':'0'}
+  el._wp=s;el.loop=!(s.st||s.en);el.dataset.mu=s.mu?'1':'0';el.style.willChange=s.z>1?'transform':'';
+  if(!el._io&&ov===undefined&&'IntersectionObserver' in window){el._io=1;const pz=()=>{if(!el.paused){el._ap=1;el.pause()}},rs=()=>{if(el._ap){el._ap=0;el.play().catch(()=>{})}};
+   const io=new IntersectionObserver(es=>es.forEach(x=>x.isIntersecting?rs():pz()),{threshold:.05});io.observe(el);
+   const vc=()=>{if(!el.isConnected){document.removeEventListener('visibilitychange',vc);io.disconnect();return}document.hidden?pz():rs()};document.addEventListener('visibilitychange',vc)}}
  else if(el.getAttribute('src')!==md.src)el.src=md.src;
  el.style.objectPosition=pos;el.style.transform=tf;el.style.transformOrigin=pos;
  if(s.t)host.insertAdjacentHTML('beforeend','<div class="wlab '+s.tp+' '+s.ts+'">'+esc(s.t)+'</div>')}
@@ -1776,6 +1819,7 @@ async function api(p,m='GET',b,quiet,retry,tmo){const c=new AbortController(),bi
   let o={};try{o=await r.json()}catch(e){}
   if(!r.ok){const msg=o.e||(r.status===503?'Server sedang penuh atau overload, coba lagi nanti':r.status>=500?'Server error ('+r.status+'), coba lagi sebentar':'Terjadi kesalahan ('+r.status+')');
    if(r.status===401&&!retry&&!['login','register'].includes(p)&&DB.get('cred')&&await recoverOnce())return api(p,m,b,quiet,1);
+   if(o&&o.ab&&r.status===403){try{banScreen(o.ab)}catch(e){}throw Object.assign(new Error(msg),{st:403})}
    if(!quiet)toast(msg);if(r.status===401&&tok()&&!['login','register'].includes(p)){DB.del('tok');setTimeout(()=>location.reload(),1500)}throw Object.assign(new Error(msg),{st:r.status})}
   return o}catch(e){if(!e.st&&!quiet)toast(e.name==='AbortError'?'Server terlalu lama merespons (timeout)':'Tidak bisa terhubung ke server. Cek internet atau server mungkin mati');if(!e.st)e.message=e.name==='AbortError'?'Server timeout':'Tidak bisa terhubung ke server';throw e}finally{clearTimeout(tm)}}
 const shaK=async t=>{try{const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(t));return[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}catch(e){return 'x'+btoa(unescape(encodeURIComponent(t)))}};
@@ -2078,8 +2122,8 @@ function giftRole(u){
 
 /* ---------- aksi owner pada pengguna ---------- */
 function ownerUser(u,after){
- const s=sheet(`<div class="acp">${av(u)}<div><b>${esc(u.name)}</b> ${roleHTML(u.role||'free')}<small>ID ${u.id}${u.email?' · '+esc(u.email):''}${u.sal!=null?' · saldo '+rp(u.sal):''}${u.ban?' · <b style="color:var(--bad)">DI-BAN</b>':''}</small></div></div>
- <div class="sec-t">Moderasi</div><div class="xrow"><select id="bd" class="oin"><option value="10">10 menit</option><option value="60">1 jam</option><option value="1440">1 hari</option><option value="10080">7 hari</option><option value="43200">30 hari</option><option value="0">Permanen</option></select><input id="br" class="oin" maxlength="60" placeholder="Alasan (opsional)"></div>
+ const s=sheet(`<div class="acp">${av(u)}<div><b>${esc(u.name)}</b> ${roleHTML(u.role||'free')}<small>ID ${u.id}${u.email?' · '+esc(u.email):''}${u.sal!=null?' · saldo '+rp(u.sal):''}${u.ban?' · <b style="color:var(--bad)">DI-BAN'+(u.bw?' · '+esc(u.bw):'')+'</b>':''}</small></div></div>
+ <div class="sec-t">Ban akun (tidak bisa memakai Astra, bisa chat Owner)</div><div class="xrow"><select id="bd" class="oin"><option value="10">10 menit</option><option value="60">1 jam</option><option value="1440">1 hari</option><option value="10080">7 hari</option><option value="43200">30 hari</option><option value="0">Permanen</option></select><input id="br" class="oin" maxlength="60" placeholder="Alasan (opsional)"></div>
  <div class="xpl"><button class="btn dng" id="o1">${ic('ban')} Ban</button><button class="btn" id="o2">Buka ban</button><button class="btn" id="o3">Mute</button><button class="btn" id="o4">Buka mute</button></div>
  <div class="sec-t">Saldo &amp; role</div><div class="xrow"><input id="sa" class="oin" inputmode="numeric" placeholder="Nominal, mis. 50000 atau -20000"><button class="btn pri" id="o5" style="flex:0 0 auto">Terapkan</button></div>
  <div class="xrow"><select id="pp" class="oin">${PLANS.filter(p=>p.id!=='free').map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join('')}</select><select id="pd" class="oin"><option value="30">30 hari</option><option value="90">90 hari</option><option value="365">1 tahun</option><option value="0">Unlimited</option></select></div>
@@ -2380,7 +2424,7 @@ const applyGift=g=>{if(!g||!g.plan)return;
  api('gift/ack','POST',{},1).catch(()=>{})};
 const syncPl=r=>{let ch=0;if(r.pl&&(S.user.plan!==r.pl.id||(S.user.planExp||0)!==(r.pl.exp||0))){S.user.plan=r.pl.id;S.user.planExp=r.pl.exp||0;if(!(PLANS.find(p=>p.id===r.pl.id)||{modes:['fast']}).modes.includes(S.mode))S.mode='fast';ch=1}
  if(r.adm&&!S.user.unlimited){S.user.unlimited=true;ch=1}if(ch){saveUser();try{refreshChrome()}catch(e){}}};
-const beat=()=>{if(!tok()||!S.user||document.hidden)return;api('hb','GET',null,1).then(r=>{syncPl(r);if(r.wpv!=null&&r.wpv!==window.__wpv){window.__wpv=r.wpv;wpLoad()}const pj=JSON.stringify(r.pr||{});if(pj!==lastPr){lastPr=pj;__lv.applyPrices(r.pr)}if(r.payv!==lastPv){lastPv=r.payv;api('pay','GET',null,1).then(m=>__lv.applyPay(m.pay)).catch(()=>{lastPv=-1})}showPill(r.live);if(r.gift)applyGift(r.gift);if(r.maint&&!X.isAdmU()&&Date.now()-lastBan>3e5){lastBan=Date.now();toast('Server pemeliharaan: '+r.maint)}if(r.ban&&Date.now()-lastBan>6e5){lastBan=Date.now();toast('Akunmu sedang di-BAN dari komunitas')}}).catch(()=>{})};
+const beat=()=>{if(!tok()||!S.user||document.hidden)return;api('hb','GET',null,1).then(r=>{if(r.ab)banScreen(r.ab);else if(window.__banOn)banLift();syncPl(r);if(r.wpv!=null&&r.wpv!==window.__wpv){window.__wpv=r.wpv;wpLoad()}const pj=JSON.stringify(r.pr||{});if(pj!==lastPr){lastPr=pj;__lv.applyPrices(r.pr)}if(r.payv!==lastPv){lastPv=r.payv;api('pay','GET',null,1).then(m=>__lv.applyPay(m.pay)).catch(()=>{lastPv=-1})}showPill(r.live);if(r.gift)applyGift(r.gift);if(r.maint&&!X.isAdmU()&&Date.now()-lastBan>3e5){lastBan=Date.now();toast('Server pemeliharaan: '+r.maint)}if(r.ban&&Date.now()-lastBan>6e5){lastBan=Date.now();toast('Akunmu sedang di-BAN dari komunitas')}}).catch(()=>{})};
 setInterval(beat,12000);setTimeout(beat,2500);
 window.__ext.watch=watch;window.__ext.studio=studio;window.__ext.hub=hub;
 })();
@@ -2553,6 +2597,7 @@ const connect=()=>{if(!tok()||!S.user){setTimeout(connect,4000);return}
  try{ws=new WebSocket(API.replace(/^http/,'ws')+'/ws?t='+tok()+'&r=inbox')}catch(e){return}
  ws.onopen=()=>{tries=0};
  ws.onmessage=e=>{let d;try{d=JSON.parse(e.data)}catch(er){return}
+  if(d.t==='ban'){if(d.ab)banScreen(d.ab);else if(window.__banOn)banLift()}
   if(d.t==='dm'&&d.to===S.user.uid&&d.from!==S.user.uid){const open=document.querySelector('.rh h3')&&document.querySelector('.rh h3').textContent.includes((d.u&&d.u[d.from]&&d.u[d.from].name)||'\u0000');
    const nm=(d.u&&d.u[d.from]&&d.u[d.from].name)||'Teman',k=d.m&&d.m.k,body=k==='text'?d.m.b:k==='img'?'📷 Foto':k==='vid'?'🎬 Video':k==='aud'?'🎤 Pesan suara':k==='stk'?'Stiker':'📎 Berkas';
    if(document.hidden||!open){playNotif();_t('💬 '+nm+': '+String(body).slice(0,60))}else playNotif()}};
@@ -2595,7 +2640,7 @@ function wpEditor(root,focus){
   $('#wfm',root).innerHTML=`<div class="sec-t">Sumber video</div>
   <div class="xrow"><button class="btn" id="wfl">Pilih file</button><input id="wfi" type="file" accept="video/mp4,video/webm,video/quicktime,image/png,image/jpeg,image/webp,image/gif" hidden>
   <input id="wlk" class="oin" style="flex:1 1 160px" placeholder="atau tempel link (YouTube, Vimeo, .mp4, .jpg)" value="${s.k==='link'?s.src.replace(/"/g,'&quot;'):''}"><button class="btn" id="wlg">Pakai</button></div>
-  <div class="st">${s.k==='file'?'File: '+(s.name||'tersimpan di server')+' · '+(s.mime||''):s.k==='link'?'Link dipakai':'Memakai video bawaan'}</div>
+  <div class="st">${s.k==='file'?'File: '+(s.name||'tersimpan di server')+' · '+(s.mime||''):s.k==='link'?'Link dipakai':'Memakai video bawaan'}${(s._f&&s._f.size||s._sz||0)>8*1048576?' · ⚠ File besar: disarankan tekan "Pangkas permanen & kompres" supaya ringan di HP pengguna.':''}</div>
   ${has?`<div class="sec-t">Pangkas &amp; sesuaikan ukuran</div>
   <div class="st">Geser kotak putih untuk memilih bagian video, tarik bulatan di sudut kanan-bawah untuk memperbesar/memperkecil (seperti memangkas foto).</div>
   ${E.mode==='same'?`<div class="xrow"><small class="mut">Bingkai ikut:</small><button class="chip ${E.ref==='p'?'on':''}" data-ref="p">Kartu Premium 16:9</button><button class="chip ${E.ref==='s'?'on':''}" data-ref="s">Kartu Saldo</button></div>`:''}
@@ -2614,17 +2659,22 @@ function wpEditor(root,focus){
   <select id="wts" class="oin" style="flex:1">${[['iklan','Kuning IKLAN'],['glass','Kaca'],['neon','Neon'],['plain','Polos']].map(([k,n])=>`<option value="${k}" ${s.ts===k?'selected':''}>${n}</option>`).join('')}</select></div>`:''}
   ${has?'<button class="btn" id="wdf" style="margin-top:8px">Pakai video bawaan untuk ini</button>':''}`;
   bind()};
- const upd=()=>{paintAll();E._lay&&E._lay()};
+ let raf=0;const upd=()=>{if(raf)return;raf=requestAnimationFrame(()=>{raf=0;paintAll();E._lay&&E._lay()})};
  const bind=()=>{const s=sl(cur),q=x=>$(x,root);
   q('#wfl').onclick=()=>q('#wfi').click();
   q('#wfi').onchange=async e=>{const f=e.target.files[0];if(!f)return;const er=$('#wer',root);er.textContent='';
    if(!/^(video\/(mp4|webm|quicktime)|image\/(png|jpeg|webp|gif))$/.test(f.type)){er.textContent='Format harus MP4/WebM/MOV atau gambar PNG/JPG/WebP/GIF.';return}
    if(f.size>30*1048576){er.textContent='File '+(f.size/1048576).toFixed(0)+' MB melebihi batas 30 MB. Pangkas dulu, atau pakai link.';return}
    const n={...DEF(),...{t:s.t,tp:s.tp,ts:s.ts},k:'file',mime:f.type,name:f.name,_f:f,_url:URL.createObjectURL(f)};E[cur]=n;dur[cur]=0;draw()};
-  q('#wlg').onclick=()=>{let u=q('#wlk').value.trim();const er=$('#wer',root);er.textContent='';if(!u)return;if(!/^https?:\/\//i.test(u))u='https://'+u;u=u.replace(/^http:\/\//i,'https://');
+  q('#wlg').onclick=async()=>{let u=q('#wlk').value.trim();const er=$('#wer',root),bt=q('#wlg');er.textContent='';if(!u)return;if(!/^https?:\/\//i.test(u))u='https://'+u;u=u.replace(/^http:\/\//i,'https://');
    if(/tiktok\.com|instagram\.com/i.test(u)){er.textContent='TikTok/Instagram tidak bisa jadi wallpaper. Unduh videonya lalu pilih sebagai file, atau pakai link langsung .mp4.';return}
-   if(!wpMedia({k:'link',src:u})){er.textContent='Link tidak dikenali. Pakai YouTube/Vimeo atau link langsung .mp4 / .webm / .jpg / .png.';return}
-   E[cur]={...DEF(),t:s.t,tp:s.tp,ts:s.ts,k:'link',src:u};dur[cur]=0;draw()};
+   const keep={t:s.t,tp:s.tp,ts:s.ts};
+   if(/youtu\.?be|vimeo\.com/i.test(u)){if(!wpMedia({k:'link',src:u})){er.textContent='Link YouTube/Vimeo tidak dikenali.';return}E[cur]={...DEF(),...keep,k:'link',src:u};dur[cur]=0;draw();return}
+   /* link video/gambar: server mengunduh dulu supaya bisa diedit & disimpan permanen seperti file */
+   bt.disabled=true;const old=bt.textContent;bt.innerHTML='<i class="dcspin"></i> Mengunduh...';const st=q('.st');if(st)st.textContent='Server sedang mengunduh video dari link (maks 30 MB, bisa sampai 1 menit)...';
+   try{const r=await api('admin/wpfetch','POST',{url:u},1,0,120000);
+    E[cur]={...DEF(),...keep,k:'file',mime:r.mime,name:r.name||'dari link',_up:r.fid,_srv:1,_sz:r.size,_url:API+'/api/wpprev/'+r.fid+'?t='+encodeURIComponent(tok())};dur[cur]=0;draw();const s2=$('#wfm .st',root);if(s2)s2.textContent='Video dari link sudah diunduh ('+(r.size/1048576).toFixed(1)+' MB). Silakan edit lalu Simpan.'}
+   catch(e){bt.disabled=false;bt.textContent=old;if(wpMedia({k:'link',src:u})){E[cur]={...DEF(),...keep,k:'link',src:u};dur[cur]=0;draw();er.textContent='Server tidak bisa mengunduh link ini ('+e.message+'). Dipakai sebagai link langsung: tetap tampil, tapi tidak bisa dikompres.'}else er.textContent=e.message}};
   const num=(id,key,fmt)=>{const e=q(id);if(!e)return;e.oninput=()=>{s[key]=+e.value;const lab=q('#v'+id.slice(2));if(lab)lab.textContent=fmt(+e.value);upd()}};
   num('#wz','z',v=>v.toFixed(2)+'x');num('#wx','x',v=>Math.round(v)+'%');num('#wy','y',v=>Math.round(v)+'%');
   const ws=q('#wst'),we=q('#wen');
@@ -2645,7 +2695,7 @@ function wpEditor(root,focus){
   const size=()=>{box.style.aspectRatio=String(V);box.style.width='min(100%,'+Math.round(300*V)+'px)'};size();
   const geo=()=>{const R=RR(),fw0=Math.min(1,R/V),fh0=Math.min(1,V/R);return{fw0,fh0,fw:fw0/s.z,fh:fh0/s.z}};
   const lay=()=>{const g=geo(),l=s.x/100*(1-g.fw),t=s.y/100*(1-g.fh);rect.style.left=l*100+'%';rect.style.top=t*100+'%';rect.style.width=g.fw*100+'%';rect.style.height=g.fh*100+'%'};
-  const sync=()=>{const set=(id,v,f)=>{const e=$(id,root);if(e)e.value=v;const l=$('#v'+id.slice(2),root);if(l)l.textContent=f(v)};set('#wz',s.z,v=>(+v).toFixed(2)+'x');set('#wx',s.x,v=>Math.round(v)+'%');set('#wy',s.y,v=>Math.round(v)+'%');lay();paintAll()};
+  const sync=()=>{const set=(id,v,f)=>{const e=$(id,root);if(e)e.value=v;const l=$('#v'+id.slice(2),root);if(l)l.textContent=f(v)};set('#wz',s.z,v=>(+v).toFixed(2)+'x');set('#wx',s.x,v=>Math.round(v)+'%');set('#wy',s.y,v=>Math.round(v)+'%');lay();upd()};
   E._lay=lay;
   const meta=()=>{const w=el.videoWidth||el.naturalWidth,hh=el.videoHeight||el.naturalHeight;if(w&&hh){V=w/hh;size();lay()}};
   el.onloadedmetadata=meta;el.onload=meta;lay();
@@ -2687,9 +2737,9 @@ function wpEditor(root,focus){
    fail=0;off=j.size;}
   return id};
  const pay=async k=>{const s=E[k];if(!s||!s.k)return null;const o={k:s.k,t:s.t,tp:s.tp,ts:s.ts,z:s.z,x:s.x,y:s.y,st:s.st,en:s.en,mu:s.mu};
-  if(s.k==='link')o.src=s.src;else if(s._f){if(s._f.size>30*1048576)throw new Error('File lebih dari 30 MB.');if(!s._up)s._up=await upl(s._f);o.fid=s._up;o.mime=s._f.type}else{o.fid=s.fid;o.mime=s.mime}return o};
+  if(s.k==='link')o.src=s.src;else if(s._f){if(s._f.size>30*1048576)throw new Error('File lebih dari 30 MB.');if(!s._up)s._up=await upl(s._f);o.fid=s._up;o.mime=s._f.type}else{o.fid=s._up||s.fid;o.mime=s.mime}return o};
  const save=async()=>{if(busy)return;const er=$('#wer',root),b=$('#wsv',root);er.textContent='';busy=1;b.disabled=true;const lab=b.textContent;b.innerHTML='<i class="dcspin"></i> Mengunggah & menyimpan...';
-  try{let r;for(let t=0;;t++){try{const A=await pay('a'),B=E.mode==='split'?await pay('b'):null;r=await api('admin/wallpaper','POST',{act:'set',mode:E.mode,a:A,b:B},1,0,120000);break}catch(e){if(t<1&&/tidak ditemukan|hilang/i.test(e.message)){['a','b'].forEach(x=>{if(E[x]&&E[x]._f)E[x]._up=''});continue}throw e}}
+  try{let r;for(let t=0;;t++){try{const A=await pay('a'),B=E.mode==='split'?await pay('b'):null;r=await api('admin/wallpaper','POST',{act:'set',mode:E.mode,a:A,b:B},1,0,120000);break}catch(e){if(t<1&&/tidak ditemukan|hilang/i.test(e.message)&&['a','b'].some(x=>E[x]&&E[x]._f)){['a','b'].forEach(x=>{if(E[x]&&E[x]._f)E[x]._up=''});continue}throw e}}
    toast('Diterapkan ke semua pengguna. Video lama otomatis dihapus dari server.');await load();await wpLoad()}catch(e){er.textContent=e.message||'Gagal menyimpan, coba lagi.'}
   busy=0;const bb=$('#wsv',root);if(bb){bb.disabled=false;bb.textContent=lab}};
  const reset=async()=>{if(busy||!confirm('Kembali ke video bawaan untuk semua pengguna?'))return;try{await api('admin/wallpaper','POST',{act:'reset'},1);toast('Kembali ke video bawaan');await load();await wpLoad()}catch(e){$('#wer',root).textContent=e.message}};
