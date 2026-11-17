@@ -1431,8 +1431,8 @@ async function imageFlow(chat,raw){
 $('#menuBtn').onclick=e=>{
   e.stopPropagation();if(document.querySelector('.pop'))return closePop();
   const r=e.currentTarget.getBoundingClientRect();const p=document.createElement('div');p.className='pop';
-  const it=[['chat','x','com'],['crown','x','fr'],['zap','x','st'],['settings','x','acc'],'-',['edit','newChat','new'],['hist','history','hist'],['settings','settings','set'],['globe','lang','lang'],['db','storage','store'],'-',['wallet','saldoAstra','wal'],['spin','x','spin'],['gamepad','x','bhv'],['music','Musik','mus'],['chat','waChannel','chn'],['crown','premium','prem'],['link','logoLink','logo'],'-',['help','help','help'],['info','about','about'],['shield','privacy','priv'],'-',['logout','logout','out']];
-  p.innerHTML=it.map(x=>x==='-'?'<hr>':`<button data-a="${x[2]}">${ic(x[0])}${x[2]==='com'?'Chat Komunitas':x[2]==='fr'?'Chat Pribadi':x[2]==='st'?'Status':x[2]==='acc'?'Pengaturan Akun':x[2]==='spin'?'Spin Hadiah':x[2]==='bhv'?'Brohaven':x[1]==='saldoAstra'?'Saldo Astra':x[1]==='Musik'?'Musik':x[1]==='waChannel'?'Saluran WhatsApp':t(x[1])}${x[2]==='prem'?'<span class="tag">GO</span>':''}${x[2]==='wal'?'<span class="tag">'+rp(bal())+'</span>':''}${x[2]==='spin'&&S.spCan?'<span class="tag">GRATIS</span>':''}${x[2]==='mus'&&!MU.audio.paused?'<span class="tag">Memutar</span>':''}${x[2]==='chn'||x[2]==='bhv'?'<span class="tag">BARU</span>':''}</button>`).join('');
+  const it=[['chat','x','com'],['crown','x','fr'],['zap','x','st'],['settings','x','acc'],'-',['edit','newChat','new'],['hist','history','hist'],['settings','settings','set'],['globe','lang','lang'],['db','storage','store'],'-',['wallet','saldoAstra','wal'],['spin','x','spin'],['gift','x','dly'],['gamepad','x','bhv'],['music','Musik','mus'],['chat','waChannel','chn'],['crown','premium','prem'],['link','logoLink','logo'],'-',['help','help','help'],['info','about','about'],['shield','privacy','priv'],'-',['logout','logout','out']];
+  p.innerHTML=it.map(x=>x==='-'?'<hr>':`<button data-a="${x[2]}">${ic(x[0])}${x[2]==='com'?'Chat Komunitas':x[2]==='fr'?'Chat Pribadi':x[2]==='st'?'Status':x[2]==='acc'?'Pengaturan Akun':x[2]==='spin'?'Spin Hadiah':x[2]==='bhv'?'Brohaven':x[2]==='dly'?'Bonus Harian':x[1]==='saldoAstra'?'Saldo Astra':x[1]==='Musik'?'Musik':x[1]==='waChannel'?'Saluran WhatsApp':t(x[1])}${x[2]==='prem'?'<span class="tag">GO</span>':''}${x[2]==='wal'?'<span class="tag">'+rp(bal())+'</span>':''}${x[2]==='spin'&&S.spCan?'<span class="tag">GRATIS</span>':''}${x[2]==='mus'&&!MU.audio.paused?'<span class="tag">Memutar</span>':''}${x[2]==='chn'||x[2]==='bhv'?'<span class="tag">BARU</span>':''}</button>`).join('');
   document.body.appendChild(p);p.style.left='12px';p.style.top=(r.bottom+6)+'px';p.style.maxHeight=(innerHeight-r.bottom-20)+'px';p.style.overflowY='auto';p.style.overscrollBehavior='contain';
   p.querySelectorAll('button').forEach(b=>b.onclick=()=>{closePop();menuAct(b.dataset.a)});
 };
@@ -1444,6 +1444,7 @@ function menuAct(a){
   else if(a==='chn'){const o=modal(`<div class="mh"><h3>Saluran WhatsApp</h3><button class="ibtn" data-close>${ic('x')}</button></div>${waChanHTML()}`);bindChan(o)}
   else if(a==='wal')openWallet();
   else if(a==='spin')openSpin();
+  else if(a==='dly')openDaily();
   else if(a==='bhv')openBrohaven();
   else if(a==='mus')muOpen();
   else if(a==='prem')openPlans(false);
@@ -2355,7 +2356,7 @@ async function giftSheet(W,getWs){
 
 /* ====================== HUB OWNER ====================== */
 function hub(){
- const secs=[['ov','dash','Ringkasan'],['us','users','Pengguna'],['cd','key','Kode redeem'],['cm','chat','Komunitas'],['lv','live','Live'],['pr','tag','Harga & pembayaran'],...(X.isRootU()?[['wp','live','Video wallpaper'],['sp','spin','Event Spin'],['bh','zap','Brohaven']]:[]),['bk','lock','Penyimpanan & cadangan'],['sd','coin','Top saldo'],['tx','list','Transaksi'],['tl','dash','Alat server'],['wd','flag','Kata terlarang'],['rg','lock','Pendaftaran'],['lg','list','Log']];
+ const secs=[['ov','dash','Ringkasan'],['us','users','Pengguna'],['cd','key','Kode redeem'],['cm','chat','Komunitas'],['lv','live','Live'],['pr','tag','Harga & pembayaran'],...(X.isRootU()?[['wp','live','Video wallpaper'],['sp','spin','Event Spin'],['bh','zap','Brohaven'],['dy','zap','Bonus Harian']]:[]),['bk','lock','Penyimpanan & cadangan'],['sd','coin','Top saldo'],['tx','list','Transaksi'],['tl','dash','Alat server'],['wd','flag','Kata terlarang'],['rg','lock','Pendaftaran'],['lg','list','Log']];
  const o=modal(`<div class="mh"><h3>Hub Owner</h3><button class="ibtn" data-close>${ic('x')}</button></div><div class="xnav">${secs.map(([k,i,n])=>`<button data-k="${k}">${ic(i)} ${n}</button>`).join('')}</div><div id="hv"></div>`,'omod tfm'),v=o.querySelector('#hv');
  const go=async k=>{o.querySelectorAll('.xnav button').forEach(b=>b.classList.toggle('on',b.dataset.k===k));v.innerHTML='<p class="mt">Memuat...</p>';
   try{await V[k]()}catch(e){v.innerHTML='<p class="mt">'+esc(e.message)+'</p>'}};
@@ -2365,6 +2366,7 @@ function hub(){
   async wp(){window.__wpEditor(v)},
   async sp(){window.__spEditor(v)},
   async bh(){window.__bhEditor(v)},
+  async dy(){window.__dyEditor(v)},
   async us(){let f='all',qs='',off=0,list=[],tot=0,tm=0;v.innerHTML=`<input id="uq" class="oin" placeholder="Cari nama, email, atau ID"><div class="seg" id="uf"><button data-f="all" class="on">Semua</button><button data-f="on">Online</button><button data-f="ban">Di-ban</button><button data-f="adm">Admin</button></div><div id="ul" class="tlist"></div><button class="btn" id="um" hidden>Muat lebih banyak</button>`;
    const ul=v.querySelector('#ul'),um=v.querySelector('#um');
    const paint=()=>{ul.innerHTML=list.length?list.map((x,i)=>`<button class="xu" data-i="${i}">${avU(x)}<span class="tri"><b>${esc(x.name)} ${roleHTML(x.role)}</b><small>ID ${x.id} · ${esc(x.email)} · ${rp(x.sal)}</small></span>${x.ban?'<span class="bd">BAN</span>':x.mute?'<span class="bd">MUTE</span>':x.on?'<i class="dot on"></i>':''}</button>`).join(''):'<p class="mt">Tidak ada pengguna.</p>';um.hidden=list.length>=tot;ul.querySelectorAll('.xu').forEach(b=>b.onclick=()=>{const x=list[b.dataset.i];X.ownerUser({...x,avatar:null},()=>ld(1))})};
@@ -3516,6 +3518,48 @@ const _en=window.enter;if(typeof _en==='function'){window.enter=function(){const
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&em()&&Date.now()-lastPull>45000)pull()});
 setInterval(()=>{if(!document.hidden&&em()&&Date.now()-lastPull>120000)pull()},30000);
 setTimeout(()=>{const a=document.getElementById('app');if(em()&&a&&!a.hidden)pull()},1300);
+})();
+</script>
+
+<script>
+/* ===== Bonus login harian ===== */
+(function(){
+const $=(s,r)=>(r||document).querySelector(s),rp=n=>'Rp'+(+n||0).toLocaleString('id-ID');
+const left=ms=>{const s=Math.max(0,Math.floor(ms/1000));return String(Math.floor(s/3600)).padStart(2,'0')+':'+String(Math.floor(s%3600/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')};
+window.openDaily=async function(){
+ const o=modal('<div class="mh"><h3>🎁 Bonus Login Harian</h3><button class="ibtn" data-close>'+ic('x')+'</button></div><div id="dyb"><p class="mt">Memuat...</p></div>','');
+ const box=$('#dyb',o);let D;try{D=await api('daily','GET',null,1)}catch(e){box.innerHTML='<p class="mt">'+esc(e.message)+'</p>';return}
+ let tm=null,end=Date.now()+D.next;
+ const dl=d=>new Date(d+'T00:00:00').toLocaleDateString('id-ID',{day:'numeric',month:'short'});
+ const draw=()=>{const sl=D.slots||[],pz=D.prize,cur=sl.find(x=>x.st==='today')||{};
+  box.innerHTML=`${D.on?'':'<p class="mt" style="text-align:center">Bonus harian sedang tidak aktif. Tunggu pengumuman dari Owner.</p>'}
+  <p class="mt" style="text-align:center;margin:4px 0 12px">Klaim tiap hari sesuai tanggal. Hari yang terlewat otomatis ditandai <b style="color:#e5484d">✕</b> dan tidak bisa diklaim lagi.${pz?` Login <b>7 hari penuh tanpa bolong</b> dan di hari ke-7 kamu dapat <b>${esc(pz.n)}</b> (Rp${pz.p.toLocaleString('id-ID')}) selama ${esc(pz.dur)}!`:''}</p>
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">${sl.map(x=>{const t=x.st==='today',dn=x.st==='done',ms=x.st==='miss',g=x.k===7,bc=t?'#2a6df4':ms?'#e5484d':dn?'#3cc878':'var(--line,#8884)',bg=t?'rgba(42,109,244,.14)':ms?'rgba(229,72,77,.12)':dn?'rgba(60,200,120,.14)':'transparent';
+   return`<div style="border:1.5px solid ${bc};background:${bg};border-radius:12px;padding:8px 4px;text-align:center;${g?'grid-column:span 1':''};opacity:${x.st==='future'?.65:1}"><div class="mt" style="font-size:11px">Hari ${x.k}</div><div class="mt" style="font-size:10px">${dl(x.d)}</div><div style="font-size:20px;margin:3px 0;line-height:24px;${ms?'color:#e5484d;font-weight:800':''}">${ms?'✕':dn?'✅':g?'🎁':'💰'}</div><b style="font-size:12px">${x.amt?rp(x.amt):'—'}</b>${g&&pz?`<div style="font-size:10px;margin-top:2px;color:#2a6df4;font-weight:700">+ GO Mini ${esc(pz.dur)}</div>`:''}</div>`}).join('')}</div>
+  ${D.miss&&pz?`<p class="mt" style="text-align:center;margin-top:10px;color:#e5484d">Ada ${D.miss} hari terlewat, jadi hadiah hari ke-7 putaran ini tidak bisa didapat. Putaran baru mulai setelah hari ke-7.</p>`:''}
+  <div style="text-align:center;margin-top:14px">${D.streak?`<p class="mt">🔥 Sudah klaim ${D.streak} dari 7 hari</p>`:''}<button class="btn pri" id="dyGo" ${D.can&&D.on?'':'disabled'} style="min-width:200px">${D.done?'Sudah diklaim hari ini':D.can?'Klaim '+rp(cur.amt||0):'Tidak tersedia'}</button>${D.done?`<p class="mt" style="margin-top:8px">Klaim berikutnya dalam <b id="dyT">${left(end-Date.now())}</b></p>`:''}</div>`;
+  const b=$('#dyGo',box);if(b)b.onclick=async()=>{b.disabled=true;try{const r=await api('daily/claim','POST',{});if(typeof applyWallet==='function')applyWallet({bal:r.bal,tx:r.tx});if(typeof syncPl==='function'&&r.pl)syncPl({pl:r.pl});D=r;end=Date.now()+r.next;toast(r.add?'+'+rp(r.add)+' masuk ke saldo':'Bonus diklaim');try{playNotif()}catch(e){}if(r.pz)setTimeout(()=>toast(r.pz),1600);draw()}catch(e){toast(e.message);b.disabled=false}};
+  clearInterval(tm);if(D.done)tm=setInterval(()=>{const t=$('#dyT',box);if(!t||!document.body.contains(box)){clearInterval(tm);return}t.textContent=left(end-Date.now())},1000)};
+ draw()};
+/* popup otomatis sekali per hari saat masuk */
+let asked='';
+async function auto(){const e=S&&S.user&&S.user.email;if(!e||!tok()||asked===e)return;asked=e;let D;try{D=await api('daily','GET',null,1)}catch(x){return}
+ if(!D.can||!D.on)return;const k='dyask:'+e,d=new Date(Date.now()+7*36e5).toISOString().slice(0,10);try{if(sessionStorage.getItem(k)===d)return;sessionStorage.setItem(k,d)}catch(x){}
+ let n=0;const t=setInterval(()=>{n++;if(n>40||document.getElementById('bhv')){clearInterval(t);return}if(!document.getElementById('ov')){clearInterval(t);openDaily()}},2500)}
+const _en=window.enter;if(typeof _en==='function'){window.enter=function(){const r=_en.apply(this,arguments);setTimeout(auto,1500);return r}}
+setTimeout(()=>{const a=document.getElementById('app');if(S&&S.user&&a&&!a.hidden)auto()},1600);
+/* Hub Owner */
+window.__dyEditor=function(v){let D;const P=b=>api('admin/daily','POST',b||{},1),inp='style="width:100%;padding:9px 11px;border-radius:10px;border:1px solid #8886;background:transparent;color:inherit;font:inherit"';
+ const draw=()=>{const c=D.cfg,pz=c.prize||{on:1,unit:'hari',val:1};v.innerHTML=`<div class="xcard" style="text-align:left"><h4 style="margin:0 0 8px">Bonus Login Harian</h4>
+ <label style="display:flex;gap:10px;align-items:center;margin:8px 0"><input type="checkbox" id="dyon" style="width:auto;flex:none" ${c.on?'checked':''}> Aktif untuk semua pengguna</label>
+ <label class="mt" style="display:block;margin-top:8px">Bonus saldo tiap hari (Rp), hari ke-1 sampai ke-7</label>
+ <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:6px">${c.amts.map((a,i)=>`<div><div class="mt" style="font-size:11px">Hari ${i+1}</div><input data-am type="number" min="0" max="1000000" step="100" value="${a}" ${inp}></div>`).join('')}</div>
+ <label style="display:flex;gap:10px;align-items:center;margin:14px 0 6px"><input type="checkbox" id="dypz" style="width:auto;flex:none" ${pz.on?'checked':''}> Hadiah hari ke-7: GO ASTRA Mini (Rp25.000) untuk yang login 7 hari penuh</label>
+ <div style="display:flex;gap:8px"><input id="dypv" type="number" min="1" value="${pz.val}" ${inp}><select id="dypu" ${inp}>${['menit','jam','hari'].map(u=>`<option ${pz.unit===u?'selected':''}>${u}</option>`).join('')}</select></div>
+ <p class="mt" style="margin:8px 0">Bonus dibayar ke saldo Astra, klaim sekali per hari (reset tengah malam WIB). Tiap putaran 7 tanggal berurutan; tanggal yang terlewat otomatis bertanda ✕ merah. Kalau pengguna sudah punya paket aktif, durasi hadiah ditambahkan ke masa aktifnya.</p>
+ <button id="dysv" style="padding:10px 16px;border-radius:12px;border:0;background:linear-gradient(135deg,#2a6df4,#00c2ff);color:#fff;font-weight:700;cursor:pointer">Simpan</button></div>`;
+  $('#dysv',v).onclick=async()=>{try{D=await P({act:'set',on:$('#dyon',v).checked,amts:[...v.querySelectorAll('[data-am]')].map(e=>+e.value||0),prize:{on:$('#dypz',v).checked,val:+$('#dypv',v).value,unit:$('#dypu',v).value}});toast('Tersimpan');draw()}catch(e){toast(e.message)}}};
+ v.innerHTML='<p class="mt">Memuat...</p>';P().then(d=>{D=d;draw()}).catch(e=>{v.innerHTML='<p class="mt">'+esc(e.message)+'</p>'})};
 })();
 </script>
 
