@@ -2357,7 +2357,7 @@ async function giftSheet(W,getWs){
 
 /* ====================== HUB OWNER ====================== */
 function hub(){
- const secs=[['ov','dash','Ringkasan'],['us','users','Pengguna'],['cd','key','Kode redeem'],['cm','chat','Komunitas'],['lv','live','Live'],['pr','tag','Harga & pembayaran'],...(X.isRootU()?[['wp','live','Video wallpaper'],['sp','spin','Event Spin'],['bh','zap','Brohaven'],['dy','zap','Bonus Harian'],['fx','spark','Misi & Event']]:[]),['bk','lock','Penyimpanan & cadangan'],['sd','coin','Top saldo'],['tx','list','Transaksi'],['tl','dash','Alat server'],['wd','flag','Kata terlarang'],['rg','lock','Pendaftaran'],['lg','list','Log']];
+ const secs=[['ov','dash','Ringkasan'],['us','users','Pengguna'],['cd','key','Kode redeem'],['cm','chat','Komunitas'],['lv','live','Live'],['pr','tag','Harga & pembayaran'],...(X.isRootU()?[['wp','live','Video wallpaper'],['sp','spin','Event Spin'],['bh','zap','Brohaven'],['dy','zap','Bonus Harian'],['fx','spark','Misi & Event'],['bq','lock','Cadangan & Pemulihan'],['au','dash','Audit & Pencari'],['an','chat','Pengumuman & Notifikasi']]:[]),['bk','lock','Penyimpanan & cadangan'],['sd','coin','Top saldo'],['tx','list','Transaksi'],['tl','dash','Alat server'],['wd','flag','Kata terlarang'],['rg','lock','Pendaftaran'],['lg','list','Log']];
  const o=modal(`<div class="mh"><h3>Hub Owner</h3><button class="ibtn" data-close>${ic('x')}</button></div><div class="xnav">${secs.map(([k,i,n])=>`<button data-k="${k}">${ic(i)} ${n}</button>`).join('')}</div><div id="hv"></div>`,'omod tfm'),v=o.querySelector('#hv');
  const go=async k=>{o.querySelectorAll('.xnav button').forEach(b=>b.classList.toggle('on',b.dataset.k===k));v.innerHTML='<p class="mt">Memuat...</p>';
   try{await V[k]()}catch(e){v.innerHTML='<p class="mt">'+esc(e.message)+'</p>'}};
@@ -2369,6 +2369,9 @@ function hub(){
   async bh(){window.__bhEditor(v)},
   async dy(){window.__dyEditor(v)},
   async fx(){window.__fxEditor(v)},
+  async bq(){window.__bqEditor(v)},
+  async au(){window.__auEditor(v)},
+  async an(){window.__anEditor(v)},
   async us(){let f='all',qs='',off=0,list=[],tot=0,tm=0;v.innerHTML=`<input id="uq" class="oin" placeholder="Cari nama, email, atau ID"><div class="seg" id="uf"><button data-f="all" class="on">Semua</button><button data-f="on">Online</button><button data-f="ban">Di-ban</button><button data-f="adm">Admin</button></div><div id="ul" class="tlist"></div><button class="btn" id="um" hidden>Muat lebih banyak</button>`;
    const ul=v.querySelector('#ul'),um=v.querySelector('#um');
    const paint=()=>{ul.innerHTML=list.length?list.map((x,i)=>`<button class="xu" data-i="${i}">${avU(x)}<span class="tri"><b>${esc(x.name)} ${roleHTML(x.role)}</b><small>ID ${x.id} · ${esc(x.email)} · ${rp(x.sal)}</small></span>${x.ban?'<span class="bd">BAN</span>':x.mute?'<span class="bd">MUTE</span>':x.on?'<i class="dot on"></i>':''}</button>`).join(''):'<p class="mt">Tidak ada pengguna.</p>';um.hidden=list.length>=tot;ul.querySelectorAll('.xu').forEach(b=>b.onclick=()=>{const x=list[b.dataset.i];X.ownerUser({...x,avatar:null},()=>ld(1))})};
@@ -3670,7 +3673,7 @@ window.__fxEditor=function(v){let D;const P=b=>api('admin/fx','POST',b||{},1),I=
  const sec=(t,h,b)=>`<div class="xcard" style="text-align:left;margin-bottom:10px"><h4 style="margin:0 0 6px">${t}</h4>${h}<button class="btn pri" data-sv="${b}" style="margin-top:8px">Simpan</button></div>`;
  const draw=()=>{const e=D.ev,s=D.sale,rf=D.ref,rd=D.rd,rc=D.race;
   v.innerHTML=sec('🎉 Event Brohaven (koin ganda)',C('evon','Aktifkan event manual',e.on)+F('evm','Pengali koin (1-10)',e.mult)+F('evh','Durasi jam dari sekarang (0 = tanpa batas)',0)+C('evwk','Otomatis koin ganda tiap Sabtu & Minggu (WIB)',e.wk)+F('evl','Judul',e.label,'text')+`<p class="mt" style="font-size:12px">Status sekarang: <b>${e.now.on?'AKTIF x'+e.now.mult:'tidak aktif'}</b>${e.until&&e.on?' · berakhir '+new Date(e.until).toLocaleString('id-ID'):''}</p>`,'ev')
-  +sec('🔥 Flash Sale (diskon semua paket)',C('slon','Aktifkan flash sale',s.live)+F('slp','Diskon (%)',s.pct)+F('slm','Durasi menit dari sekarang (isi ulang untuk memulai)',s.live?Math.max(1,Math.round((s.end-Date.now())/6e4)):60)+F('sll','Judul',s.label,'text')+(s.live?`<p class="mt" style="font-size:12px">Berakhir ${new Date(s.end).toLocaleString('id-ID')}</p>`:''),'sale')
+  +sec('🔥 Flash Sale (diskon semua paket)',C('slon','Aktifkan flash sale',s.live)+F('slp','Diskon (%)',s.pct)+F('slm','Durasi menit dari sekarang (isi ulang untuk memulai)',s.live?Math.max(1,Math.round((s.end-Date.now())/6e4)):60)+F('slat','Mulai pada (kosong = sekarang)','','datetime-local')+F('sll','Judul',s.label,'text')+(s.live?`<p class="mt" style="font-size:12px">Berakhir ${new Date(s.end).toLocaleString('id-ID')}</p>`:''),'sale')
   +sec('📋 Misi (target & hadiah)','<div style="overflow:auto">'+D.mis.map((m,i)=>`<div style="border-top:1px solid #8883;padding:6px 0"><b style="font-size:13px">${E(m.n)}</b> <span class="mt" style="font-size:11px">(${m.per==='d'?'harian':'mingguan'})</span><div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:6px;margin-top:4px"><input ${I} data-mg="${i}" type="number" value="${m.g}" title="Target"><input ${I} data-ma="${i}" type="number" value="${m.a}" title="Hadiah"><select ${I} data-mr="${i}"><option value="sal" ${m.r==='sal'?'selected':''}>Saldo</option><option value="coin" ${m.r==='coin'?'selected':''}>Koin</option></select><input type="checkbox" data-mo="${i}" ${m.on===0?'':'checked'}></div></div>`).join('')+'</div><p class="mt" style="font-size:11px">Kolom: target · hadiah · jenis · aktif</p>','mis')
   +sec('👥 Ajak Teman',C('rfon','Aktif',rf.on)+F('rfa','Hadiah pengajak (Rp)',rf.a)+F('rfb','Hadiah teman baru (Rp)',rf.b)+F('rfm','Maks teman per pengguna',rf.max),'ref')
   +sec('🩹 Tebus Hari Bolong',C('rdon','Aktif',rd.on)+F('rdp','Harga tebus per hari (Rp)',rd.p),'rd')
@@ -3680,7 +3683,7 @@ window.__fxEditor=function(v){let D;const P=b=>api('admin/fx','POST',b||{},1),I=
   if(t.dataset.vd){D=await P({act:'vchdel',code:t.dataset.vd});toast('Dihapus');return draw()}
   const k=t.dataset.sv;if(!k)return;let b;
   if(k==='ev')b={act:'ev',ev:{on:sc('evon'),mult:nv('evm'),hrs:nv('evh'),wk:sc('evwk'),label:g('evl').value,keep:nv('evh')===0&&D.ev.on&&D.ev.until>Date.now()}};
-  else if(k==='sale')b={act:'sale',sale:{on:sc('slon'),pct:nv('slp'),mins:nv('slm'),label:g('sll').value}};
+  else if(k==='sale')b={act:'sale',sale:{on:sc('slon'),pct:nv('slp'),mins:nv('slm'),label:g('sll').value,at:g('slat').value?new Date(g('slat').value).getTime():0}};
   else if(k==='mis')b={act:'mis',mis:D.mis.map((m,i)=>({id:m.id,g:+v.querySelector('[data-mg="'+i+'"]').value,a:+v.querySelector('[data-ma="'+i+'"]').value,r:v.querySelector('[data-mr="'+i+'"]').value,on:v.querySelector('[data-mo="'+i+'"]').checked?1:0}))};
   else if(k==='ref')b={act:'ref',ref:{on:sc('rfon'),a:nv('rfa'),b:nv('rfb'),max:nv('rfm')}};
   else if(k==='rd')b={act:'rd',rd:{on:sc('rdon'),p:nv('rdp')}};
@@ -3690,5 +3693,68 @@ window.__fxEditor=function(v){let D;const P=b=>api('admin/fx','POST',b||{},1),I=
  P().then(r=>{D=r;draw()}).catch(e=>{v.innerHTML='<p class="mt">'+E(e.message)+'</p>'})};
 })();
 </script>
+<script>
+/* ===== Owner+: cadangan berlapis, audit saldo, pengumuman, notifikasi ===== */
+(function(){
+const E=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])),rp=n=>'Rp'+Math.round(n||0).toLocaleString('id-ID'),dt=t=>t?new Date(t).toLocaleString('id-ID',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}):'belum pernah',kb=n=>n>1048576?(n/1048576).toFixed(1)+' MB':Math.round(n/1024)+' KB';
+const I='style="width:100%;padding:8px 10px;border-radius:10px;border:1px solid #8886;background:transparent;color:inherit;font:inherit"',CARD='class="xcard" style="text-align:left;margin-bottom:10px"',BS='style="padding:6px 12px;font-size:12px"';
+const P=(p,b)=>api('admin/'+p,'POST',b||{},1);
+/* ---- Cadangan & Pemulihan ---- */
+window.__bqEditor=function(v){let D;const draw=()=>{const ok=D.loaded&&D.up,t=D.t||{};
+ const row=(x,src,i)=>`<div style="display:flex;justify-content:space-between;gap:8px;align-items:center;border-top:1px solid #8883;padding:6px 0;font-size:12px"><span><b>${E(src==='cloud'?(x.why||'cloud')+' · '+x.k:x.f)}</b><br><span class="mt">${dt(x.t)} · ${kb(x.sz*(src==='cloud'?1024:1))}${src==='cloud'?' · '+x.acc+' akun · '+rp(x.sum):''}</span></span><span style="display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end"><button class="btn sec" ${BS} data-rs="${src}|${E(src==='cloud'?x.k:x.f)}|wallet|0">Saldo</button><button class="btn sec" ${BS} data-rs="${src}|${E(src==='cloud'?x.k:x.f)}|full|0">Penuh</button><button class="btn sec" ${BS} data-rs="${src}|${E(src==='cloud'?x.k:x.f)}|wallet|1" title="Paksa: saldo disamakan persis dengan cadangan">Paksa</button></span></div>`;
+ v.innerHTML=`<div ${CARD}><h4 style="margin:0 0 6px">🛡️ Status perlindungan saldo</h4>
+ <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:13px"><div><div class="mt">Akun</div><b>${D.acc}</b></div><div><div class="mt">Total saldo beredar</div><b>${rp(D.sum)}</b></div>
+ <div><div class="mt">Penyimpanan permanen (Upstash)</div><b style="color:${D.up?'#3cc878':'#e5484d'}">${D.up?(D.loaded?'Aktif':'Memuat…'):'TIDAK AKTIF'}</b></div><div><div class="mt">Jurnal transaksi</div><b>${kb(D.jr)}</b></div>
+ <div><div class="mt">Cadangan lokal terakhir</div><b>${dt(Math.max(t.lite||0,t.full||0)||(D.lite[0]&&D.lite[0].t))}</b></div><div><div class="mt">Cadangan cloud terakhir</div><b>${dt(t.cloud||(D.cloud[0]&&D.cloud[0].t))}</b></div></div>
+ ${D.up?'':'<p style="color:#e5484d;font-size:12px;margin:8px 0 0">⚠️ Upstash belum diatur, jadi data hanya ada di disk server. Di Render gratis disk bisa terhapus saat redeploy. Isi env UPSTASH_REDIS_REST_URL dan UPSTASH_REDIS_REST_TOKEN supaya saldo aman permanen.</p>'}
+ ${D.cerr?'<p style="color:#e5484d;font-size:12px;margin:8px 0 0">Cadangan cloud gagal: '+E(D.cerr)+'</p>':''}
+ ${D.boot&&(D.boot.add||D.boot.upd)?'<p style="font-size:12px;margin:8px 0 0;color:#3cc878">Pemulihan otomatis saat server menyala: '+D.boot.add+' akun & '+D.boot.upd+' saldo dikembalikan dari '+E(D.boot.src)+'.</p>':''}
+ <p class="mt" style="font-size:12px;margin:8px 0">Lapisan: ① data utama + Upstash ② ledger saldo terpisah di Upstash ③ snapshot lokal tiap 10 menit/1 jam ④ snapshot cloud tiap 30 menit + harian ⑤ jurnal transaksi ⑥ pemulihan otomatis tiap server menyala (tidak pernah menurunkan saldo).</p>
+ <button class="btn pri" id="bqn">Cadangkan sekarang</button> <button class="btn sec" id="bqd">Unduh cadangan lengkap</button></div>
+ <div ${CARD}><h4 style="margin:0 0 4px">☁️ Cadangan cloud (Upstash)</h4>${D.cloud.length?D.cloud.map(x=>row(x,'cloud')).join(''):'<span class="mt" style="font-size:12px">Belum ada.</span>'}</div>
+ <div ${CARD}><h4 style="margin:0 0 4px">💾 Cadangan lokal (disk server)</h4><p class="mt" style="font-size:11px;margin:0 0 4px">Saldo = hanya menaikkan saldo yang lebih baru · Penuh = juga mengembalikan akun hilang · Paksa = samakan persis (bisa menurunkan saldo).</p>${D.lite.concat(D.full).map(x=>row(x,'local')).join('')||'<span class="mt" style="font-size:12px">Belum ada.</span>'}</div>
+ <div ${CARD}><h4 style="margin:0 0 6px">📒 Jurnal saldo per akun</h4><div style="display:flex;gap:8px"><input id="bqi" ${I} placeholder="ID akun, mis. 100002"><button class="btn pri" id="bqj">Lihat</button></div><div id="bqo" style="margin-top:8px"></div></div>`};
+ const ld=async()=>{D=await P('bk',{act:'status'});draw()};
+ v.onclick=async e=>{const t=e.target.closest('button');if(!t)return;try{
+  if(t.id==='bqn'){t.disabled=true;t.textContent='Mencadangkan…';D=await P('bk',{act:'now'});toast(D.res.cloud&&D.res.cloud.ok?'Cadangan lokal + cloud selesai':'Cadangan lokal selesai'+(D.res.cloud&&D.res.cloud.e?' (cloud: '+D.res.cloud.e+')':''));return draw()}
+  if(t.id==='bqd'){const d=await P('backup',{});const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(d)],{type:'application/json'}));a.download='astra-cadangan-'+new Date().toISOString().slice(0,16).replace(/[:T]/g,'-')+'.json';a.click();return}
+  if(t.dataset.rs){const [src,k,mode,fc]=t.dataset.rs.split('|');if(!confirm((fc==='1'?'PAKSA: saldo semua akun akan disamakan persis dengan cadangan ini (bisa menurunkan saldo).':'Pulihkan dari cadangan ini?')+'\nSnapshot pengaman dibuat otomatis sebelum pemulihan.'))return;t.disabled=true;const r=await P('bk',{act:'restore',src,k,mode,force:fc==='1'});D=r;toast('Selesai: '+r.add+' akun dikembalikan, '+r.upd+' saldo dipulihkan');return draw()}
+  if(t.id==='bqj'){const id=v.querySelector('#bqi').value.trim(),r=await P('bk',{act:'jr',id});v.querySelector('#bqo').innerHTML=`<p style="margin:0 0 6px;font-size:13px"><b>${E(r.name)}</b> · saldo ${r.sal==null?'?':rp(r.sal)}</p>`+(r.list.length?r.list.map(x=>`<div style="font-size:12px;border-top:1px solid #8883;padding:4px 0">${dt(x.t)} · <b style="color:${x.a<0?'#e5484d':'#3cc878'}">${x.a>0?'+':''}${rp(x.a)}</b> → ${rp(x.b)} <span class="mt">· ${E(x.n)}</span></div>`).join('')+`<button class="btn sec" ${BS} data-jr="${E(id)}" style="margin-top:8px">Pulihkan saldo ke catatan jurnal terakhir (${rp(r.list[0].b)})</button>`:'<span class="mt" style="font-size:12px">Belum ada catatan jurnal (jurnal dimulai sejak update ini).</span>');return}
+  if(t.dataset.jr){if(!confirm('Set saldo akun ini ke nilai catatan jurnal terakhir?'))return;const r=await P('bk',{act:'jrecover',id:t.dataset.jr});toast('Saldo: '+rp(r.old)+' → '+rp(r.sal));return}
+ }catch(er){toast(er.message);try{t.disabled=false}catch(x){}}};
+ ld().catch(e=>{v.innerHTML='<p class="mt">'+E(e.message)+'</p>'})};
+/* ---- Audit & Pencari ---- */
+window.__auEditor=function(v){let D,F=null;const draw=()=>{v.innerHTML=`<div ${CARD}><h4 style="margin:0 0 6px">📊 Audit saldo</h4><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:13px"><div><div class="mt">Total saldo</div><b>${rp(D.tot)}</b></div><div><div class="mt">Akun</div><b>${D.acc}</b> <span class="mt">(${D.zero} saldo 0)</span></div><div><div class="mt">Saldo tidak valid</div><b style="color:${D.neg?'#e5484d':'#3cc878'}">${D.neg}</b></div><div><div class="mt">Saldo belum terlindungi*</div><b style="color:${D.weak?'#e0a800':'#3cc878'}">${D.weak}</b></div></div><p class="mt" style="font-size:11px;margin:6px 0 0">*akun bersaldo yang belum punya catatan versi dompet. Akan terlindungi setelah ada transaksi berikutnya.</p></div>
+ <div ${CARD}><h4 style="margin:0 0 6px">🏆 10 saldo terbesar</h4>${D.top.map((x,i)=>`<div style="display:flex;justify-content:space-between;font-size:13px;border-top:1px solid #8883;padding:4px 0"><span>${i+1}. ${E(x.n)} <span class="mt">#${x.id}</span></span><b>${rp(x.s)}</b></div>`).join('')}</div>
+ <div ${CARD}><h4 style="margin:0 0 6px">🔎 Cari akun</h4><div style="display:flex;gap:8px"><input id="auq" ${I} placeholder="Nama, email, atau ID"><button class="btn pri" id="aus">Cari</button></div><div id="auo" style="margin-top:8px">${F?F:''}</div></div>
+ <div ${CARD}><h4 style="margin:0 0 6px">🧾 Aktivitas dompet terbaru</h4>${D.glog.map(x=>`<div style="font-size:12px;border-top:1px solid #8883;padding:4px 0">${dt(x.t)} · <b>${E(x.u)}</b> <b style="color:${x.a<0?'#e5484d':'#3cc878'}">${x.a>0?'+':''}${rp(x.a)}</b> <span class="mt">${E(x.n)}</span></div>`).join('')||'<span class="mt">Kosong</span>'}</div>
+ <div ${CARD}><h4 style="margin:0 0 6px">♻️ Alat cepat</h4><button class="btn sec" id="aur">Reset peringkat mingguan</button></div>`};
+ v.onclick=async e=>{const t=e.target.closest('button');if(!t)return;try{
+  if(t.id==='aus'){const r=await P('own',{act:'find',q:v.querySelector('#auq').value});F=r.list.length?r.list.map(x=>`<div style="border:1px solid #8884;border-radius:10px;padding:8px;margin-bottom:6px;font-size:12px"><b style="font-size:14px">${E(x.n)}</b> <span class="mt">#${x.id} · ${E(x.e)}</span><div>Saldo <b>${rp(x.s)}</b> · paket ${E(x.pl)} · streak ${x.st} hari${x.ban?' · <b style="color:#e5484d">DIBLOKIR</b>':''}</div><div class="mt" style="margin-top:4px">Transaksi terakhir:</div>${(x.jr.length?x.jr.map(j=>`<div>${dt(j.t)} ${j.a>0?'+':''}${rp(j.a)} → ${rp(j.b)} · ${E(j.n)}</div>`):x.tx.map(j=>`<div>${dt(j.t)} ${j.amount>0?'+':''}${rp(j.amount)} · ${E(j.note)}</div>`)).join('')||'<div class="mt">—</div>'}</div>`).join(''):'<span class="mt">Tidak ditemukan.</span>';return draw()}
+  if(t.id==='aur'){if(!confirm('Reset peringkat koin & balapan minggu ini?'))return;await P('own',{act:'resetlb'});return toast('Peringkat direset')}
+ }catch(er){toast(er.message)}};
+ P('own',{act:'audit'}).then(r=>{D=r;draw()}).catch(e=>{v.innerHTML='<p class="mt">'+E(e.message)+'</p>'})};
+/* ---- Pengumuman & Notifikasi ---- */
+window.__anEditor=function(v){let D;const draw=()=>{const a=D&&D.ann&&D.ann.until>Date.now()?D.ann:null;v.innerHTML=`<div ${CARD}><h4 style="margin:0 0 6px">📢 Pengumuman ke semua pengguna</h4>${a?`<p style="font-size:13px;margin:0 0 8px;padding:8px;border-radius:10px;background:rgba(42,109,244,.14)"><b>Aktif:</b> ${E(a.text)}<br><span class="mt">berakhir ${dt(a.until)}</span></p>`:'<p class="mt" style="font-size:12px;margin:0 0 6px">Tidak ada pengumuman aktif.</p>'}<textarea id="anx" ${I} rows="3" maxlength="300" placeholder="Tulis pengumuman (maks 300 huruf)"></textarea><div style="display:flex;gap:8px;margin-top:8px;align-items:center"><input id="anh" ${I} type="number" value="24" style="width:90px"><span class="mt" style="font-size:12px">jam tayang</span><button class="btn pri" id="anp" style="margin-left:auto">Kirim</button>${a?'<button class="btn sec" id="and">Hapus</button>':''}</div><p class="mt" style="font-size:11px;margin:6px 0 0">Muncul sebagai pop-up berbunyi untuk setiap pengguna yang sedang atau nanti membuka ASTRA, satu kali per pengumuman.</p></div>
+ <div ${CARD}><h4 style="margin:0 0 6px">🔔 Notifikasi pribadi</h4><input id="ani" ${I} placeholder="ID pengguna, mis. 100002" style="margin-bottom:8px"><textarea id="ant" ${I} rows="2" maxlength="200" placeholder="Isi pesan (maks 200 huruf)"></textarea><button class="btn pri" id="ans" style="margin-top:8px">Kirim notifikasi</button><p class="mt" style="font-size:11px;margin:6px 0 0">Pesan sampai dalam ±90 detik ke pengguna yang sedang online, atau saat dia membuka ASTRA lagi.</p></div>`};
+ v.onclick=async e=>{const t=e.target.closest('button');if(!t)return;try{
+  if(t.id==='anp'){const r=await P('own',{act:'ann',on:1,text:v.querySelector('#anx').value,hrs:+v.querySelector('#anh').value||24});D.ann=r.ann;toast('Pengumuman terkirim');return draw()}
+  if(t.id==='and'){await P('own',{act:'ann',on:0});D.ann=null;toast('Dihapus');return draw()}
+  if(t.id==='ans'){const r=await P('own',{act:'notif',to:v.querySelector('#ani').value,text:v.querySelector('#ant').value});toast('Terkirim ke '+r.to);v.querySelector('#ant').value=''}
+ }catch(er){toast(er.message)}};
+ P('own',{act:'audit'}).then(r=>{D=r;draw()}).catch(e=>{v.innerHTML='<p class="mt">'+E(e.message)+'</p>'})};
+/* ---- penerima pengumuman / notifikasi / flash sale untuk pengguna ---- */
+const lsg=k=>{try{return localStorage.getItem(k)}catch(e){return null}},lss=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}};
+let busy=0;
+async function pull(){if(busy)return;busy=1;try{if(!(S&&S.user&&tok()))return;const r=await api('fx/pull','GET',null,1);
+ if(r.ann&&String(r.ann.id)!==lsg('annSeen')){lss('annSeen',String(r.ann.id));try{playNotif(true)}catch(e){}modal('<div class="mh"><h3>📢 Pengumuman</h3><button class="ibtn" data-close>'+ic('x')+'</button></div><p style="white-space:pre-wrap;line-height:1.5">'+E(r.ann.text)+'</p>','')}
+ for(const m of r.inb||[]){try{playNotif(true)}catch(e){}toast('🔔 '+m.x)}
+ if(r.sale&&String(r.sale.end)!==lsg('saleSeen')){lss('saleSeen',String(r.sale.end));toast('🔥 '+r.sale.label+' -'+r.sale.pct+'% untuk semua paket GO ASTRA!')}
+ const d=new Date(Date.now()+7*36e5).toISOString().slice(0,10);if(r.ev&&r.ev.on&&lsg('evSeen')!==d){lss('evSeen',d);toast('🎉 Event Brohaven: koin x'+r.ev.mult+' sedang berlangsung!')}
+}catch(e){}finally{busy=0}}
+setInterval(pull,90000);setTimeout(pull,9000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)setTimeout(pull,1500)});
+})();
+</script>
+
 
 
