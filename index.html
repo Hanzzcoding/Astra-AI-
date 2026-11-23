@@ -63,12 +63,27 @@ svg.i.fill{fill:currentColor;stroke:none}
 .authbox .mark img,.authbox .mark svg{width:62px;height:62px}
 .authbox h1{font-family:var(--f-d);font-size:26px;margin:4px 0 0;letter-spacing:.06em}
 .authbox p{margin:0;color:var(--muted);font-size:13.5px}
+/* ASTRA v13 tampilan */
+.msg .bub{font-family:var(--af,inherit);font-size:calc(var(--asz,1)*1em);line-height:1.62}
+.msg.ai .bub{color:var(--atc,var(--text));background:linear-gradient(180deg,color-mix(in srgb,var(--abub) 100%,#fff 4%),var(--abub));border-color:color-mix(in srgb,var(--line) 80%,var(--accent2) 20%);box-shadow:0 8px 28px rgba(0,0,0,.18);border-radius:20px;border-top-left-radius:6px}
+.msg.user .bub{border-radius:20px;border-top-right-radius:6px}
+.msg.ai .bub b,.msg.ai .bub strong{color:var(--abc,inherit);font-weight:700}
+.msg.ai .bub p+p{margin-top:8px}.msg.ai .bub li{margin:3px 0}
+.tc{font-weight:700}.tc-merah{color:#ff6b6b}.tc-biru{color:#4da3ff}.tc-hijau{color:#34d399}.tc-kuning{color:#fbbf24}.tc-oranye{color:#fb923c}.tc-ungu{color:#a78bfa}.tc-pink{color:#f472b6}.tc-tosca{color:#2dd4bf}.tc-emas{color:#f5c542}.tc-abu{color:#94a3b8}
+:root[data-theme="light"] .tc-hijau{color:#059669}:root[data-theme="light"] .tc-kuning{color:#b45309}:root[data-theme="light"] .tc-emas{color:#a16207}:root[data-theme="light"] .tc-tosca{color:#0f766e}:root[data-theme="light"] .tc-pink{color:#be185d}:root[data-theme="light"] .tc-oranye{color:#c2410c}
+.bub mark{background:color-mix(in srgb,#fbbf24 38%,transparent);color:inherit;padding:0 4px;border-radius:5px}
+.codeblk{border-radius:14px;overflow:hidden;border:1px solid var(--line)}
+.msg .gal{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;margin:8px 0 10px}.msg .gal figure{margin:0;border-radius:14px;overflow:hidden;border:1px solid var(--line);background:var(--card2)}.msg .gal img[data-lb]{width:100%;aspect-ratio:4/3;object-fit:cover;display:block;cursor:zoom-in}.msg .gal figcaption{font-size:11px;padding:5px 8px;color:var(--muted)}.msg .gal figcaption a{display:flex;gap:5px;align-items:center;color:inherit;text-decoration:none}.msg .gal figcaption span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.msg .gal .fv{width:12px;height:12px}
+.a13c{display:flex;flex-wrap:wrap;gap:6px}.a13c button{padding:7px 12px;border-radius:99px;border:1px solid var(--line);background:var(--card2);color:var(--text);font-size:13px;font-weight:600}.a13c button.on{background:var(--accent2);color:#fff;border-color:transparent}
+.a13s{display:flex;gap:8px;flex-wrap:wrap}.a13s button{width:34px;height:34px;border-radius:50%;border:2px solid var(--line);color:var(--text);font-weight:800}.a13s button.on{border-color:var(--accent2);box-shadow:0 0 0 3px var(--glow)}
+.a13p{margin-top:10px;padding:12px;border:1px dashed var(--line);border-radius:12px}
+.a13m{display:flex;flex-direction:column;gap:6px;max-height:240px;overflow:auto}.a13m div{display:flex;gap:8px;align-items:flex-start;justify-content:space-between;font-size:13px;padding:8px 10px;border:1px solid var(--line);border-radius:12px;background:var(--card2)}.a13m button{background:none;color:var(--muted);padding:0 4px}
 /* AUTH v2 */
 #auth{padding:0;display:block}.aw{min-height:100%;display:grid;place-items:center;padding:20px}
 .aw{grid-template-columns:minmax(0,1fr)}.abrand{display:block;position:absolute;width:0;height:0;overflow:hidden;padding:0}.authbox .mm{display:grid}.row2 .btn{border:1px solid var(--line);background:var(--card2);color:var(--text)}
 .authbox{background:var(--card);border:1px solid var(--line);border-radius:24px;padding:26px 22px;box-shadow:0 20px 60px rgba(0,0,0,.35)}
-.seg{display:grid;grid-template-columns:1fr 1fr;background:var(--card2);border-radius:14px;padding:4px;gap:4px}.seg button{height:40px;border-radius:11px;background:none;color:var(--muted);font-weight:700}.seg button.on{background:var(--accent2);color:#fff}
-.mt{display:flex;gap:6px;border-bottom:1px solid var(--line)}.mt button{flex:1;background:none;color:var(--muted);padding:10px 4px;font-size:13px;font-weight:700;border-bottom:2px solid transparent;margin-bottom:-1px}.mt button.on{color:var(--text);border-color:var(--accent2)}
+#authForm .seg{display:grid;grid-template-columns:1fr 1fr;background:var(--card2);border:0;border-radius:14px;padding:4px;gap:4px;margin:0}#authForm .seg button{height:40px;border-radius:11px;background:none;color:var(--muted);font-weight:700;padding:0;flex:none;border:0}#authForm .seg button.on{background:var(--accent2);color:#fff}
+.aMeth{display:flex;gap:6px;border-bottom:1px solid var(--line)}.aMeth button{flex:1;background:none;color:var(--muted);padding:10px 4px;font-size:13px;font-weight:700;border-bottom:2px solid transparent;margin-bottom:-1px}.aMeth button.on{color:var(--text);border-color:var(--accent2)}
 .pane{display:flex;flex-direction:column;gap:12px;text-align:left}.pane[hidden]{display:none}
 .hint{font-size:13px;color:var(--muted);line-height:1.5;text-align:center}.hint.sm{font-size:12px;opacity:.8}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}.row2 .btn{padding:0 8px;font-size:13px}
@@ -79,7 +94,7 @@ svg.i.fill{fill:currentColor;stroke:none}
 .skc{display:flex;flex-direction:column;gap:8px;padding:12px;border:1px solid var(--line);border-radius:14px;background:var(--card2);margin-bottom:10px}.skc h4{margin:0;font-size:14px}.skc small{color:var(--muted)}
 .skr{display:flex;align-items:center;gap:8px;justify-content:space-between;font-size:13px;padding:6px 0;border-top:1px solid var(--line)}.skr:first-of-type{border-top:0}.skr div{min-width:0}.skr b{display:block;overflow:hidden;text-overflow:ellipsis}.skr button{padding:6px 10px;border-radius:9px;background:var(--card);border:1px solid var(--line);color:var(--text);font-size:12px}
 .bkc{display:grid;grid-template-columns:1fr 1fr;gap:6px;font-family:monospace;font-size:14px;text-align:center}.bkc span{background:var(--card);padding:6px;border-radius:8px}
-.qrbox{display:grid;place-items:center;gap:6px}.qrbox canvas{width:220px;height:220px;border-radius:12px;image-rendering:pixelated;background:#fff}
+.qrbx{display:grid;place-items:center;gap:6px}.qrbx canvas{width:220px;height:220px;border-radius:12px;image-rendering:pixelated;background:#fff}
 @media(min-width:900px){.aw{grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:0;padding:0;min-height:100vh;place-items:stretch}.authbox{align-self:center;margin:24px 0}.abrand .mark{width:92px;height:92px;border-radius:26px;background:var(--card);display:grid;place-items:center;box-shadow:0 0 50px var(--glow);overflow:hidden}.abrand .mark img,.abrand .mark svg{width:76px;height:76px}.abrand{position:static;width:auto;height:100%;overflow:visible;display:flex;flex-direction:column;gap:16px;justify-content:center;height:100%;padding:60px;background:radial-gradient(120% 90% at 0% 0%,var(--glow),transparent 60%),var(--card2);text-align:left}.authbox .mm{display:grid;position:absolute;width:0;height:0;overflow:hidden;margin:0;box-shadow:none}.abrand h2{font-family:var(--f-d);font-size:38px;margin:0;letter-spacing:.06em}.abrand p{margin:0;color:var(--muted);font-size:16px;max-width:420px}.abrand ul{list-style:none;margin:0;padding:0;display:grid;gap:12px;font-size:14px;color:var(--muted)}.abrand li b{display:block;color:var(--text)}.abrand small{color:var(--muted)}.authbox{width:min(420px,calc(100% - 40px));justify-self:center}}
 .field{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:0 14px;height:50px;transition:border-color .2s,box-shadow .2s}
 .field:focus-within{border-color:var(--accent2);box-shadow:0 0 0 3px var(--glow)}
@@ -572,7 +587,7 @@ footer.comp,html[data-device=mobile] footer.comp{padding:4px 10px 6px}
     <h1 id="aTitle">Selamat datang kembali</h1>
     <p id="aSub" data-t="authSub">Masuk untuk menyimpan chat dan batas pemakaianmu.</p>
     <div class="seg" role="tablist"><button type="button" id="segIn" class="on">Masuk</button><button type="button" id="regBtn">Daftar</button></div>
-    <div class="mt" id="aTabs"><button type="button" data-m="pw" class="on">Password</button><button type="button" data-m="pk">Passkey</button><button type="button" data-m="qr">QR / Kode</button></div>
+    <div class="aMeth" id="aTabs"><button type="button" data-m="pw" class="on">Password</button><button type="button" data-m="pk">Passkey</button><button type="button" data-m="qr">QR / Kode</button></div>
     <div class="pane" id="pPw">
      <label class="field"><svg class="i" viewBox="0 0 24 24" data-ic="mail"></svg><input id="em" type="email" placeholder="Email" autocomplete="username webauthn" required></label>
      <label class="field"><svg class="i" viewBox="0 0 24 24" data-ic="key"></svg><input id="pw" type="password" placeholder="Password" autocomplete="current-password" required><button type="button" class="pwt" id="pwt" aria-label="Lihat password" aria-pressed="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><path d="M1 1l22 22"/></svg></button></label>
@@ -826,7 +841,7 @@ function renderChat(msgs){
 function scrollDown(){const c=$('#chat');c.scrollTop=c.scrollHeight}
 function md(s){
   const blocks=[];if((s.match(/```/g)||[]).length%2)s+='\n```';s=esc(s).replace(/```(\w*)\n?([\s\S]*?)```/g,(m,l,c)=>{blocks.push(`<div class="codeblk"><div class="hd"><span>${l||'kode'}</span><button class="cp" data-copy>${ic('copy')}Salin kode</button></div><pre><code>${c.replace(/\n$/,'')}</code></pre></div>`);return '\u0000'+(blocks.length-1)+'\u0000'});
-  s=s.replace(/`([^`\n]+)`/g,'<code>$1</code>').replace(/\*\*([^*]+)\*\*/g,'<b>$1</b>');
+  s=s.replace(/`([^`\n]+)`/g,'<code>$1</code>').replace(/\*\*([^*]+)\*\*/g,'<b>$1</b>').replace(/\{\{(merah|biru|hijau|kuning|oranye|ungu|pink|tosca|emas|abu)\|([^{}\n]{1,90})\}\}/g,'<span class="tc tc-$1">$2</span>').replace(/==([^=\n]{1,80})==/g,'<mark>$1</mark>');
   const lines=s.split('\n');let out='',inl=false;
   lines.forEach(l=>{l=l.replace(/^#{1,4}\s+(.*)$/,'<b>$1</b>').replace(/^\s*\*\s+/,'- ');if(/^\s*[-•]\s+/.test(l)){if(!inl){out+='<ul>';inl=true}out+='<li>'+l.replace(/^\s*[-•]\s+/,'')+'</li>'}else{if(inl){out+='</ul>';inl=false}out+=l.trim()===''?'<div style="height:6px"></div>':'<p>'+l+'</p>'}});
   if(inl)out+='</ul>';
@@ -1184,7 +1199,7 @@ async function send(){
     else if(sq)await imageSearchFlow(chat,sq);
     else await answer(chat,raw,att);
   }catch(e){console.error(e);toast('Terjadi kesalahan, coba lagi.')}
-  chat.ts=Date.now();persist();S.busy=false;$('#sendBtn').innerHTML=ic('up');
+  chat.ts=Date.now();persist();S.busy=false;$('#sendBtn').innerHTML=ic('up');try{window.A13&&A13.after(chat)}catch(e){}
 }
 /* ===== PENYIMPANAN MEDIA (IndexedDB) + PEMUTAR ===== */
 const MS={db:null,mem:{},
@@ -1229,7 +1244,7 @@ function learn(raw){const t=(raw||'').trim();if(!t||!S.user)return;const q=t.toL
 function memBlock(){const m=Mem();if(!m||(!m.n&&!m.name))return'';const p=[];if(m.name)p.push('nama: '+m.name);const f=m.facts||{};Object.keys(f).forEach(k=>p.push(k+': '+f[k]));
   const days=m.first?Math.max(0,Math.floor((Date.now()-m.first)/864e5)):0,n=m.n||0,lvl=n<5?'baru kenal (sopan, ramah, mulai akrab pelan-pelan)':n<40?'sudah cukup kenal (lebih santai dan personal)':'sudah akrab (ngobrol seperti teman dekat, ingat konteks lama, boleh bercanda ringan)';
   let t='INGATAN TENTANG PENGGUNA (milik pengguna, simpan di perangkat; pakai secara natural, jangan membacakan daftar ini dan jangan bilang "menurut data"): '+(p.length?p.join('; ')+'. ':'')+((m.likes||[]).length?'Preferensi: '+m.likes.join(', ')+'. ':'')+((m.notes||[]).length?'Hal yang diminta diingat: '+m.notes.join(' | ')+'. ':'')+'Sudah ngobrol '+n+' pesan selama '+(days+1)+' hari; tingkat keakraban: '+lvl+'. ';
-  const c=curChat(),old=c?c.msgs.slice(0,-40).filter(x=>x.role==='user').slice(-12).map(x=>(x.text||'').slice(0,100)):[];
+  const c=curChat(),old=c?c.msgs.slice(0,-24).filter(x=>x.role==='user').slice(-12).map(x=>(x.text||'').slice(0,100)):[];
   if(old.length)t+='Ringkasan awal chat ini (pesan lama pengguna): '+old.join(' / ')+'. ';
   const ps=(m.past||[]).slice(-14,-1);if(ps.length)t+='Topik yang pernah ditanyakan di chat lain: '+ps.map(x=>x.slice(0,80)).join(' / ')+'. ';
   return t+'Rujuk ingatan ini hanya kalau relevan, dan tanyakan kabar/kelanjutan hal yang pernah diceritakan bila pas.'}
@@ -1246,12 +1261,13 @@ const factAnswer=raw=>{const q=raw.toLowerCase().replace(/[?!.,]/g,' ');
 let HEAD={t:0,txt:''};
 async function refreshHead(){try{if(!S.web)return;const r=await webSearch('berita utama Indonesia dunia hari ini',8,{news:true,top:true});if(r.length)HEAD={t:Date.now(),txt:r.map(x=>'- '+x.title).join('\n')}}catch(e){}}
 setTimeout(refreshHead,2500);setInterval(refreshHead,3e5);
+const MODE_TXT={fast:'Jawab singkat dan langsung ke inti.',balanced:'Pikirkan dulu SANGAT singkat (maksimal 3 kalimat, kurang dari 5 detik) di dalam <think>...</think>, lalu beri jawaban jelas dan teliti setelah </think>. Jangan bertele-tele saat berpikir.',deep:'Berpikirlah tajam tapi ringkas di dalam <think>...</think> (maksimal 8 kalimat padat, tetap timbang alternatif dan periksa ulang, selesai dalam sekitar 8 detik), lalu beri jawaban akhir yang lengkap setelah </think>.',code:'Fokus pemrograman. Pikirkan dulu secara ringkas di <think>...</think> (maksimal 5 kalimat), lalu beri kode lengkap yang rapi dengan penjelasan singkat setelah </think>.'};MODE_TXT.quick='Jawab langsung sekarang, tanpa <think>. Tetap cerdas, akurat, dan natural; ringkas tapi lengkap.';
 function sysPrompt(mode){const mem=Mem(),d=new Date();
   const base=`Kamu adalah ASTRA AI, asisten AI yang cerdas, hangat, dan jujur, dibuat oleh Ziurixy x Hanzzy. Balas dalam bahasa yang dipakai pengguna (default Bahasa Indonesia). Pakai Markdown: **tebal**, daftar dengan "- ", dan blok kode dengan tiga backtick plus nama bahasa. Semua kode WAJIB ada di dalam blok kode terpisah yang hanya berisi kode (komentar singkat boleh); penjelasan ditulis di luar blok, jangan dicampur. Jangan mengarang fakta; kalau tidak yakin, bilang. ${nowCtx()}${mem.name?' Nama pengguna: '+mem.name+'.':''} Kamu tidak bisa mendengar audio atau membuka isi PDF; untuk video kamu hanya melihat satu cuplikan gambar. Kamu bisa membuat gambar kalau pengguna menulis "buatkan gambar ..." dan mencarikan gambar kalau pengguna menulis "carikan gambar ..."; kalau diminta, arahkan ke cara penulisan itu. Prinsip menjawab: pahami maksud sebenarnya dari pertanyaan termasuk konteks chat sebelumnya; jawab inti dulu lalu jelaskan runtut dengan contoh konkret; untuk hitungan dan kode, periksa ulang sebelum menyimpulkan; bedakan fakta, perkiraan, dan opini; akui batas pengetahuanmu dengan jujur; tanyakan klarifikasi hanya jika benar-benar perlu; sesuaikan gaya dan kedalaman dengan pengguna. Jika ditanya siapa yang membuatmu, jawab: "Saya dikembangkan oleh Ziurixy x Hanzzy. Jika ada pertanyaan lain tentang tim atau proses pengembangan, jangan ragu bertanya!" Info tim: dipimpin oleh CEO Abhizan Albani Arafah; kantor di Indonesia, Jawa Barat, Bandung, Kiaracondong; alamat lengkap tidak dibagikan, jangan menebak atau mengarang alamat. Jangan mengaku sebagai model buatan perusahaan lain. Pengetahuan bawaanmu bisa usang: untuk pejabat, berita, harga, skor, dan hal terkini selalu andalkan hasil pencarian web jika tersedia.`;
-  const m={fast:'Jawab singkat dan langsung ke inti.',balanced:'Pikirkan dulu secara singkat di dalam <think>...</think>, lalu beri jawaban jelas dan teliti setelah </think>.',deep:'Berpikirlah mendalam langkah demi langkah di dalam <think>...</think> (uraikan masalah, timbang alternatif, periksa ulang), lalu beri jawaban akhir yang lengkap setelah </think>.',code:'Fokus pemrograman. Pikirkan dulu di <think>...</think>, lalu beri kode lengkap yang rapi dengan penjelasan singkat setelah </think>.'};
-  return base+' '+FAKTA+' Tanggal dan jam saat ini: '+d.toLocaleString('id-ID',{dateStyle:'full',timeStyle:'short'})+' WIB. Tahun sekarang adalah '+d.getFullYear()+', jangan menyebut tahun lain sebagai tahun sekarang.'+(HEAD.txt?' BERITA TERKINI (diperbarui otomatis tiap 5 menit, terakhir '+new Date(HEAD.t).toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'})+'): '+HEAD.txt:'')+' '+memBlock()+' '+PERSONA+' '+styleHint()+' '+m[mode]+(typeof Live!=='undefined'&&Live.active?' MODE LIVE SUARA: pengguna berbicara langsung denganmu; jawab natural seperti percakapan, singkat (1-3 kalimat), tanpa markdown, daftar, atau kode, kecuali diminta rinci.':'')}
+  const m=MODE_TXT;
+  return base+' '+FAKTA+' Tanggal dan jam saat ini: '+d.toLocaleString('id-ID',{dateStyle:'full',timeStyle:'short'})+' WIB. Tahun sekarang adalah '+d.getFullYear()+', jangan menyebut tahun lain sebagai tahun sekarang.'+(HEAD.txt?' BERITA TERKINI (diperbarui otomatis tiap 5 menit, terakhir '+new Date(HEAD.t).toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'})+'): '+HEAD.txt:'')+' '+memBlock()+' '+PERSONA+' '+styleHint()+' '+(window.A13?A13.hint(mode):'')+' '+m[mode]+(typeof Live!=='undefined'&&Live.active?' MODE LIVE SUARA: pengguna berbicara langsung denganmu; jawab natural seperti percakapan, singkat (1-3 kalimat), tanpa markdown, daftar, atau kode, kecuali diminta rinci.':'')}
 function buildMsgs(chat,raw,att){
-  const h=chat.msgs.slice(-40);
+  const h=chat.msgs.slice(-24);
   const r=h.map((m,i)=>{const role=m.role==='ai'?'assistant':'user';
     if(i<h.length-1||role!=='user')return{role,content:((m.text||'')+((m.att||[]).length?'\n[lampiran: '+m.att.map(a=>a.name).join(', ')+']':''))||'(kosong)'};
     let tx=raw||'Tolong lihat lampiran ini.';const parts=[];
@@ -1259,11 +1275,11 @@ function buildMsgs(chat,raw,att){
     return{role,content:parts.length?[{type:'text',text:tx},...parts]:tx}});
   while(r.length&&r[0].role!=='user')r.shift();return r}
 const toAnth=m=>({role:m.role,content:typeof m.content==='string'?m.content:m.content.map(p=>p.type==='image_url'?{type:'image',source:{type:'base64',media_type:'image/jpeg',data:p.image_url.url.split(',')[1]}}:p)});
-async function streamAI(msgs,sys,signal,onT,onD){
+async function streamAI(msgs,sys,signal,onT,onD,opt){opt=opt||{};
   const c=DB.get('ai',{}),custom=c.provider==='custom'&&c.url&&c.key,anth=custom&&/anthropic\.com/.test(c.url);
   const headers={'Content-Type':'application/json'};let url,body;
   if(anth){url=c.url;headers['x-api-key']=c.key;headers['anthropic-version']='2023-06-01';headers['anthropic-dangerous-direct-browser-access']='true';body={model:c.model||'claude-sonnet-4-5',max_tokens:4096,stream:true,system:sys,messages:msgs.map(toAnth)}}
-  else{url=custom?c.url:'https://text.pollinations.ai/openai';if(custom)headers.Authorization='Bearer '+c.key;body={model:custom?(c.model||'gpt-4o-mini'):'openai',stream:true,temperature:.7,messages:[{role:'system',content:sys},...msgs]}}
+  else{url=custom?c.url:'https://text.pollinations.ai/openai';if(custom)headers.Authorization='Bearer '+c.key;body={model:custom?(c.model||'gpt-4o-mini'):(opt.model||'openai'),stream:true,temperature:(opt.fast?.6:.8),messages:[{role:'system',content:sys},...msgs]}}
   const r=await fetch(url,{method:'POST',headers,body:JSON.stringify(body),signal});
   if(!r.ok)throw new Error('HTTP '+r.status);
   if(!/event-stream/.test(r.headers.get('content-type')||'')){const o=await r.json(),tx=(o.choices&&o.choices[0]&&o.choices[0].message&&o.choices[0].message.content)||(o.content&&o.content[0]&&o.content[0].text)||'';if(!tx)throw new Error('empty');onD(tx);return}
@@ -1379,9 +1395,9 @@ async function gnews(q,when,top){
   return items.map(i=>({title:i.title,url:i.url,host:i.host.replace(/^www\./,''),snippet:`${i.title}. Dimuat ${i.pub||i.host}${fd(i.date)?' pada '+fd(i.date):''}.`,ts:+i.date||0}))}
 const pickNews=(l,k)=>{const tr=l.filter(x=>trusted(x.host)),cnt={};return (tr.length?tr:l).sort((a,b)=>b.ts-a.ts).filter(x=>(cnt[x.host]=(cnt[x.host]||0)+1)<=2).slice(0,k)};
 async function webSearch(q,n,opt={}){
-  const c=DB.get('ai',{}),sig=()=>AbortSignal.timeout?AbortSignal.timeout(9000):undefined;
+  const c=DB.get('ai',{}),sig=()=>AbortSignal.timeout?AbortSignal.timeout(4500):undefined;
   const tav=async dom=>{const r=await fetch('https://api.tavily.com/search',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({api_key:c.tav,query:q,max_results:n+3,search_depth:'basic',topic:opt.news?'news':'general',...(dom?{include_domains:TRUST}:{})}),signal:sig()});if(!r.ok)return [];const o=await r.json();return (o.results||[]).map(x=>({title:x.title||hostOf(x.url),url:x.url,snippet:((x.published_date?x.published_date+'. ':'')+(x.content||'')).slice(0,600)}))};
-  const wk=async l=>{try{const r=await fetch(`https://${l}.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch=${encodeURIComponent(q)}&gsrlimit=4&prop=extracts|info&exintro=1&explaintext=1&exchars=700&inprop=url&format=json&origin=*`,{signal:sig()}),o=await r.json();return Object.values((o.query&&o.query.pages)||{}).sort((a,b)=>a.index-b.index).map(p=>({title:p.title+' - Wikipedia',url:p.fullurl,snippet:(p.extract||'').slice(0,600)}))}catch(e){return []}};
+  const wk=async l=>{try{const r=await fetch(`https://${l}.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch=${encodeURIComponent(q)}&gsrlimit=4&prop=extracts|info|pageimages&piprop=thumbnail&pithumbsize=640&exintro=1&explaintext=1&exchars=700&inprop=url&format=json&origin=*`,{signal:sig()}),o=await r.json();return Object.values((o.query&&o.query.pages)||{}).sort((a,b)=>a.index-b.index).map(p=>({title:p.title+' - Wikipedia',url:p.fullurl,snippet:(p.extract||'').slice(0,600),img:p.thumbnail&&p.thumbnail.source||''}))}catch(e){return []}};
   const gd=async()=>{try{const r=await fetch(`https://api.gdeltproject.org/api/v2/doc/doc?query=${encodeURIComponent(q+' (sourcelang:indonesian OR sourcelang:english)')}&mode=artlist&maxrecords=25&sort=datedesc&format=json`,{signal:sig()}),o=await r.json();return (o.articles||[]).filter(x=>trusted(x.url)).slice(0,6).map(x=>{const d=x.seendate||'';return{title:x.title,url:x.url,snippet:`${x.title}. Dimuat ${x.domain}${d?' pada '+d.slice(6,8)+'/'+d.slice(4,6)+'/'+d.slice(0,4):''}.`}})}catch(e){return []}};
   let tv=[];if(c.tav&&!opt.top){try{tv=await tav(true);if(tv.length<2){const b=await tav(false);tv=tv.concat(b.filter(x=>!tv.some(y=>y.url===x.url)))}tv=rank(tv)}catch(e){}}
   const [gn,a,b,g]=await Promise.all([gnews(q,opt.news?'30d':'365d',opt.top),wk('id'),wk('en'),opt.news&&!tv.length?gd():[]]),seen=new Set();
@@ -1396,28 +1412,29 @@ async function answer(chat,raw,att){
   box.innerHTML=`<div class="av">${logoHTML()}</div><div class="bub"><div class="tslot"></div><div class="sslot"></div><div class="aslot"><span class="dots"><i></i><i></i><i></i></span></div></div>`;
   $('#wrap').appendChild(box);scrollDown();
   const ts=box.querySelector('.tslot'),ss=box.querySelector('.sslot'),as=box.querySelector('.aslot');let full='',rs='',tm=0,timedOut=false,src=[],sys=sysPrompt(mode);if(tl)sys+='\n\nHASIL ALAT WAKTU (akurat, pakai ini): '+tl;
-  ctl=new AbortController();
+  ctl=new AbortController();const T0=Date.now();let galP=null;
   if(needSearch(raw,att)){
     ts.innerHTML=`<details class="think" open><summary>${ic('globe')}Mencari di web...</summary></details>`;
     const prev=chat.msgs.filter(m=>m.role==='user').slice(-2,-1)[0];
     let q=raw.replace(/[?!]+/g,' ').replace(/^(tolong|coba|bisa|kasih tahu|jelaskan|apa itu|apa sih|siapa|apakah|kenapa|bagaimana|gimana|cara)\s+/i,'').trim();if(countWords(q)<3&&prev)q=(prev.text+' '+q).trim();
     if(NEWS.test(raw)&&!/20\d\d/.test(q))q=(q+' '+new Date().getFullYear()).trim();
-    try{src=await webSearch(q.slice(0,200),mode==='deep'?8:5,{news:NEWS.test(raw),top:TOPNEWS.test(raw.trim())})}catch(e){}
+    try{src=await Promise.race([webSearch(q.slice(0,200),mode==='deep'?8:5,{news:NEWS.test(raw),top:TOPNEWS.test(raw.trim())}),sleep(4800).then(()=>[])])}catch(e){}
     ts.innerHTML='';
+    if(src.length&&window.A13&&A13.P().imgs&&!NEWS.test(raw)&&!TOPNEWS.test(raw.trim()))galP=A13.gallery(q,src);
     if(src.length)sys+='\n\nATURAN HASIL WEB: hasil di atas adalah info paling baru, utamakan di atas ingatanmu. Bandingkan beberapa sumber, prioritaskan sumber terverifikasi, sebut nama media dan tanggal terbit, tandai kutipan dengan [nomor], dan jika sumber berbeda sebutkan perbedaannya. Mulai dengan jawaban inti, lalu rincian. Jangan mengarang; kalau hasil tidak memuat jawabannya, bilang jujur lalu beri saran kata kunci.';
     if(src.length&&TOPNEWS.test(raw.trim()))sys+='\n\nPengguna minta berita terbaru secara umum: rangkum 5-8 berita utama paling baru, tiap butir sebut media dan tanggal, kelompokkan singkat per topik.';
     if(src.length){ss.innerHTML=srcHTML(src);sys+=`\n\nHASIL PENCARIAN WEB (${new Date().toLocaleDateString('id-ID')}):\n`+src.map((x,i)=>`[${i+1}] ${x.title} (${x.url})${trusted(x.host||x.url)?' [sumber terverifikasi]':''}\n${x.snippet}`).join('\n\n')+'\n\nTahun sekarang ${new Date().getFullYear()}. Untuk pertanyaan tentang jabatan, pemimpin, atau berita terkini, ikuti artikel dengan tanggal paling baru dan abaikan ingatanmu yang mungkin usang; sebutkan tanggal beritanya. Gunakan hasil ini sebagai sumber utama untuk fakta, utamakan yang bertanda sumber terverifikasi, sebut nama medianya, dan untuk berita sebut tanggalnya. Tulis nomor sumber seperti [1] atau [2] tepat setelah kalimat yang memakainya. Kalau hasil tidak relevan atau kurang, katakan terus terang dan jangan mengarang.'}
   }
-  const to=setTimeout(()=>{timedOut=true;ctl.abort()},45000);
+  const to=0;
   const paint=()=>{tm=0;const s=splitThink(full),th=(rs+s.t).trim(),live=!s.a&&!!(rs||s.open);
     if(th){if(!ts.firstChild)ts.innerHTML='<details class="think" open><summary></summary><p class="tx"></p></details>';const d=ts.firstChild;d.querySelector('summary').innerHTML=ic(live?'loader':'brain',live?'spin':'')+t(live?'thinking':'thought');d.querySelector('.tx').textContent=th;if(!live&&!d.dataset.c){d.dataset.c=1;d.open=false}}
     as.innerHTML=s.a?cites(md(s.a),src):th?'':'<span class="dots"><i></i><i></i><i></i></span>';scrollDown()};
   const tick=()=>{clearTimeout(to);if(!tm)tm=requestAnimationFrame(paint)};
-  try{await streamAI(buildMsgs(chat,raw,att),sys,ctl.signal,d=>{rs+=d;tick()},d=>{full+=d;tick()})}
+  try{await A13.run(streamAI,buildMsgs(chat,raw,att),sys,mode,ctl.signal,{onT:d=>{rs+=d;tick()},onD:d=>{full+=d;tick()},reset:()=>{full='';rs='';ts.innerHTML='';tick()},ans:()=>!!splitThink(full).a,any:()=>!!(full||rs)},T0)}
   catch(e){clearTimeout(to);const stopped=ctl.signal.aborted&&!timedOut;
     if(!(stopped&&(full||rs))){cancelAnimationFrame(tm);box.remove();ctl=null;if(stopped)return;toast('AI online belum tersambung, memakai mesin lokal. Atur di Pengaturan > Otak AI.');return localAnswer(chat,raw,att)}}
   clearTimeout(to);cancelAnimationFrame(tm);const s=splitThink(full);
-  const am={role:'ai',text:s.a||full||'(tidak ada jawaban)',think:(rs+s.t).trim(),src};
+  const am={role:'ai',text:s.a||full||'(tidak ada jawaban)',think:(rs+s.t).trim(),src};if(galP){try{const g=await Promise.race([galP,sleep(2200).then(()=>[])]);if(g&&g.length)am.gallery=g}catch(e){}}
   const el=msgEl(am);box.replaceWith(el);chat.msgs.push(am);scrollDown();ctl=null;autoSpeak(el,am.text)}
 async function localAnswer(chat,raw,att){
   const mode=S.mode;const [total,gap]=DELAY[mode];
@@ -3942,12 +3959,12 @@ async function secPanel(){const o=modal(`<div class="mh"><h3>Keamanan Akun</h3><
     await api('passkey/reg/finish','POST',{name:nm[0],response:{clientDataJSON:b64u(c.response.clientDataJSON),attestationObject:b64u(c.response.attestationObject)}});toast('Passkey tersimpan ✔');load()}catch(e){toast(e.name==='NotAllowedError'?'Dibatalkan':(e.message||'Gagal membuat passkey'))}};
   root.querySelectorAll('[data-pd]').forEach(b=>b.onclick=async()=>{if(!confirm('Hapus passkey ini?'))return;try{await api('passkey/del','POST',{id:b.dataset.pd});load()}catch(e){errT(e)}});
   root.querySelectorAll('[data-pr]').forEach(b=>b.onclick=async()=>{const r=await ask('Ubah nama',[{l:'Nama baru'}],'Simpan');if(!r||!r[0])return;try{await api('passkey/rename','POST',{id:b.dataset.pr,name:r[0]});load()}catch(e){errT(e)}});
-  const t2s=q('#t2s');if(t2s)t2s.onclick=async()=>{try{const x=await api('2fa/setup','POST',{});const box=q('#t2a');box.innerHTML=`<div class="qrbox"><div id="t2q"></div><small>Pindai di aplikasi autentikator, atau masukkan kunci manual:</small><code style="word-break:break-all;user-select:all">${E(x.secret)}</code></div><label>Kode 6 digit dari aplikasi<input id="t2i" class="oin" inputmode="numeric" maxlength="8" autocomplete="off"></label><button class="btn pri" id="t2e">Verifikasi &amp; aktifkan</button>`;
+  const t2s=q('#t2s');if(t2s)t2s.onclick=async()=>{try{const x=await api('2fa/setup','POST',{});const box=q('#t2a');box.innerHTML=`<div class="qrbx"><div id="t2q"></div><small>Pindai di aplikasi autentikator, atau masukkan kunci manual:</small><code style="word-break:break-all;user-select:all">${E(x.secret)}</code></div><label>Kode 6 digit dari aplikasi<input id="t2i" class="oin" inputmode="numeric" maxlength="8" autocomplete="off"></label><button class="btn pri" id="t2e">Verifikasi &amp; aktifkan</button>`;
     try{const cv=QRG.toCanvas(x.uri,440);box.querySelector('#t2q').appendChild(cv)}catch(e){}
     box.querySelector('#t2e').onclick=async()=>{try{const r=await api('2fa/enable','POST',{code:box.querySelector('#t2i').value});showCodes(r.codes);await load()}catch(e){errT(e)}}}catch(e){errT(e)}};
   const t2c=q('#t2c');if(t2c)t2c.onclick=async()=>{const r=await ask('Kode cadangan baru',[{l:'Kode 6 digit dari autentikator'}],'Buat');if(!r)return;try{const x=await api('2fa/codes','POST',{code:r[0]});showCodes(x.codes);load()}catch(e){errT(e)}};
   const t2d=q('#t2d');if(t2d)t2d.onclick=async()=>{const r=await ask('Nonaktifkan 2FA',[{l:'Password akun',t:'password'},{l:'Kode 6 digit / kode cadangan'}],'Nonaktifkan');if(!r)return;try{const em=sec.email,key=await dk(em,r[0]);try{await api('2fa/disable','POST',{pass:key,code:r[1]},1)}catch(e){if(e.st===403)await api('2fa/disable','POST',{pass:r[0],code:r[1]},1);else throw e}toast('2FA dinonaktifkan');load()}catch(e){errT(e)}};
-  q('#qg').onclick=async()=>{try{const x=await api('qrlogin/create','POST',{mins:+q('#qm').value});const box=q('#qo');box.className='qrbox';box.innerHTML=`<div id="qq"></div><b style="font-family:monospace;font-size:17px;user-select:all">${E(x.code)}</b><small>Berlaku ${x.mins>=60?x.mins/60+' jam':x.mins+' menit'} · sekali pakai</small><div class="row2"><button class="btn" id="qd">Simpan PNG</button><button class="btn" id="qc">Salin kode</button></div>`;
+  q('#qg').onclick=async()=>{try{const x=await api('qrlogin/create','POST',{mins:+q('#qm').value});const box=q('#qo');box.className='qrbx';box.innerHTML=`<div id="qq"></div><b style="font-family:monospace;font-size:17px;user-select:all">${E(x.code)}</b><small>Berlaku ${x.mins>=60?x.mins/60+' jam':x.mins+' menit'} · sekali pakai</small><div class="row2"><button class="btn" id="qd">Simpan PNG</button><button class="btn" id="qc">Salin kode</button></div>`;
     const cv=QRG.toCanvas(x.url,560);box.querySelector('#qq').appendChild(cv);box.querySelector('#qd').onclick=()=>{const a=document.createElement('a');a.download='astra-login-qr.png';a.href=cv.toDataURL('image/png');a.click()};box.querySelector('#qc').onclick=()=>{navigator.clipboard&&navigator.clipboard.writeText(x.code).then(()=>toast('Kode disalin'))};setTimeout(async()=>{try{sec=await api('security','GET',null,1)}catch(e){}},0)}catch(e){errT(e)}};
   root.querySelectorAll('[data-qr]').forEach(b=>b.onclick=async()=>{try{await api('qrlogin/revoke','POST',{h:b.dataset.qr});load()}catch(e){errT(e)}});
   const qra=q('#qra');if(qra)qra.onclick=async()=>{try{await api('qrlogin/revoke','POST',{});load()}catch(e){errT(e)}};
@@ -3958,5 +3975,97 @@ async function secPanel(){const o=modal(`<div class="mh"><h3>Keamanan Akun</h3><
 window.__secPanel=secPanel;
 const _ac=window.account;window.account=function(){_ac();const b=$('#ao');if(b&&!$('#sk0')){b.insertAdjacentHTML('beforebegin','<button class="btn pri" id="sk0">🔐 Keamanan Akun (Passkey, 2FA, QR)</button>');$('#sk0').onclick=secPanel}};
 setMode('in');
+})();
+</script>
+<script>
+/* ===== ASTRA v13: gaya bicara, font & warna, memori belajar, respons cepat ===== */
+(function(){
+'use strict';
+const E=x=>String(x==null?'':x).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const DEF={tone:'natural',lang:'auto',font:'Plus Jakarta Sans',tc:'',bc:'',size:100,learn:true,imgs:true,custom:''};
+const P=()=>Object.assign({},DEF,DB.get('prefs13',{}));
+const sv=o=>{DB.set('prefs13',Object.assign(P(),o));apply()};
+const TONES={natural:['Natural','Ngobrol seperti teman pintar: hangat, mengalir, tidak kaku, bahasa sehari-hari yang rapi.'],santai:['Santai','Gaya santai dan akrab, kalimat pendek, boleh pakai "aku/kamu", sesekali emoji.'],gaul:['Gaul','Gaya gaul anak Indonesia (gue/lo, bro, banget, wkwk, sih, dong) tapi tetap jelas dan membantu; jangan berlebihan.'],formal:['Formal','Gaya formal dan sopan, kalimat baku, tanpa slang.'],pro:['Profesional','Gaya profesional ringkas seperti konsultan: struktur jelas, poin penting dulu, tanpa basa-basi.'],lembut:['Lembut','Gaya hangat, empatik, menenangkan, sabar; dengarkan perasaan dulu.'],lucu:['Lucu','Gaya humoris ringan dan witty; candaan tidak boleh mengorbankan ketepatan jawaban.'],guru:['Guru','Gaya guru yang sabar: jelaskan bertahap dengan analogi dan contoh, cek pemahaman.']};
+const LANGS={auto:'Otomatis (ikut pengguna)',id:'Bahasa Indonesia',en:'English',su:'Basa Sunda',jv:'Basa Jawa',ms:'Bahasa Melayu',ja:'日本語',ko:'한국어',zh:'中文',ar:'العربية',es:'Español',fr:'Français',de:'Deutsch'};
+const LN={id:'Bahasa Indonesia',en:'English',su:'bahasa Sunda',jv:'bahasa Jawa',ms:'Bahasa Melayu',ja:'Jepang',ko:'Korea',zh:'Mandarin',ar:'Arab',es:'Spanyol',fr:'Prancis',de:'Jerman'};
+const FONTS=['Plus Jakarta Sans','Inter','Poppins','Nunito','Quicksand','DM Sans','Outfit','Lexend','Sora','Space Grotesk','Montserrat','Raleway','Merriweather','Playfair Display','Lora','JetBrains Mono','Fira Code','Caveat','Comfortaa','Pacifico'];
+const COL={'':['Bawaan','inherit'],'#e8f1ff':['Putih','#e8f1ff'],'#ffd166':['Emas','#ffd166'],'#7dffb0':['Hijau','#7dffb0'],'#ff9ecb':['Pink','#ff9ecb'],'#c9a7ff':['Ungu','#c9a7ff'],'#ff9f68':['Oranye','#ff9f68'],'#5eead4':['Tosca','#5eead4'],'#ff6b6b':['Merah','#ff6b6b']};
+let fl={};function loadFont(f){if(!f||fl[f]||f==='Plus Jakarta Sans')return;fl[f]=1;const l=document.createElement('link');l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family='+f.replace(/ /g,'+')+':wght@400;500;600;700&display=swap';document.head.appendChild(l)}
+function apply(){const p=P(),r=document.documentElement.style;loadFont(p.font);r.setProperty('--af',`'${p.font}',system-ui,sans-serif`);p.tc?r.setProperty('--atc',p.tc):r.removeProperty('--atc');p.bc?r.setProperty('--abc',p.bc):r.removeProperty('--abc');r.setProperty('--asz',(p.size/100).toFixed(2))}
+/* ---- petunjuk sistem ---- */
+function mem(){return (typeof Mem==='function'?Mem():{}).ll||{}}
+function memText(){const l=mem(),p=P();if(!p.learn)return'';const o=[];
+ if((l.traits||[]).length)o.push('Karakter pengguna: '+l.traits.join('; '));if(l.style)o.push('Gaya bicara pengguna: '+l.style);
+ if((l.facts||[]).length)o.push('Fakta tentangnya: '+l.facts.slice(-30).join('; '));if((l.stories||[]).length)o.push('Cerita yang pernah ia bagikan: '+l.stories.slice(-14).join(' | '));
+ const cur=(typeof curChat==='function'&&curChat())?curChat().id:'',ep=Object.entries(l.eps||{}).filter(x=>x[0]!==cur).sort((a,b)=>b[1].t-a[1].t).slice(0,8).map(x=>x[1].s);if(ep.length)o.push('Ringkasan obrolan sebelumnya: '+ep.join(' | '));
+ return o.length?'YANG SUDAH KUPELAJARI TENTANG PENGGUNA (dari obrolan kita; pakai secara natural untuk personalisasi, rujuk cerita lama bila relevan, jangan membacakan daftar, jangan mengarang di luar ini): '+o.join('. ')+'.':''}
+function hint(mode){const p=P(),t=TONES[p.tone]||TONES.natural,o=[];
+ o.push('GAYA BICARA TERPILIH ('+t[0]+'): '+t[1]);
+ if(p.lang!=='auto')o.push('BAHASA JAWABAN WAJIB: '+LN[p.lang]+' (kecuali pengguna minta bahasa lain).');
+ if(p.custom)o.push('Instruksi tambahan pengguna: '+p.custom.slice(0,300));
+ o.push('Percakapan natural: tanggapi seperti manusia, bukan template. Hindari pembuka klise ("Tentu!", "Baik, saya akan..."), jangan mengulang pertanyaan, jangan terlalu panjang untuk obrolan ringan, variasikan kalimat, tunjukkan empati bila perlu, ajukan satu pertanyaan lanjutan hanya bila berguna.');
+ o.push('Pewarnaan teks: untuk menonjolkan kata kunci pakai {{warna|teks}} dengan warna merah/biru/hijau/kuning/oranye/ungu/pink/tosca/emas (maksimal 3-4 per jawaban, contoh {{hijau|benar}}), atau ==teks== untuk stabilo. Jangan dipakai di dalam blok kode.');
+ o.push('KECEPATAN: jawab dalam waktu singkat; pikirkan seperlunya saja namun tetap cerdas dan teliti.');
+ const m=memText();if(m)o.push(m);return o.join(' ')}
+/* ---- eksekusi AI dengan batas waktu 10 detik ---- */
+async function run(stream,msgs,sys,mode,signal,cb,T0){
+ const custom=(DB.get('ai',{}).provider==='custom'),sysF=sys.split(MODE_TXT[mode]||'\u0000').join(MODE_TXT.quick);
+ const att=[];let won=null,hedged=0,hard=0,ansOn=false;
+ const claim=r=>{if(r.dead)return false;if(won&&won!==r)return false;if(!won){won=r;att.forEach(a=>{if(a!==r){a.dead=1;a.ac.abort()}})}return true};
+ const launch=(tag,s2,m2,opt)=>{const ac=new AbortController();signal.addEventListener('abort',()=>ac.abort(),{once:true});const r={tag,ac,done:0,err:null,dead:0};
+  r.p=stream(m2,s2,ac.signal,d=>{if(claim(r))cb.onT(d)},d=>{if(claim(r)){ansOn=true;cb.onD(d)}},opt).then(()=>{r.done=1},e=>{r.done=1;r.err=e;if(!won&&!hedged&&!r.dead)startHedge()});att.push(r);return r};
+ const fastMsgs=msgs.slice(-10),startHedge=()=>{if(hedged||won)return;hedged=1;launch('fast',sysF,fastMsgs,{model:custom?undefined:'openai-fast',fast:true})};
+ const left=ms=>Math.max(900,ms-(Date.now()-T0));
+ launch('main',sys,msgs,{});
+ const t1=setTimeout(startHedge,left(4200)),t2=setTimeout(()=>{if(won&&!ansOn&&!won.done){const o=won;o.dead=1;o.ac.abort();won=null;cb.reset();launch('quick',sysF,fastMsgs,{model:custom?undefined:'openai-fast',fast:true})}},left(8500)),t3=setTimeout(()=>{if(!won){hard=1;att.forEach(a=>{a.dead=1;a.ac.abort()})}},left(10500)),t4=setTimeout(()=>{if(won&&!won.done)won.ac.abort()},90000);
+ try{await new Promise(res=>{const iv=setInterval(()=>{if(signal.aborted||hard||(won&&won.done)||(!won&&att.every(a=>a.done)&&hedged)){clearInterval(iv);res()}},60)})}
+ finally{[t1,t2,t3,t4].forEach(clearTimeout)}
+ if(won&&!cb.ans()&&!signal.aborted&&!hard){won=null;cb.reset();const r=launch('retry',sysF,fastMsgs,{model:custom?undefined:'openai-fast',fast:true});const tm=setTimeout(()=>r.ac.abort(),8000);await new Promise(res=>{const iv=setInterval(()=>{if(r.done||signal.aborted){clearInterval(iv);res()}},60)});clearTimeout(tm)}
+ if(signal.aborted&&!cb.any())throw new Error('abort');
+ if(!won)throw new Error('timeout');
+ if(won.err&&!cb.any())throw won.err;
+ if(!cb.any())throw new Error('empty')}
+/* ---- gambar dari hasil pencarian ---- */
+async function gallery(q,src){try{const out=[],seen=new Set();
+ src.slice(0,4).forEach(x=>{if(x.img&&!seen.has(x.img)&&out.length<4){seen.add(x.img);out.push({thumb:x.img,full:x.img,title:(x.title||'').replace(/ - Wikipedia$/,''),page:x.url})}});
+ if(out.length&&out.length<4&&typeof imgSearch==='function'){const t=(out[0].title||q).slice(0,60);const r=await imgSearch(t,5);r.forEach(x=>{if(out.length<4&&!seen.has(x.thumb)){seen.add(x.thumb);out.push(x)}})}
+ return out}catch(e){return[]}}
+/* ---- belajar dari pengguna ---- */
+let busyL=0;
+function clip(a,n){const o=[];(a||[]).forEach(x=>{x=String(x||'').trim().slice(0,170);if(x&&!o.some(y=>y.toLowerCase()===x.toLowerCase()))o.push(x)});return o.slice(-n)}
+async function distill(chat){if(busyL)return;busyL=1;
+ try{const us=chat.msgs.filter(m=>m.role==='user'&&m.text).slice(-10).map(m=>'- '+m.text.slice(0,400)).join('\n'),m=Mem(),l=m.ll||{};
+  const sys='Kamu modul memori. Dari pesan PENGGUNA saja (jangan dari asumsi), ekstrak hal tentang dia. Balas HANYA JSON valid: {"facts":["fakta konkret yang ia sebut: nama, umur, kota, pekerjaan, hobi, keluarga, tujuan"],"traits":["sifat/karakter yang tampak, mis. humoris, perfeksionis"],"style":"cara bicaranya dalam satu kalimat","stories":["cerita/pengalaman penting yang ia bagikan, 1 kalimat tiap cerita"],"summary":"ringkasan obrolan ini 1-2 kalimat"}. Kosongkan array bila tidak ada. Jangan mengulang yang sudah diketahui: '+JSON.stringify({facts:l.facts||[],traits:l.traits||[],stories:(l.stories||[]).slice(-8)}).slice(0,1500);
+  let txt='';const ac=new AbortController(),to=setTimeout(()=>ac.abort(),15000);
+  try{await streamAI([{role:'user',content:'Pesan pengguna:\n'+us}],sys,ac.signal,()=>{},d=>{txt+=d},{fast:true})}finally{clearTimeout(to)}
+  const j=JSON.parse(txt.slice(txt.indexOf('{'),txt.lastIndexOf('}')+1));
+  const n=Mem();n.ll=n.ll||{};const x=n.ll;x.facts=clip([...(x.facts||[]),...(j.facts||[])],40);x.traits=clip([...(x.traits||[]),...(j.traits||[])],12);x.stories=clip([...(x.stories||[]),...(j.stories||[])],25);if(j.style)x.style=String(j.style).slice(0,200);
+  x.eps=x.eps||{};if(j.summary)x.eps[chat.id]={t:Date.now(),s:String(j.summary).slice(0,220)};const ks=Object.keys(x.eps).sort((a,b)=>x.eps[b].t-x.eps[a].t);ks.slice(30).forEach(k=>delete x.eps[k]);x.u=Date.now();setMem(n)}
+ catch(e){}finally{busyL=0}}
+function after(chat){if(!P().learn||!S.user||(DB.get('ai',{}).provider==='local'))return;const n=chat.msgs.filter(m=>m.role==='user').length,m=Mem();m.lc=(m.lc||0)+1;
+ const last=(chat.msgs.filter(x=>x.role==='user').slice(-1)[0]||{}).text||'',story=last.length>140||/\b(cerita|pengalaman|dulu|kemarin|keluarga|pacar|kerja|sekolah|kuliah|namaku|nama saya|aku suka|gue suka)\b/i.test(last);
+ if(m.lc>=4||(story&&m.lc>=2)||(n===3)){m.lc=0;setMem(m);distill(chat)}else setMem(m)}
+/* ---- UI pengaturan ---- */
+const chips=(id,cur,arr)=>`<div class="a13c" id="${id}">${arr.map(([k,l])=>`<button type="button" data-k="${E(k)}" class="${k===cur?'on':''}">${E(l)}</button>`).join('')}</div>`;
+function section(o){const p=P(),l=mem();const host=o.querySelector('#stor');if(!host)return;
+ host.insertAdjacentHTML('beforebegin',`<div class="sec-t">Gaya Bicara Astra</div><div class="setrow" style="display:block"><small style="display:block;margin-bottom:8px;color:var(--muted)">Pilih cara Astra mengobrol.</small>${chips('a13t',p.tone,Object.entries(TONES).map(([k,v])=>[k,v[0]]))}<label style="display:block;margin-top:10px"><small style="color:var(--muted)">Bahasa jawaban</small><select id="a13l" style="width:100%">${Object.entries(LANGS).map(([k,v])=>`<option value="${k}" ${k===p.lang?'selected':''}>${E(v)}</option>`).join('')}</select></label><label class="field" style="margin-top:10px"><input id="a13x" maxlength="300" placeholder="Instruksi khusus (opsional), mis. panggil aku Kak" value="${E(p.custom)}"></label></div>
+ <div class="sec-t">Tampilan Teks Astra</div><div class="setrow" style="display:block"><label style="display:block"><small style="color:var(--muted)">Font</small><select id="a13f" style="width:100%">${FONTS.map(f=>`<option value="${f}" ${f===p.font?'selected':''}>${f}</option>`).join('')}</select></label><div class="a13p" id="a13pv">Contoh teks: Astra siap membantu kamu hari ini. 1234567890</div>
+ <small style="display:block;margin:10px 0 6px;color:var(--muted)">Warna teks jawaban</small><div class="a13s" id="a13c">${Object.entries(COL).map(([k,v])=>`<button type="button" data-k="${k}" title="${v[0]}" class="${k===p.tc?'on':''}" style="background:${k||'var(--card2)'}">${k?'':'A'}</button>`).join('')}</div>
+ <small style="display:block;margin:10px 0 6px;color:var(--muted)">Warna judul &amp; teks tebal</small><div class="a13s" id="a13b">${Object.entries(COL).map(([k,v])=>`<button type="button" data-k="${k}" title="${v[0]}" class="${k===p.bc?'on':''}" style="background:${k||'var(--card2)'}">${k?'':'A'}</button>`).join('')}</div>
+ <label style="display:block;margin-top:10px"><small style="color:var(--muted)">Ukuran teks: <b id="a13z">${p.size}</b>%</small><input type="range" id="a13r" min="85" max="130" step="5" value="${p.size}" style="width:100%"></label>
+ <label class="setrow" style="padding:10px 0 0"><span>Tampilkan gambar di hasil pencarian</span><input type="checkbox" id="a13i" ${p.imgs?'checked':''}></label></div>
+ <div class="sec-t">Ingatan Astra (belajar dari obrolan)</div><div class="setrow" style="display:block"><label class="setrow" style="padding:0"><span><b>Astra belajar dari karakter &amp; ceritamu</b><small>Disimpan di akunmu dan ikut tersinkron.</small></span><input type="checkbox" id="a13n" ${p.learn?'checked':''}></label><div id="a13m" style="margin-top:10px"></div></div>`);
+ const mm=()=>{const x=mem(),it=[];(x.traits||[]).forEach((t,i)=>it.push(['traits',i,'🧠',t]));if(x.style)it.push(['style',0,'💬',x.style]);(x.facts||[]).forEach((t,i)=>it.push(['facts',i,'📌',t]));(x.stories||[]).forEach((t,i)=>it.push(['stories',i,'📖',t]));
+  o.querySelector('#a13m').innerHTML=it.length?`<div class="a13m">${it.map(([k,i,ic,t])=>`<div><span>${ic} ${E(t)}</span><button type="button" data-k="${k}" data-i="${i}" aria-label="Hapus">✕</button></div>`).join('')}</div><button type="button" class="btn sec" id="a13w" style="margin-top:8px;width:100%">Hapus semua hasil belajar</button>`:'<small style="color:var(--muted)">Belum ada. Ngobrol dan bercerita saja, Astra akan mengenalmu pelan-pelan.</small>';
+  o.querySelectorAll('#a13m [data-k]').forEach(b=>b.onclick=()=>{const m=Mem();m.ll=m.ll||{};if(b.dataset.k==='style')delete m.ll.style;else m.ll[b.dataset.k].splice(+b.dataset.i,1);setMem(m);mm()});const w=o.querySelector('#a13w');if(w)w.onclick=()=>{const m=Mem();delete m.ll;setMem(m);mm();toast('Ingatan hasil belajar dihapus')}};mm();
+ const pv=()=>{const e=o.querySelector('#a13pv'),p=P();e.style.fontFamily=`'${p.font}',sans-serif`;e.style.color=p.tc||'';e.style.fontSize=(p.size/100)+'em'};pv();
+ o.querySelectorAll('#a13t button').forEach(b=>b.onclick=()=>{sv({tone:b.dataset.k});o.querySelectorAll('#a13t button').forEach(x=>x.classList.toggle('on',x===b))});
+ o.querySelector('#a13l').onchange=e=>sv({lang:e.target.value});o.querySelector('#a13x').onchange=e=>sv({custom:e.target.value.trim()});
+ o.querySelector('#a13f').onchange=e=>{sv({font:e.target.value});setTimeout(pv,400)};
+ [['#a13c','tc'],['#a13b','bc']].forEach(([s,k])=>o.querySelectorAll(s+' button').forEach(b=>b.onclick=()=>{sv({[k]:b.dataset.k});o.querySelectorAll(s+' button').forEach(x=>x.classList.toggle('on',x===b));pv()}));
+ o.querySelector('#a13r').oninput=e=>{o.querySelector('#a13z').textContent=e.target.value;sv({size:+e.target.value});pv()};
+ o.querySelector('#a13i').onchange=e=>sv({imgs:e.target.checked});o.querySelector('#a13n').onchange=e=>sv({learn:e.target.checked})}
+const _os=window.openSettings;if(typeof _os==='function')window.openSettings=function(sc){const r=_os.apply(this,arguments);try{const o=document.querySelector('#ov .modal');if(o&&!o.querySelector('#a13t'))section(o)}catch(e){console.error(e)}return r};
+window.A13={P,hint,run,gallery,after,apply,distill};apply();
 })();
 </script>
