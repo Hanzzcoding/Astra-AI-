@@ -64,6 +64,9 @@ svg.i.fill{fill:currentColor;stroke:none}
 .authbox h1{font-family:var(--f-d);font-size:26px;margin:4px 0 0;letter-spacing:.06em}
 .authbox p{margin:0;color:var(--muted);font-size:13.5px}
 /* ASTRA v13 tampilan */
+#astat{position:sticky;top:0;z-index:6;display:flex;align-items:center;gap:9px;width:fit-content;max-width:calc(100% - 8px);margin:0 auto 10px;padding:8px 14px;border-radius:99px;font-size:13px;font-weight:600;color:var(--text);background:color-mix(in srgb,var(--card) 88%,transparent);border:1px solid color-mix(in srgb,var(--line) 60%,var(--accent2) 40%);box-shadow:0 8px 24px rgba(0,0,0,.25);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);animation:rise .25s both}
+#astat[hidden]{display:none}#astat span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}#astat em{font-style:normal;color:var(--muted);font-size:12px}
+#astat .sp{flex:none;width:14px;height:14px;border-radius:50%;border:2px solid color-mix(in srgb,var(--accent2) 30%,transparent);border-top-color:var(--accent2);animation:a13spin .8s linear infinite}@keyframes a13spin{to{transform:rotate(360deg)}}
 .msg .bub{font-family:var(--af,inherit);font-size:calc(var(--asz,1)*1em);line-height:1.62}
 .msg.ai .bub{color:var(--atc,var(--text));background:linear-gradient(180deg,color-mix(in srgb,var(--abub) 100%,#fff 4%),var(--abub));border-color:color-mix(in srgb,var(--line) 80%,var(--accent2) 20%);box-shadow:0 8px 28px rgba(0,0,0,.18);border-radius:20px;border-top-left-radius:6px}
 .msg.user .bub{border-radius:20px;border-top-right-radius:6px}
@@ -1187,7 +1190,7 @@ async function send(){
   if(p.words!==Infinity&&(u.words>=p.words||u.words+w>p.words)){limitToast('w');return}
   const sq=imgSearchQ(raw),wantImg=!sq&&(S.imgMode||/(buat|bikin|generate|gambar(kan)?|lukis).*(gambar|foto|image|lukisan|ilustrasi|poster)/i.test(raw));
   if(wantImg&&u.images>=p.images){limitToast('i');return}
-  S.busy=true;$('#sendBtn').innerHTML=ic('stop','fill');
+  S.busy=true;$('#sendBtn').innerHTML=ic('stop','fill');try{A13.status(sq?'Mencari gambar “'+sq.slice(0,40)+'”…':wantImg?'Melukis gambarmu…':A13.ctx(raw))}catch(e){}
   const att=S.pending;S.pending=[];renderPending();
   att.forEach(a=>{if(a.file)MS.put(a.id,a.file)});const um={role:'user',rk:roleKey(),text:raw,att:att.map(a=>({id:a.file?a.id:undefined,name:a.name,kind:a.kind,type:a.type,size:a.size,thumb:a.thumb}))};
   let chat=curChat();if(!chat){chat={id:S.chatId,title:(raw||att[0].name).slice(0,42),ts:Date.now(),msgs:[]};S.chats.unshift(chat)}try{learn(raw)}catch(e){}
@@ -1199,7 +1202,7 @@ async function send(){
     else if(sq)await imageSearchFlow(chat,sq);
     else await answer(chat,raw,att);
   }catch(e){console.error(e);toast('Terjadi kesalahan, coba lagi.')}
-  chat.ts=Date.now();persist();S.busy=false;$('#sendBtn').innerHTML=ic('up');try{window.A13&&A13.after(chat)}catch(e){}
+  chat.ts=Date.now();persist();S.busy=false;$('#sendBtn').innerHTML=ic('up');try{A13.status(null)}catch(e){}try{window.A13&&A13.after(chat)}catch(e){}
 }
 /* ===== PENYIMPANAN MEDIA (IndexedDB) + PEMUTAR ===== */
 const MS={db:null,mem:{},
@@ -1395,14 +1398,24 @@ async function gnews(q,when,top){
   return items.map(i=>({title:i.title,url:i.url,host:i.host.replace(/^www\./,''),snippet:`${i.title}. Dimuat ${i.pub||i.host}${fd(i.date)?' pada '+fd(i.date):''}.`,ts:+i.date||0}))}
 const pickNews=(l,k)=>{const tr=l.filter(x=>trusted(x.host)),cnt={};return (tr.length?tr:l).sort((a,b)=>b.ts-a.ts).filter(x=>(cnt[x.host]=(cnt[x.host]||0)+1)<=2).slice(0,k)};
 async function webSearch(q,n,opt={}){
-  const c=DB.get('ai',{}),sig=()=>AbortSignal.timeout?AbortSignal.timeout(4500):undefined;
+  const c=DB.get('ai',{}),sig=()=>AbortSignal.timeout?AbortSignal.timeout(9000):undefined;
   const tav=async dom=>{const r=await fetch('https://api.tavily.com/search',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({api_key:c.tav,query:q,max_results:n+3,search_depth:'basic',topic:opt.news?'news':'general',...(dom?{include_domains:TRUST}:{})}),signal:sig()});if(!r.ok)return [];const o=await r.json();return (o.results||[]).map(x=>({title:x.title||hostOf(x.url),url:x.url,snippet:((x.published_date?x.published_date+'. ':'')+(x.content||'')).slice(0,600)}))};
-  const wk=async l=>{try{const r=await fetch(`https://${l}.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch=${encodeURIComponent(q)}&gsrlimit=4&prop=extracts|info|pageimages&piprop=thumbnail&pithumbsize=640&exintro=1&explaintext=1&exchars=700&inprop=url&format=json&origin=*`,{signal:sig()}),o=await r.json();return Object.values((o.query&&o.query.pages)||{}).sort((a,b)=>a.index-b.index).map(p=>({title:p.title+' - Wikipedia',url:p.fullurl,snippet:(p.extract||'').slice(0,600),img:p.thumbnail&&p.thumbnail.source||''}))}catch(e){return []}};
+  const wk=async(l,qq)=>{qq=qq||q;try{const r=await fetch(`https://${l}.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch=${encodeURIComponent(qq)}&gsrlimit=6&prop=extracts|info|pageimages&piprop=thumbnail&pithumbsize=640&exintro=1&explaintext=1&exchars=700&inprop=url&format=json&origin=*`,{signal:sig()}),o=await r.json();return Object.values((o.query&&o.query.pages)||{}).sort((a,b)=>a.index-b.index).map(p=>({title:p.title+' - Wikipedia',url:p.fullurl,snippet:(p.extract||'').slice(0,600),img:p.thumbnail&&p.thumbnail.source||''}))}catch(e){return []}};
   const gd=async()=>{try{const r=await fetch(`https://api.gdeltproject.org/api/v2/doc/doc?query=${encodeURIComponent(q+' (sourcelang:indonesian OR sourcelang:english)')}&mode=artlist&maxrecords=25&sort=datedesc&format=json`,{signal:sig()}),o=await r.json();return (o.articles||[]).filter(x=>trusted(x.url)).slice(0,6).map(x=>{const d=x.seendate||'';return{title:x.title,url:x.url,snippet:`${x.title}. Dimuat ${x.domain}${d?' pada '+d.slice(6,8)+'/'+d.slice(4,6)+'/'+d.slice(0,4):''}.`}})}catch(e){return []}};
-  let tv=[];if(c.tav&&!opt.top){try{tv=await tav(true);if(tv.length<2){const b=await tav(false);tv=tv.concat(b.filter(x=>!tv.some(y=>y.url===x.url)))}tv=rank(tv)}catch(e){}}
-  const [gn,a,b,g]=await Promise.all([gnews(q,opt.news?'30d':'365d',opt.top),wk('id'),wk('en'),opt.news&&!tv.length?gd():[]]),seen=new Set();
-  const all=(opt.top&&gn.length)?pickNews(gn,8):tv.length?[...tv.slice(0,n-2),...pickNews(gn,3)]:opt.news?[...pickNews(gn,5),...g.slice(0,2),...a.slice(0,1)]:[...a.slice(0,2),...pickNews(gn,3),...b.slice(0,2),...a.slice(2),...b.slice(2)];
-  return all.filter(x=>x.snippet&&!seen.has(x.url)&&seen.add(x.url)).slice(0,n)}
+  const on=opt.on||(()=>{}),seen=new Set(),all=[];let tvl=[];
+  const add=l=>{(l||[]).forEach(x=>{if(x&&x.snippet&&x.url&&!seen.has(x.url)){seen.add(x.url);all.push(x)}});if(all.length)on(all.length)};
+  const T=(p,f)=>p.then(r=>{try{f&&f(r)}catch(e){}return r},()=>[]);
+  const jobs=[];
+  if(c.tav&&!opt.top)jobs.push(T((async()=>{let tv=await tav(true);if(tv.length<3){const b=await tav(false);tv=tv.concat(b.filter(x=>!tv.some(y=>y.url===x.url)))}return rank(tv)})(),r=>{tvl=r;add(r)}));
+  jobs.push(T(gnews(q,opt.news?'30d':'365d',opt.top),r=>add(pickNews(r,opt.top?8:7))));
+  jobs.push(T(wk('id'),add),T(wk('en'),add));
+  if(!opt.top)jobs.push(T(gd(),add));
+  await Promise.all(jobs);
+  /* putaran kedua: variasi kata kunci bila sumber belum cukup */
+  if(all.length<n&&!opt.top&&!opt.fast){const w=q.split(/\s+/).filter(x=>x.length>2),v=[q+' terbaru',q+' penjelasan lengkap',w.slice(0,3).join(' ')].filter((x,i,a)=>x&&x!==q&&a.indexOf(x)===i);
+   await Promise.all(v.flatMap(x=>[T(wk('id',x),add),T(wk('en',x),add),T(gnews(x,'365d',false),r=>add(pickNews(r,5)))]))}
+  const rk=a=>rank(a);
+  return (opt.top?pickNews(all,8):rk(all)).slice(0,n)}
 function needSearch(raw,att){if(!S.web||!raw.trim())return false;const cl=classify(raw,att);if(['math','greet','thanks','bye','joke','pass','rand','count','rev','remember','recall','time','identity','creator','abilities','plans','how','attach','code','image'].includes(cl.top))return false;return countWords(raw)>=2||TOPNEWS.test(raw.trim())||NEWS.test(raw)}
 async function answer(chat,raw,att){
   {const fa=factAnswer(raw||'');if(fa&&!(att||[]).length){const c=aiCard('<span class="dots"><i></i><i></i><i></i></span>');await sleep(350);const am={role:'ai',text:fa};const el=msgEl(am);c.replaceWith(el);chat.msgs.push(am);scrollDown();autoSpeak(el,am.text);return}}
@@ -1412,25 +1425,26 @@ async function answer(chat,raw,att){
   box.innerHTML=`<div class="av">${logoHTML()}</div><div class="bub"><div class="tslot"></div><div class="sslot"></div><div class="aslot"><span class="dots"><i></i><i></i><i></i></span></div></div>`;
   $('#wrap').appendChild(box);scrollDown();
   const ts=box.querySelector('.tslot'),ss=box.querySelector('.sslot'),as=box.querySelector('.aslot');let full='',rs='',tm=0,timedOut=false,src=[],sys=sysPrompt(mode);if(tl)sys+='\n\nHASIL ALAT WAKTU (akurat, pakai ini): '+tl;
-  ctl=new AbortController();const T0=Date.now();let galP=null;
+  ctl=new AbortController();let T0=Date.now();let galP=null;
   if(needSearch(raw,att)){
     ts.innerHTML=`<details class="think" open><summary>${ic('globe')}Mencari di web...</summary></details>`;
     const prev=chat.msgs.filter(m=>m.role==='user').slice(-2,-1)[0];
     let q=raw.replace(/[?!]+/g,' ').replace(/^(tolong|coba|bisa|kasih tahu|jelaskan|apa itu|apa sih|siapa|apakah|kenapa|bagaimana|gimana|cara)\s+/i,'').trim();if(countWords(q)<3&&prev)q=(prev.text+' '+q).trim();
     if(NEWS.test(raw)&&!/20\d\d/.test(q))q=(q+' '+new Date().getFullYear()).trim();
-    try{src=await Promise.race([webSearch(q.slice(0,200),mode==='deep'?8:5,{news:NEWS.test(raw),top:TOPNEWS.test(raw.trim())}),sleep(4800).then(()=>[])])}catch(e){}
-    ts.innerHTML='';
+    A13.status('Mencari “'+q.slice(0,48)+'” di web…');const tS=Date.now();try{src=await Promise.race([webSearch(q.slice(0,200),mode==='deep'?14:12,{news:NEWS.test(raw),top:TOPNEWS.test(raw.trim()),on:k=>A13.status('Membaca sumber… '+k+' ditemukan')}),sleep(24000).then(()=>[])])}catch(e){}
+    ts.innerHTML='';A13.status(src.length?'Memeriksa '+src.length+' sumber dan mencocokkan fakta…':'Tidak ada sumber web, memakai pengetahuan Astra…');T0=Date.now();
     if(src.length&&window.A13&&A13.P().imgs&&!NEWS.test(raw)&&!TOPNEWS.test(raw.trim()))galP=A13.gallery(q,src);
+    if(src.length)sys+='\n\nVALIDASI: kamu membaca '+src.length+' sumber. Silangkan antar sumber: nyatakan sebagai fakta hanya yang didukung minimal 2 sumber atau 1 sumber terverifikasi; bila hanya satu sumber lemah tulis "belum terkonfirmasi"; bila sumber bertentangan jelaskan perbedaannya; sebut jumlah sumber yang dipakai di akhir. Jangan mengarang.';
     if(src.length)sys+='\n\nATURAN HASIL WEB: hasil di atas adalah info paling baru, utamakan di atas ingatanmu. Bandingkan beberapa sumber, prioritaskan sumber terverifikasi, sebut nama media dan tanggal terbit, tandai kutipan dengan [nomor], dan jika sumber berbeda sebutkan perbedaannya. Mulai dengan jawaban inti, lalu rincian. Jangan mengarang; kalau hasil tidak memuat jawabannya, bilang jujur lalu beri saran kata kunci.';
     if(src.length&&TOPNEWS.test(raw.trim()))sys+='\n\nPengguna minta berita terbaru secara umum: rangkum 5-8 berita utama paling baru, tiap butir sebut media dan tanggal, kelompokkan singkat per topik.';
     if(src.length){ss.innerHTML=srcHTML(src);sys+=`\n\nHASIL PENCARIAN WEB (${new Date().toLocaleDateString('id-ID')}):\n`+src.map((x,i)=>`[${i+1}] ${x.title} (${x.url})${trusted(x.host||x.url)?' [sumber terverifikasi]':''}\n${x.snippet}`).join('\n\n')+'\n\nTahun sekarang ${new Date().getFullYear()}. Untuk pertanyaan tentang jabatan, pemimpin, atau berita terkini, ikuti artikel dengan tanggal paling baru dan abaikan ingatanmu yang mungkin usang; sebutkan tanggal beritanya. Gunakan hasil ini sebagai sumber utama untuk fakta, utamakan yang bertanda sumber terverifikasi, sebut nama medianya, dan untuk berita sebut tanggalnya. Tulis nomor sumber seperti [1] atau [2] tepat setelah kalimat yang memakainya. Kalau hasil tidak relevan atau kurang, katakan terus terang dan jangan mengarang.'}
   }
   const to=0;
-  const paint=()=>{tm=0;const s=splitThink(full),th=(rs+s.t).trim(),live=!s.a&&!!(rs||s.open);
+  const paint=()=>{tm=0;const s=splitThink(full),th=(rs+s.t).trim(),live=!s.a&&!!(rs||s.open);A13.status(s.a?(src.length?'Menyusun jawaban dari '+src.length+' sumber…':'Menulis jawaban…'):'Berpikir dan menalar…');
     if(th){if(!ts.firstChild)ts.innerHTML='<details class="think" open><summary></summary><p class="tx"></p></details>';const d=ts.firstChild;d.querySelector('summary').innerHTML=ic(live?'loader':'brain',live?'spin':'')+t(live?'thinking':'thought');d.querySelector('.tx').textContent=th;if(!live&&!d.dataset.c){d.dataset.c=1;d.open=false}}
     as.innerHTML=s.a?cites(md(s.a),src):th?'':'<span class="dots"><i></i><i></i><i></i></span>';scrollDown()};
   const tick=()=>{clearTimeout(to);if(!tm)tm=requestAnimationFrame(paint)};
-  try{await A13.run(streamAI,buildMsgs(chat,raw,att),sys,mode,ctl.signal,{onT:d=>{rs+=d;tick()},onD:d=>{full+=d;tick()},reset:()=>{full='';rs='';ts.innerHTML='';tick()},ans:()=>!!splitThink(full).a,any:()=>!!(full||rs)},T0)}
+  try{await A13.run(streamAI,buildMsgs(chat,raw,att),sys,mode,ctl.signal,{onT:d=>{rs+=d;tick()},onD:d=>{full+=d;tick()},reset:()=>{full='';rs='';ts.innerHTML='';tick()},ans:()=>!!splitThink(full).a,any:()=>!!(full||rs)},T0,src.length?4000:0)}
   catch(e){clearTimeout(to);const stopped=ctl.signal.aborted&&!timedOut;
     if(!(stopped&&(full||rs))){cancelAnimationFrame(tm);box.remove();ctl=null;if(stopped)return;toast('AI online belum tersambung, memakai mesin lokal. Atur di Pengaturan > Otak AI.');return localAnswer(chat,raw,att)}}
   clearTimeout(to);cancelAnimationFrame(tm);const s=splitThink(full);
@@ -4008,16 +4022,16 @@ function hint(mode){const p=P(),t=TONES[p.tone]||TONES.natural,o=[];
  o.push('KECEPATAN: jawab dalam waktu singkat; pikirkan seperlunya saja namun tetap cerdas dan teliti.');
  const m=memText();if(m)o.push(m);return o.join(' ')}
 /* ---- eksekusi AI dengan batas waktu 10 detik ---- */
-async function run(stream,msgs,sys,mode,signal,cb,T0){
+async function run(stream,msgs,sys,mode,signal,cb,T0,bonus){
  const custom=(DB.get('ai',{}).provider==='custom'),sysF=sys.split(MODE_TXT[mode]||'\u0000').join(MODE_TXT.quick);
  const att=[];let won=null,hedged=0,hard=0,ansOn=false;
  const claim=r=>{if(r.dead)return false;if(won&&won!==r)return false;if(!won){won=r;att.forEach(a=>{if(a!==r){a.dead=1;a.ac.abort()}})}return true};
  const launch=(tag,s2,m2,opt)=>{const ac=new AbortController();signal.addEventListener('abort',()=>ac.abort(),{once:true});const r={tag,ac,done:0,err:null,dead:0};
   r.p=stream(m2,s2,ac.signal,d=>{if(claim(r))cb.onT(d)},d=>{if(claim(r)){ansOn=true;cb.onD(d)}},opt).then(()=>{r.done=1},e=>{r.done=1;r.err=e;if(!won&&!hedged&&!r.dead)startHedge()});att.push(r);return r};
  const fastMsgs=msgs.slice(-10),startHedge=()=>{if(hedged||won)return;hedged=1;launch('fast',sysF,fastMsgs,{model:custom?undefined:'openai-fast',fast:true})};
- const left=ms=>Math.max(900,ms-(Date.now()-T0));
+ const left=(ms,b)=>Math.max(900,ms+(b?bonus||0:0)-(Date.now()-T0));
  launch('main',sys,msgs,{});
- const t1=setTimeout(startHedge,left(4200)),t2=setTimeout(()=>{if(won&&!ansOn&&!won.done){const o=won;o.dead=1;o.ac.abort();won=null;cb.reset();launch('quick',sysF,fastMsgs,{model:custom?undefined:'openai-fast',fast:true})}},left(8500)),t3=setTimeout(()=>{if(!won){hard=1;att.forEach(a=>{a.dead=1;a.ac.abort()})}},left(10500)),t4=setTimeout(()=>{if(won&&!won.done)won.ac.abort()},90000);
+ const t1=setTimeout(startHedge,left(4200)),t2=setTimeout(()=>{if(won&&!ansOn&&!won.done){const o=won;o.dead=1;o.ac.abort();won=null;cb.reset();launch('quick',sysF,fastMsgs,{model:custom?undefined:'openai-fast',fast:true})}},left(8500,1)),t3=setTimeout(()=>{if(!won){hard=1;att.forEach(a=>{a.dead=1;a.ac.abort()})}},left(10500,1)),t4=setTimeout(()=>{if(won&&!won.done)won.ac.abort()},90000);
  try{await new Promise(res=>{const iv=setInterval(()=>{if(signal.aborted||hard||(won&&won.done)||(!won&&att.every(a=>a.done)&&hedged)){clearInterval(iv);res()}},60)})}
  finally{[t1,t2,t3,t4].forEach(clearTimeout)}
  if(won&&!cb.ans()&&!signal.aborted&&!hard){won=null;cb.reset();const r=launch('retry',sysF,fastMsgs,{model:custom?undefined:'openai-fast',fast:true});const tm=setTimeout(()=>r.ac.abort(),8000);await new Promise(res=>{const iv=setInterval(()=>{if(r.done||signal.aborted){clearInterval(iv);res()}},60)});clearTimeout(tm)}
@@ -4066,6 +4080,22 @@ function section(o){const p=P(),l=mem();const host=o.querySelector('#stor');if(!
  o.querySelector('#a13r').oninput=e=>{o.querySelector('#a13z').textContent=e.target.value;sv({size:+e.target.value});pv()};
  o.querySelector('#a13i').onchange=e=>sv({imgs:e.target.checked});o.querySelector('#a13n').onchange=e=>sv({learn:e.target.checked})}
 const _os=window.openSettings;if(typeof _os==='function')window.openSettings=function(sc){const r=_os.apply(this,arguments);try{const o=document.querySelector('#ov .modal');if(o&&!o.querySelector('#a13t'))section(o)}catch(e){console.error(e)}return r};
-window.A13={P,hint,run,gallery,after,apply,distill};apply();
+/* ---- status di atas chat ---- */
+let st=null,stT=0,stS=0,stTx='';
+function status(m){if(!st){const c=document.getElementById('chat'),w=document.getElementById('wrap');if(!c||!w)return;st=document.createElement('div');st.id='astat';st.hidden=true;st.setAttribute('role','status');st.innerHTML='<i class="sp"></i><span></span><em></em>';c.insertBefore(st,w)}
+ if(!m){clearInterval(stT);stT=0;st.hidden=true;stTx='';return}
+ if(m!==stTx){stTx=m;st.querySelector('span').textContent=m}
+ if(st.hidden){st.hidden=false;stS=Date.now();clearInterval(stT);stT=setInterval(()=>{const k=Math.floor((Date.now()-stS)/1000);st.querySelector('em').textContent=k>=2?k+' dtk':''},500)}}
+function ctx(raw){const t=(raw||'').toLowerCase();
+ if(/```|\b(kode|code|script|program|fungsi|function|bug|error|html|css|javascript|python|java|sql|api)\b/.test(t))return 'Menganalisis dan menulis kode…';
+ if(/\d\s*[+\-*\/x×^%]\s*\d|\b(hitung|berapa|rumus|persen|akar|integral|turunan)\b/.test(t))return 'Menghitung dan memeriksa hasilnya…';
+ if(/\b(terjemah|translate|artinya)\b/.test(t))return 'Menerjemahkan…';
+ if(/\b(puisi|cerita|cerpen|lagu|pantun|caption|esai|artikel|surat)\b/.test(t))return 'Menyusun tulisan kreatif…';
+ if(/\b(sedih|capek|stres|stress|galau|curhat|bingung|takut|sendiri|kecewa)\b/.test(t))return 'Menyimak ceritamu…';
+ if(/\b(ringkas|rangkum|simpulkan)\b/.test(t))return 'Meringkas isinya…';
+ if(/\b(rencana|jadwal|strategi|tips|saran|rekomendasi)\b/.test(t))return 'Menyusun saran terbaik…';
+ if(/\b(kenapa|mengapa|bagaimana|gimana|jelaskan|apa itu|apa bedanya)\b/.test(t))return 'Memikirkan penjelasan terbaik…';
+ return 'Membaca dan memahami pesanmu…'}
+window.A13={P,hint,run,gallery,after,apply,distill,status,ctx};apply();
 })();
 </script>
