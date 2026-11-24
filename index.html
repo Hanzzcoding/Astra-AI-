@@ -1417,8 +1417,8 @@ async function webSearch(q,n,opt={}){
   jobs.push(T(gnews(q,opt.news?'30d':'365d',opt.top,ctl.signal),r=>add(pickNews(r,opt.top?8:7))));
   jobs.push(T(wk('id'),add),T(wk('en'),add));
   if(!opt.top)jobs.push(T(gd(),add));
-  await new Promise(res=>{let k=jobs.length;fin=res;jobs.forEach(j=>j.then(()=>{if(--k===0)res()}));setTimeout(()=>{if(!opt.top&&all.length>=8)res()},7000)});
-  if(!opt.top&&all.length>=8)ctl.abort();
+  await new Promise(res=>{let k=jobs.length;fin=res;jobs.forEach(j=>j.then(()=>{if(--k===0)res()}))});
+  if(!opt.top&&all.length>=n)ctl.abort();
   /* putaran kedua: variasi kata kunci bila sumber belum cukup */
   if(all.length<n&&!opt.top&&!opt.fast&&!ctl.signal.aborted){const w=q.split(/\s+/).filter(x=>x.length>2),v=[q+' terbaru',q+' penjelasan lengkap',w.slice(0,3).join(' ')].filter((x,i,a)=>x&&x!==q&&a.indexOf(x)===i);
    await Promise.all(v.flatMap(x=>[T(wk('id',x),add),T(wk('en',x),add),T(gnews(x,'365d',false),r=>add(pickNews(r,5)))]))}
@@ -1438,7 +1438,7 @@ async function answer(chat,raw,att){
     const prev=chat.msgs.filter(m=>m.role==='user').slice(-2,-1)[0];
     let q=raw.replace(/[?!]+/g,' ').replace(/^(tolong|coba|bisa|kasih tahu|jelaskan|apa itu|apa sih|siapa|apakah|kenapa|bagaimana|gimana|cara)\s+/i,'').trim();if(prev&&(countWords(raw)<=2||/^(dan|terus|lalu|kalau|kalo|bagaimana dengan|gimana dengan|trus)\b/i.test(raw.trim())||/\b(itu|tersebut|tadi|dia|lanjut)\b/i.test(raw)))q=(prev.text+' '+q).trim();
     if(NEWS.test(raw)&&!/20\d\d/.test(q))q=(q+' '+new Date().getFullYear()).trim();
-    A13.status('Mencari “'+q.slice(0,48)+'” di web…');const tS=Date.now(),sc=new AbortController();try{src=await Promise.race([webSearch(q.slice(0,200),mode==='deep'?14:12,{news:NEWS.test(raw),top:TOPNEWS.test(raw.trim()),signal:sc.signal,on:k=>A13.status('Membaca sumber… '+k+' ditemukan')}),sleep(24000).then(()=>[])])}catch(e){}sc.abort();if(src.length>=8)A13.status('Sumber sudah cukup ('+src.length+'), pencarian dihentikan');A13.srcLog(src);
+    A13.status('Mencari “'+q.slice(0,48)+'” di web…');const tS=Date.now(),sc=new AbortController();try{src=await Promise.race([webSearch(q.slice(0,200),mode==='deep'?14:12,{news:NEWS.test(raw),top:TOPNEWS.test(raw.trim()),signal:sc.signal,on:k=>A13.status('Membaca sumber… '+k+' ditemukan')}),sleep(45000).then(()=>[])])}catch(e){}sc.abort();if(src.length>=(mode==='deep'?14:12))A13.status('Sumber sudah cukup ('+src.length+'), pencarian dihentikan');A13.srcLog(src);
     ts.innerHTML='';A13.status(src.length?'Memeriksa '+src.length+' sumber dan mencocokkan fakta…':'Tidak ada sumber web, memakai pengetahuan Astra…');T0=Date.now();
     if(src.length&&window.A13&&A13.P().imgs&&!NEWS.test(raw)&&!TOPNEWS.test(raw.trim()))galP=A13.gallery(q,src);
     if(src.length)sys+='\n\nVALIDASI: kamu membaca '+src.length+' sumber. Silangkan antar sumber: nyatakan sebagai fakta hanya yang didukung minimal 2 sumber atau 1 sumber terverifikasi; bila hanya satu sumber lemah tulis "belum terkonfirmasi"; bila sumber bertentangan jelaskan perbedaannya; sebut jumlah sumber yang dipakai di akhir. Jangan mengarang.';
