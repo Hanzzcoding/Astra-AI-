@@ -1269,7 +1269,7 @@ const factAnswer=raw=>{const q=raw.toLowerCase().replace(/[?!.,]/g,' ');
 let HEAD={t:0,txt:''};
 async function refreshHead(){try{if(!S.web)return;const r=await webSearch('berita utama Indonesia dunia hari ini',8,{news:true,top:true});if(r.length)HEAD={t:Date.now(),txt:r.map(x=>'- '+x.title).join('\n')}}catch(e){}}
 setTimeout(refreshHead,2500);setInterval(refreshHead,3e5);
-const HN=()=>window.A13&&A13.P().speed==='fast'?24:40;
+const HN=()=>window.A13&&A13.P().speed==='fast'?24:56;
 const MODE_TXT={fast:'Jawab singkat dan langsung ke inti.',balanced:'Pikirkan dulu SANGAT singkat (maksimal 3 kalimat, kurang dari 5 detik) di dalam <think>...</think>, lalu beri jawaban jelas dan teliti setelah </think>. Jangan bertele-tele saat berpikir.',deep:'Berpikirlah tajam tapi ringkas di dalam <think>...</think> (maksimal 8 kalimat padat, tetap timbang alternatif dan periksa ulang, selesai dalam sekitar 8 detik), lalu beri jawaban akhir yang lengkap setelah </think>.',code:'Fokus pemrograman. Pikirkan dulu secara ringkas di <think>...</think> (maksimal 5 kalimat), lalu beri kode lengkap yang rapi dengan penjelasan singkat setelah </think>.'};MODE_TXT.quick='Jawab langsung sekarang, tanpa <think>. Tetap cerdas, akurat, dan natural; ringkas tapi lengkap.';
 function sysPrompt(mode){const mem=Mem(),d=new Date();
   const base=`Kamu adalah ASTRA AI, asisten AI yang cerdas, hangat, dan jujur, dibuat oleh Ziurixy x Hanzzy. Balas dalam bahasa yang dipakai pengguna (default Bahasa Indonesia). Pakai Markdown: **tebal**, daftar dengan "- ", dan blok kode dengan tiga backtick plus nama bahasa. Semua kode WAJIB ada di dalam blok kode terpisah yang hanya berisi kode (komentar singkat boleh); penjelasan ditulis di luar blok, jangan dicampur. Jangan mengarang fakta; kalau tidak yakin, bilang. ${nowCtx()}${mem.name?' Nama pengguna: '+mem.name+'.':''} Kamu tidak bisa mendengar audio atau membuka isi PDF; untuk video kamu hanya melihat satu cuplikan gambar. Kamu bisa membuat gambar kalau pengguna menulis "buatkan gambar ..." dan mencarikan gambar kalau pengguna menulis "carikan gambar ..."; kalau diminta, arahkan ke cara penulisan itu. Prinsip menjawab: pahami maksud sebenarnya dari pertanyaan termasuk konteks chat sebelumnya; jawab inti dulu lalu jelaskan runtut dengan contoh konkret; untuk hitungan dan kode, periksa ulang sebelum menyimpulkan; bedakan fakta, perkiraan, dan opini; akui batas pengetahuanmu dengan jujur; tanyakan klarifikasi hanya jika benar-benar perlu; sesuaikan gaya dan kedalaman dengan pengguna. Jika ditanya siapa yang membuatmu, jawab: "Saya dikembangkan oleh Ziurixy x Hanzzy. Jika ada pertanyaan lain tentang tim atau proses pengembangan, jangan ragu bertanya!" Info tim: dipimpin oleh CEO Abhizan Albani Arafah; kantor di Indonesia, Jawa Barat, Bandung, Kiaracondong; alamat lengkap tidak dibagikan, jangan menebak atau mengarang alamat. Jangan mengaku sebagai model buatan perusahaan lain. Pengetahuan bawaanmu bisa usang: untuk pejabat, berita, harga, skor, dan hal terkini selalu andalkan hasil pencarian web jika tersedia.`;
@@ -1425,7 +1425,16 @@ async function webSearch(q,n,opt={}){
    await Promise.all(v.flatMap(x=>[T(wk('id',x),add),T(wk('en',x),add),T(gnews(x,'365d',false),r=>add(pickNews(r,5)))]))}
   const rk=a=>rank(a);
   return (opt.top?pickNews(all,8):rk(all)).slice(0,n)}}
-function needSearch(raw,att){if(!S.web||!raw.trim())return false;const cl=classify(raw,att);if(['math','greet','thanks','bye','joke','pass','rand','count','rev','remember','recall','time','identity','creator','abilities','plans','how','attach','code','image'].includes(cl.top))return false;return countWords(raw)>=2||TOPNEWS.test(raw.trim())||NEWS.test(raw)}
+function needSearch(raw,att){if(!S.web||!raw.trim())return false;const cl=classify(raw,att);if(['math','greet','thanks','bye','joke','pass','rand','count','rev','remember','recall','time','identity','creator','abilities','how','attach','code','image'].includes(cl.top))return false;const t=raw.trim();if(cl.top==='plans'&&/(astra|paket|langganan|premium|upgrade|member|saldo|koin)/i.test(t))return false;
+ if(TOPNEWS.test(t))return true;
+ if(/\b(cari|carikan|googling|google|search|browsing|cek di (internet|web)|sumbernya|referensi|link)\b/i.test(t))return true;
+ if(/^(aku|gue|gw|gua|saya|ak|kok aku|lagi)\b/i.test(t)&&!/\?/.test(t))return false;
+ if(/\b(sedih|capek|galau|curhat|kangen|bete|stres|stress|bosan|bingung harus)\b/i.test(t))return false;
+ if(/\b(terbaru|terkini|2026|presiden|wakil presiden|menteri|gubernur|juara|pemenang|kurs|cuaca|rilis|peluncuran|trending|jadwal|klasemen|dolar|emas|bitcoin|kripto|saham|ihsg|harga|berita|viral|update|skor|hasil pertandingan|bencana|gempa|breaking|news|latest|202[5-9]|bupati|wali ?kota|kapolri|panglima|dilantik|pilkada|pemilu|menjabat)\b/i.test(t))return countWords(t)>=2;
+ if(/\b(harga|kurs|jadwal|skor|cuaca|rilis|trending|viral|update|versi terbaru|pemenang|klasemen|saham|bitcoin|crypto|kapan (rilis|tayang|terbit|dibuka))\b/i.test(t))return true;
+ const ent=(t.slice(1).match(/(?:^|\s)[A-Z][\p{L}]{2,}/gu)||[]).length;
+ if(/\b(siapa|kapan|dimana|di mana|berapa|profil|biografi|penemu|pendiri|ibu kota|populasi|umur)\b/i.test(t)&&ent>=1)return true;
+ return false}
 async function answer(chat,raw,att){
   {const fa=factAnswer(raw||'');if(fa&&!(att||[]).length){const c=aiCard('<span class="dots"><i></i><i></i><i></i></span>');await sleep(350);const am={role:'ai',text:fa};const el=msgEl(am);c.replaceWith(el);chat.msgs.push(am);scrollDown();autoSpeak(el,am.text);return}}
   if(DB.get('ai',{}).provider==='local')return localAnswer(chat,raw,att);
@@ -1435,6 +1444,7 @@ async function answer(chat,raw,att){
   $('#wrap').appendChild(box);scrollDown();
   const ts=box.querySelector('.tslot'),ss=box.querySelector('.sslot'),as=box.querySelector('.aslot');let full='',rs='',tm=0,timedOut=false,src=[],sys=sysPrompt(mode);if(tl)sys+='\n\nHASIL ALAT WAKTU (akurat, pakai ini): '+tl;
   ctl=new AbortController();A13.begin(box.querySelector('.actslot'));let T0=Date.now();let galP=null;
+  if(!needSearch(raw,att)&&window.A13&&A13.P().imgs&&A13.wantsImg(raw,classify(raw,att).top)){A13.status('Menyiapkan gambar contoh…');galP=A13.galleryFor(raw)}
   if(needSearch(raw,att)){
     const prev=chat.msgs.filter(m=>m.role==='user').slice(-2,-1)[0];
     let q=raw.replace(/[?!]+/g,' ').replace(/^(tolong|coba|bisa|kasih tahu|jelaskan|apa itu|apa sih|siapa|apakah|kenapa|bagaimana|gimana|cara)\s+/i,'').trim();if(prev&&(countWords(raw)<=2||/^(dan|terus|lalu|kalau|kalo|bagaimana dengan|gimana dengan|trus)\b/i.test(raw.trim())||/\b(itu|tersebut|tadi|dia|lanjut)\b/i.test(raw)))q=(prev.text+' '+q).trim();
@@ -1442,6 +1452,7 @@ async function answer(chat,raw,att){
     A13.status('Mencari “'+q.slice(0,48)+'” di web…');const tS=Date.now(),sc=new AbortController();try{src=await Promise.race([webSearch(q.slice(0,200),mode==='deep'?14:12,{news:NEWS.test(raw),top:TOPNEWS.test(raw.trim()),signal:sc.signal,on:k=>A13.status('Membaca sumber… '+k+' ditemukan')}),sleep(45000).then(()=>[])])}catch(e){}sc.abort();if(src.length>=(mode==='deep'?14:12))A13.status('Sumber sudah cukup ('+src.length+'), pencarian dihentikan');A13.srcLog(src);
     ts.innerHTML='';A13.status(src.length?'Memeriksa '+src.length+' sumber dan mencocokkan fakta…':'Tidak ada sumber web, memakai pengetahuan Astra…');T0=Date.now();
     if(src.length&&window.A13&&A13.P().imgs&&!NEWS.test(raw)&&!TOPNEWS.test(raw.trim()))galP=A13.gallery(q,src);
+    if(!src.length)sys+='\n\nCATATAN: pencarian web tidak mengembalikan hasil. Jawab dari pengetahuanmu sendiri sebaik mungkin; jangan bilang kamu tidak terhubung ke internet; sebutkan bila informasi mungkin sudah kedaluwarsa.';
     if(src.length)sys+='\n\nVALIDASI: kamu membaca '+src.length+' sumber. Silangkan antar sumber: nyatakan sebagai fakta hanya yang didukung minimal 2 sumber atau 1 sumber terverifikasi; bila hanya satu sumber lemah tulis "belum terkonfirmasi"; bila sumber bertentangan jelaskan perbedaannya; sebut jumlah sumber yang dipakai di akhir. Jangan mengarang.';
     if(src.length)sys+='\n\nATURAN HASIL WEB: hasil di atas adalah info paling baru, utamakan di atas ingatanmu. Bandingkan beberapa sumber, prioritaskan sumber terverifikasi, sebut nama media dan tanggal terbit, tandai kutipan dengan [nomor], dan jika sumber berbeda sebutkan perbedaannya. Mulai dengan jawaban inti, lalu rincian. Jangan mengarang; kalau hasil tidak memuat jawabannya, bilang jujur lalu beri saran kata kunci.';
     if(src.length&&TOPNEWS.test(raw.trim()))sys+='\n\nPengguna minta berita terbaru secara umum: rangkum 5-8 berita utama paling baru, tiap butir sebut media dan tanggal, kelompokkan singkat per topik.';
@@ -1456,7 +1467,7 @@ async function answer(chat,raw,att){
   catch(e){clearTimeout(to);const stopped=ctl.signal.aborted&&!timedOut;
     if(!(stopped&&(full||rs))){A13.end();cancelAnimationFrame(tm);box.remove();ctl=null;if(stopped)return;toast('AI online belum tersambung, memakai mesin lokal. Atur di Pengaturan > Otak AI.');return localAnswer(chat,raw,att)}}
   clearTimeout(to);cancelAnimationFrame(tm);const s=splitThink(full);
-  const am={role:'ai',text:s.a||full||'(tidak ada jawaban)',think:(rs+s.t).trim(),src};am.act=A13.end();if(galP){try{const g=await Promise.race([galP,sleep(2200).then(()=>[])]);if(g&&g.length)am.gallery=g}catch(e){}}
+  const am={role:'ai',text:s.a||full||'(tidak ada jawaban)',think:(rs+s.t).trim(),src};am.act=A13.end();if(galP){try{const g=await Promise.race([galP,sleep(5500).then(()=>[])]);if(g&&g.length)am.gallery=g}catch(e){}}
   const el=msgEl(am);box.replaceWith(el);chat.msgs.push(am);scrollDown();ctl=null;autoSpeak(el,am.text)}
 async function localAnswer(chat,raw,att){
   const mode=S.mode;const [total,gap]=DELAY[mode];
@@ -4019,8 +4030,8 @@ function apply(){const p=P(),r=document.documentElement.style;Object.assign(MODE
 function mem(){return (typeof Mem==='function'?Mem():{}).ll||{}}
 function memText(){const l=mem(),p=P();if(!p.learn)return'';const o=[];
  if((l.traits||[]).length)o.push('Karakter pengguna: '+l.traits.join('; '));if(l.style)o.push('Gaya bicara pengguna: '+l.style);
- if((l.facts||[]).length)o.push('Fakta tentangnya: '+l.facts.slice(-30).join('; '));if((l.stories||[]).length)o.push('Cerita yang pernah ia bagikan: '+l.stories.slice(-14).join(' | '));
- const cur=(typeof curChat==='function'&&curChat())?curChat().id:'',ep=Object.entries(l.eps||{}).filter(x=>x[0]!==cur).sort((a,b)=>b[1].t-a[1].t).slice(0,8).map(x=>x[1].s);if(ep.length)o.push('Ringkasan obrolan sebelumnya: '+ep.join(' | '));
+ if((l.facts||[]).length)o.push('Fakta tentangnya: '+l.facts.slice(-60).join('; '));if((l.stories||[]).length)o.push('Cerita yang pernah ia bagikan: '+l.stories.slice(-25).join(' | '));
+ const cur=(typeof curChat==='function'&&curChat())?curChat().id:'',ep=Object.entries(l.eps||{}).filter(x=>x[0]!==cur).sort((a,b)=>b[1].t-a[1].t).slice(0,12).map(x=>x[1].s);if(ep.length)o.push('Ringkasan obrolan sebelumnya: '+ep.join(' | '));
  return o.length?'YANG SUDAH KUPELAJARI TENTANG PENGGUNA (dari obrolan kita; pakai secara natural untuk personalisasi, rujuk cerita lama bila relevan, jangan membacakan daftar, jangan mengarang di luar ini): '+o.join('. ')+'.':''}
 function hint(mode){const p=P(),t=TONES[p.tone]||TONES.natural,o=[];
  o.push('GAYA BICARA TERPILIH ('+t[0]+'): '+t[1]);
@@ -4028,11 +4039,16 @@ function hint(mode){const p=P(),t=TONES[p.tone]||TONES.natural,o=[];
  if(p.custom)o.push('Instruksi tambahan pengguna: '+p.custom.slice(0,300));
  o.push('Percakapan natural: tanggapi seperti manusia, bukan template. Hindari pembuka klise ("Tentu!", "Baik, saya akan..."), jangan mengulang pertanyaan, jangan terlalu panjang untuk obrolan ringan, variasikan kalimat, tunjukkan empati bila perlu, ajukan satu pertanyaan lanjutan hanya bila berguna.');
  o.push('Pewarnaan teks: untuk menonjolkan kata kunci pakai {{warna|teks}} dengan warna merah/biru/hijau/kuning/oranye/ungu/pink/tosca/emas (maksimal 3-4 per jawaban, contoh {{hijau|benar}}), atau ==teks== untuk stabilo. Jangan dipakai di dalam blok kode.');
+ o.push('OTAK: kamu cerdas dan bisa menjawab apa pun dari pengetahuanmu sendiri tanpa internet: pengetahuan umum, sains, matematika, coding, bisnis, hukum dan kesehatan umum, kreatif, curhat, dan obrolan santai. Bernalarlah dulu, periksa konsistensi, beri contoh konkret; bila ambigu, ambil asumsi paling masuk akal dan sebutkan, atau tanya balik singkat. Internet hanya untuk info yang berubah (berita, harga, jadwal, skor): JANGAN pernah bilang kamu tidak terhubung ke internet; bila tak ada data web, jawab dari pengetahuanmu dan beri tahu bila info mungkin kedaluwarsa. Ingat seluruh percakapan dan rujuk hal yang pernah disebut pengguna.');
  o.push(p.speed==='fast'?'KECEPATAN: jawab dalam waktu singkat; pikirkan seperlunya saja namun tetap cerdas dan teliti.':'KUALITAS: prioritaskan kedalaman, ketelitian, dan kelengkapan jawaban; berpikirlah sepenuhnya tanpa terburu-buru.');
  const m=memText();if(m)o.push(m);return o.join(' ')}
 /* ---- eksekusi AI dengan batas waktu 10 detik ---- */
 async function run(stream,msgs,sys,mode,signal,cb,T0,bonus){
- if(P().speed!=='fast'){const ac=new AbortController();signal.addEventListener('abort',()=>ac.abort(),{once:true});const tm=setTimeout(()=>ac.abort(),150000);try{await stream(msgs,sys,ac.signal,cb.onT,cb.onD,{})}finally{clearTimeout(tm)}if(signal.aborted&&!cb.any())throw new Error('abort');if(!cb.any())throw new Error('empty');return}
+ if(P().speed!=='fast'){const custom0=(DB.get('ai',{}).provider==='custom'),plan=custom0?[[0,null]]:[[0,'openai'],[900,'openai'],[600,'openai-fast',16],[600,'mistral',10],[900,'openai-large',10],[1200,'llama',8]];let last=null;
+ for(let i=0;i<plan.length;i++){const [wait,model,trim]=plan[i];if(i){await new Promise(r=>setTimeout(r,wait));if(signal.aborted)break;try{A13.status('Server AI sibuk, mencoba jalur cadangan ('+i+')…')}catch(e){}}
+  const ac=new AbortController();signal.addEventListener('abort',()=>ac.abort(),{once:true});const tm=setTimeout(()=>ac.abort(),150000);
+  try{await stream(trim?msgs.slice(-trim):msgs,sys,ac.signal,cb.onT,cb.onD,model?{model}:{});last=null;break}catch(e){last=e;if(cb.any()||signal.aborted)break}finally{clearTimeout(tm)}}
+ if(signal.aborted&&!cb.any())throw new Error('abort');if(last&&!cb.any())throw last;if(!cb.any())throw new Error('empty');return}
  const custom=(DB.get('ai',{}).provider==='custom'),sysF=sys.split(MODE_TXT[mode]||'\u0000').join(MODE_TXT.quick);
  const att=[];let won=null,hedged=0,hard=0,ansOn=false;
  const claim=r=>{if(r.dead)return false;if(won&&won!==r)return false;if(!won){won=r;att.forEach(a=>{if(a!==r){a.dead=1;a.ac.abort()}})}return true};
@@ -4063,12 +4079,12 @@ async function distill(chat){if(busyL)return;busyL=1;
   let txt='';const ac=new AbortController(),to=setTimeout(()=>ac.abort(),15000);
   try{await streamAI([{role:'user',content:'Pesan pengguna:\n'+us}],sys,ac.signal,()=>{},d=>{txt+=d},{fast:true})}finally{clearTimeout(to)}
   const j=JSON.parse(txt.slice(txt.indexOf('{'),txt.lastIndexOf('}')+1));
-  const n=Mem();n.ll=n.ll||{};const x=n.ll;x.facts=clip([...(x.facts||[]),...(j.facts||[])],40);x.traits=clip([...(x.traits||[]),...(j.traits||[])],12);x.stories=clip([...(x.stories||[]),...(j.stories||[])],25);if(j.style)x.style=String(j.style).slice(0,200);
-  x.eps=x.eps||{};if(j.summary)x.eps[chat.id]={t:Date.now(),s:String(j.summary).slice(0,220)};const ks=Object.keys(x.eps).sort((a,b)=>x.eps[b].t-x.eps[a].t);ks.slice(30).forEach(k=>delete x.eps[k]);x.u=Date.now();setMem(n)}
+  const n=Mem();n.ll=n.ll||{};const x=n.ll;x.facts=clip([...(x.facts||[]),...(j.facts||[])],90);x.traits=clip([...(x.traits||[]),...(j.traits||[])],16);x.stories=clip([...(x.stories||[]),...(j.stories||[])],45);if(j.style)x.style=String(j.style).slice(0,200);
+  x.eps=x.eps||{};if(j.summary)x.eps[chat.id]={t:Date.now(),s:String(j.summary).slice(0,220)};const ks=Object.keys(x.eps).sort((a,b)=>x.eps[b].t-x.eps[a].t);ks.slice(45).forEach(k=>delete x.eps[k]);x.u=Date.now();setMem(n)}
  catch(e){}finally{busyL=0}}
 function after(chat){if(!P().learn||!S.user||(DB.get('ai',{}).provider==='local'))return;const n=chat.msgs.filter(m=>m.role==='user').length,m=Mem();m.lc=(m.lc||0)+1;
  const last=(chat.msgs.filter(x=>x.role==='user').slice(-1)[0]||{}).text||'',story=last.length>140||/\b(cerita|pengalaman|dulu|kemarin|keluarga|pacar|kerja|sekolah|kuliah|namaku|nama saya|aku suka|gue suka)\b/i.test(last);
- if(m.lc>=4||(story&&m.lc>=2)||(n===3)){m.lc=0;setMem(m);distill(chat)}else setMem(m)}
+ if(m.lc>=3||(story&&m.lc>=2)||(n===2)){m.lc=0;setMem(m);distill(chat)}else setMem(m)}
 /* ---- UI pengaturan ---- */
 const chips=(id,cur,arr)=>`<div class="a13c" id="${id}">${arr.map(([k,l])=>`<button type="button" data-k="${E(k)}" class="${k===cur?'on':''}">${E(l)}</button>`).join('')}</div>`;
 function section(o){const p=P(),l=mem();const host=o.querySelector('#stor');if(!host)return;
@@ -4122,6 +4138,13 @@ function ctx(raw){const t=(raw||'').toLowerCase();
  if(/\b(rencana|jadwal|strategi|tips|saran|rekomendasi)\b/.test(t))return 'Menyusun saran terbaik…';
  if(/\b(kenapa|mengapa|bagaimana|gimana|jelaskan|apa itu|apa bedanya)\b/.test(t))return 'Memikirkan penjelasan terbaik…';
  return 'Membaca dan memahami pesanmu…'}
-window.A13={P,hint,run,gallery,after,apply,distill,status,ctx,begin,end,srcLog,actHTML};apply();
+const WI=['greet','thanks','bye','joke','pass','math','rand','count','rev','remember','recall','time','identity','creator','abilities','plans','attach','code','image'];
+function wantsImg(raw,top){if(WI.includes(top))return false;const t=(raw||'').trim();if(t.length<8)return false;if(/^(aku|gue|gw|gua|saya)\s.*\b(sedih|capek|senang|bete|marah|takut|galau|kangen)\b/i.test(t))return false;
+ return /\b(contoh|seperti apa|bentuk(nya)?|wujud(nya)?|tampilan|ciri[- ]ciri|jenis[- ]?jenis|macam[- ]?macam|ilustrasi|referensi|varian|spesies)\b/i.test(t)||/^(siapa|apa itu|apa sih|apakah itu)\b/i.test(t)||/\b(tampilkan|tunjukkan|perlihatkan|lihatkan|profil|biografi|sejarah|penemu)\b/i.test(t)}
+async function galleryFor(raw){try{const t=(raw||'').replace(/[?!.,]+/g,' ').replace(/\b(tolong|coba|bisa|kasih|tunjukkan|tampilkan|lihatkan|perlihatkan|gambarkan|beri|berikan|contoh|seperti apa|bentuknya|wujudnya|apa itu|apa sih|siapa|apa|itu|yang|dong|ya|sih|aja|saja|dari|di|ke|dan|untuk|jelaskan|ceritakan|tentang|mengenai|ada|apa saja|jenis|macam|ciri|ciri-ciri|profil|biografi|sejarah|penemu)\b/gi,' ').replace(/\s+/g,' ').trim().slice(0,60);if(t.length<3)return[];
+ const out=[],seen=new Set();for(const l of ['id','en']){if(out.length>=4)break;try{const r=await fetch(`https://${l}.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch=${encodeURIComponent(t)}&gsrlimit=6&prop=pageimages|info&piprop=thumbnail&pithumbsize=640&inprop=url&format=json&origin=*`,{signal:AbortSignal.timeout?AbortSignal.timeout(6000):undefined}),o=await r.json();Object.values((o.query&&o.query.pages)||{}).sort((a,b)=>a.index-b.index).forEach(p=>{const u=p.thumbnail&&p.thumbnail.source;if(u&&!seen.has(u)&&out.length<4){seen.add(u);out.push({thumb:u,full:u,title:(p.title||'').replace(/ - Wikipedia$/,''),page:p.fullurl})}})}catch(e){}}
+ if(out.length&&out.length<4&&typeof imgSearch==='function'){try{const r=await imgSearch(out[0].title||t,5);r.forEach(x=>{if(out.length<4&&!seen.has(x.thumb)){seen.add(x.thumb);out.push(x)}})}catch(e){}}
+ return out}catch(e){return[]}}
+window.A13={wantsImg,galleryFor,P,hint,run,gallery,after,apply,distill,status,ctx,begin,end,srcLog,actHTML};apply();
 })();
 </script>
