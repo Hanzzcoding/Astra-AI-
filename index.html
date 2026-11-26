@@ -1540,8 +1540,8 @@ async function imageFlow(chat,raw){
 $('#menuBtn').onclick=e=>{
   e.stopPropagation();if(document.querySelector('.pop'))return closePop();
   const r=e.currentTarget.getBoundingClientRect();const p=document.createElement('div');p.className='pop';
-  const it=[['chat','x','com'],['crown','x','fr'],['zap','x','st'],['settings','x','acc'],'-',['edit','newChat','new'],['hist','history','hist'],['settings','settings','set'],['globe','lang','lang'],['db','storage','store'],'-',['wallet','saldoAstra','wal'],['spin','x','spin'],['gift','x','dly'],['spark','x','fxp'],['crown','x','evt'],['gamepad','x','bhv'],['music','Musik','mus'],['chat','waChannel','chn'],['crown','premium','prem'],['link','logoLink','logo'],'-',['help','help','help'],['info','about','about'],['shield','privacy','priv'],'-',['logout','logout','out']];
-  p.innerHTML=it.map(x=>x==='-'?'<hr>':`<button data-a="${x[2]}">${ic(x[0])}${x[2]==='com'?'Chat Komunitas':x[2]==='fr'?'Chat Pribadi':x[2]==='st'?'Status':x[2]==='acc'?'Pengaturan Akun':x[2]==='spin'?'Spin Hadiah':x[2]==='bhv'?'Brohaven':x[2]==='dly'?'Bonus Harian':x[2]==='fxp'?'Misi & Event':x[2]==='evt'?'Pusat Event':x[1]==='saldoAstra'?'Saldo Astra':x[1]==='Musik'?'Musik':x[1]==='waChannel'?'Saluran WhatsApp':t(x[1])}${x[2]==='prem'?'<span class="tag">GO</span>':''}${x[2]==='wal'?'<span class="tag">'+rp(bal())+'</span>':''}${x[2]==='spin'&&S.spCan?'<span class="tag">GRATIS</span>':''}${x[2]==='mus'&&!MU.audio.paused?'<span class="tag">Memutar</span>':''}${x[2]==='chn'||x[2]==='bhv'?'<span class="tag">BARU</span>':''}</button>`).join('');
+  const it=[['chat','x','com'],['crown','x','fr'],['zap','x','st'],['settings','x','acc'],'-',['edit','newChat','new'],['hist','history','hist'],['settings','settings','set'],['globe','lang','lang'],['db','storage','store'],'-',['wallet','saldoAstra','wal'],['spin','x','spin'],['gift','x','dly'],['spark','x','fxp'],['crown','x','evt'],['gift','x','shp'],['spark','x','box'],['gamepad','x','bhv'],['music','Musik','mus'],['chat','waChannel','chn'],['crown','premium','prem'],['link','logoLink','logo'],'-',['help','help','help'],['info','about','about'],['shield','privacy','priv'],'-',['logout','logout','out']];
+  p.innerHTML=it.map(x=>x==='-'?'<hr>':`<button data-a="${x[2]}">${ic(x[0])}${x[2]==='com'?'Chat Komunitas':x[2]==='fr'?'Chat Pribadi':x[2]==='st'?'Status':x[2]==='acc'?'Pengaturan Akun':x[2]==='spin'?'Spin Hadiah':x[2]==='bhv'?'Brohaven':x[2]==='dly'?'Bonus Harian':x[2]==='fxp'?'Misi & Event':x[2]==='evt'?'Pusat Event':x[2]==='shp'?'Toko Kosmetik':x[2]==='box'?'Kotak Misteri':x[1]==='saldoAstra'?'Saldo Astra':x[1]==='Musik'?'Musik':x[1]==='waChannel'?'Saluran WhatsApp':t(x[1])}${x[2]==='prem'?'<span class="tag">GO</span>':''}${x[2]==='wal'?'<span class="tag">'+rp(bal())+'</span>':''}${x[2]==='spin'&&S.spCan?'<span class="tag">GRATIS</span>':''}${x[2]==='mus'&&!MU.audio.paused?'<span class="tag">Memutar</span>':''}${x[2]==='chn'||x[2]==='bhv'?'<span class="tag">BARU</span>':''}</button>`).join('');
   document.body.appendChild(p);p.style.left='12px';p.style.top=(r.bottom+6)+'px';p.style.maxHeight=(innerHeight-r.bottom-20)+'px';p.style.overflowY='auto';p.style.overscrollBehavior='contain';
   p.querySelectorAll('button').forEach(b=>b.onclick=()=>{closePop();menuAct(b.dataset.a)});
 };
@@ -1556,6 +1556,8 @@ function menuAct(a){
   else if(a==='dly')openDaily();
   else if(a==='fxp')openFx();
   else if(a==='evt')openEvents();
+  else if(a==='shp')openShop();
+  else if(a==='box')openBox();
   else if(a==='bhv')openBrohaven();
   else if(a==='mus')muOpen();
   else if(a==='prem')openPlans(false);
@@ -2466,7 +2468,7 @@ async function giftSheet(W,getWs){
 
 /* ====================== HUB OWNER ====================== */
 function hub(){
- const secs=[['ov','dash','Ringkasan'],['us','users','Pengguna'],['cd','key','Kode redeem'],['cm','chat','Komunitas'],['lv','live','Live'],['pr','tag','Harga & pembayaran'],...(X.isRootU()?[['wp','live','Video wallpaper'],['sp','spin','Event Spin'],['bh','zap','Brohaven'],['dy','zap','Bonus Harian'],['fx','spark','Misi & Event'],['bq','lock','Cadangan & Pemulihan'],['au','dash','Audit & Pencari'],['an','chat','Pengumuman & Notifikasi'],['gl','lock','Login Google & Keamanan'],['ej','zap','Jadwal Event'],['qz','spark','Kuis & Turnamen'],['vt','coin','Brankas & Ekonomi']]:[]),['bk','lock','Penyimpanan & cadangan'],['sd','coin','Top saldo'],['tx','list','Transaksi'],['tl','dash','Alat server'],['wd','flag','Kata terlarang'],['rg','lock','Pendaftaran'],['lg','list','Log']];
+ const secs=[['ov','dash','Ringkasan'],['us','users','Pengguna'],['cd','key','Kode redeem'],['cm','chat','Komunitas'],['lv','live','Live'],['pr','tag','Harga & pembayaran'],...(X.isRootU()?[['wp','live','Video wallpaper'],['sp','spin','Event Spin'],['bh','zap','Brohaven'],['dy','zap','Bonus Harian'],['fx','spark','Misi & Event'],['bq','lock','Cadangan & Pemulihan'],['au','dash','Audit & Pencari'],['an','chat','Pengumuman & Notifikasi'],['gl','lock','Login Google & Keamanan'],['ej','zap','Jadwal Event'],['qz','spark','Kuis & Turnamen'],['vt','coin','Brankas & Ekonomi'],['tk','crown','Toko & Kotak Misteri'],['ds','chart','Dasbor & Log']]:[]),['bk','lock','Penyimpanan & cadangan'],['sd','coin','Top saldo'],['tx','list','Transaksi'],['tl','dash','Alat server'],['wd','flag','Kata terlarang'],['rg','lock','Pendaftaran'],['lg','list','Log']];
  const o=modal(`<div class="mh"><h3>Hub Owner</h3><button class="ibtn" data-close>${ic('x')}</button></div><div class="xnav">${secs.map(([k,i,n])=>`<button data-k="${k}">${ic(i)} ${n}</button>`).join('')}</div><div id="hv"></div>`,'omod tfm'),v=o.querySelector('#hv');
  const go=async k=>{o.querySelectorAll('.xnav button').forEach(b=>b.classList.toggle('on',b.dataset.k===k));v.innerHTML='<p class="mt">Memuat...</p>';
   try{await V[k]()}catch(e){v.innerHTML='<p class="mt">'+esc(e.message)+'</p>'}};
@@ -2481,7 +2483,7 @@ function hub(){
   async bq(){window.__bqEditor(v)},
   async au(){window.__auEditor(v)},
   async an(){window.__anEditor(v)},
-  async gl(){window.__x14(v,'gl')},async ej(){window.__x14(v,'ej')},async qz(){window.__x14(v,'qz')},async vt(){window.__x14(v,'vt')},
+  async gl(){window.__x14(v,'gl')},async ej(){window.__x14(v,'ej')},async qz(){window.__x14(v,'qz')},async vt(){window.__x14(v,'vt')},async tk(){window.__x15(v,'tk')},async ds(){window.__x15(v,'ds')},
   async us(){let f='all',qs='',off=0,list=[],tot=0,tm=0;v.innerHTML=`<input id="uq" class="oin" placeholder="Cari nama, email, atau ID"><div class="seg" id="uf"><button data-f="all" class="on">Semua</button><button data-f="on">Online</button><button data-f="ban">Di-ban</button><button data-f="adm">Admin</button></div><div id="ul" class="tlist"></div><button class="btn" id="um" hidden>Muat lebih banyak</button>`;
    const ul=v.querySelector('#ul'),um=v.querySelector('#um');
    const paint=()=>{ul.innerHTML=list.length?list.map((x,i)=>`<button class="xu" data-i="${i}">${avU(x)}<span class="tri"><b>${esc(x.name)} ${roleHTML(x.role)}</b><small>ID ${x.id} · ${esc(x.email)} · ${rp(x.sal)}</small></span>${x.ban?'<span class="bd">BAN</span>':x.mute?'<span class="bd">MUTE</span>':x.on?'<i class="dot on"></i>':''}</button>`).join(''):'<p class="mt">Tidak ada pengguna.</p>';um.hidden=list.length>=tot;ul.querySelectorAll('.xu').forEach(b=>b.onclick=()=>{const x=list[b.dataset.i];X.ownerUser({...x,avatar:null},()=>ld(1))})};
@@ -4240,8 +4242,8 @@ function openStats(){const tx=(S.user.tx||[]).slice(),now=Date.now(),days=[];for
  $('#stcsv',o).onclick=()=>{const rows=[['waktu','jumlah','catatan']].concat(tx.map(t=>[new Date(t.t||t.d||0).toISOString(),t.a!=null?t.a:t.amt,'"'+String(t.n||t.note||'').replace(/"/g,'""')+'"']));const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([rows.map(r=>r.join(',')).join('\n')],{type:'text/csv'}));a.download='riwayat-saldo-astra.csv';a.click()}}
 /* tambah tombol ke dompet */
 const _ow=window.openWallet||openWallet;
-window.openWallet=function(){_ow.apply(this,arguments);const m=$('#ov .modal');if(!m||$('#x14w',m))return;const t=$('#walTf',m);if(t)t.parentNode.insertAdjacentHTML('afterend','<div class="x14b" id="x14w" style="margin-bottom:12px"><button class="btn" data-x="v">🔐 Brankas</button><button class="btn" data-x="r">📥 Terima QR</button><button class="btn" data-x="s">📊 Statistik</button><button class="btn" data-x="e">🏆 Pusat Event</button></div>');
- m.querySelectorAll('[data-x]').forEach(b=>b.onclick=()=>({v:openVault,r:openRecv,s:openStats,e:openEvents})[b.dataset.x]())};
+window.openWallet=function(){_ow.apply(this,arguments);const m=$('#ov .modal');if(!m||$('#x14w',m))return;const t=$('#walTf',m);if(t)t.parentNode.insertAdjacentHTML('afterend','<div class="x14b" id="x14w" style="margin-bottom:12px"><button class="btn" data-x="v">🔐 Brankas</button><button class="btn" data-x="r">📥 Terima QR</button><button class="btn" data-x="s">📊 Statistik</button><button class="btn" data-x="e">🏆 Pusat Event</button><button class="btn" data-x="t">🛍 Toko</button><button class="btn" data-x="b">🎁 Kotak Misteri</button></div>');
+ m.querySelectorAll('[data-x]').forEach(b=>b.onclick=()=>({v:openVault,r:openRecv,s:openStats,e:openEvents,t:openShop,b:openBox})[b.dataset.x]())};
 try{openWallet=window.openWallet}catch(e){}
 /* ================= PUSAT EVENT ================= */
 function openEvents(){
@@ -4264,7 +4266,8 @@ window.__x14=async function(v,k){const P=(p,b)=>api('admin/'+p,'POST',b||{},1);l
   if(k==='gl'){const sc=d.g;v.innerHTML=`<div class="x14c"><h4>Login Google (uji coba)</h4><small class="mut">Tombol "Masuk dengan Google" tampil di bawah kartu login dan membuka halaman terpisah. Google yang memverifikasi akun, server mengecek token ke Google.</small>${tg('gon',sc.on,'Aktifkan Masuk dengan Google')}${inp('gcid',sc.cid,'Client ID: xxxx.apps.googleusercontent.com')}<button class="btn pri" id="gs">Simpan</button></div>
    <div class="x14c"><h4>Cara membuat Client ID</h4><ol class="mut" style="font-size:13px;margin:0;padding-left:18px;line-height:1.6"><li>Buka console.cloud.google.com › APIs &amp; Services › Credentials.</li><li>Create Credentials › OAuth client ID › Web application.</li><li>Authorized JavaScript origins, tambahkan: <b>${E(location.origin)}</b></li><li>Salin Client ID, tempel di atas, aktifkan, simpan.</li></ol><small class="mut">Layar persetujuan (OAuth consent screen) isi mode Testing + daftarkan email penguji.</small></div>`;
    $('#gs',v).onclick=e=>save(e.target,{act:'g',on:$('#gon',v).checked,cid:$('#gcid',v).value.trim()})}
-  if(k==='ej'){v.innerHTML=`<div class="x14c"><h4>Event sekarang</h4><small class="mut">${d.now&&d.now.mult>1?'Aktif: ×'+d.now.mult+' '+E(d.now.label||''):'Tidak ada event aktif'}</small></div><div class="x14c"><h4>Jadwalkan event bonus</h4>${inp('x14el','','Nama event, mis. Weekend Gila')}${inp('x14em','2','Pengali hadiah (1.5 - 10)','number')}${inp('x14eh','24','Durasi (jam)','number')}${inp('x14ea','','Mulai (kosong = sekarang)','datetime-local')}${tg('x14ean',1,'Kirim pengumuman ke semua pemain')}<button class="btn pri" id="es">Jadwalkan</button></div><div class="sec-t">Terjadwal</div>${(d.s||[]).length?d.s.map(x=>`<div class="x14c"><div class="x14r"><b>${E(x.label)} ×${x.mult}</b><button class="btn" style="height:34px" data-sd="${E(x.id)}">Hapus</button></div><small class="mut">${new Date(x.start).toLocaleString('id-ID')} → ${new Date(x.end).toLocaleString('id-ID')}</small></div>`).join(''):'<p class="mut">Belum ada.</p>'}`;
+  if(k==='ej'){v.innerHTML=`<div class="x14c"><h4>Event sekarang</h4><small class="mut">${d.now&&d.now.mult>1?'Aktif: ×'+d.now.mult+' '+E(d.now.label||''):'Tidak ada event aktif'}</small></div><div class="x14c"><h4>Jadwalkan event bonus</h4><div class="x14b">${[['Ramadan',1.5,720],['17 Agustus',2,72],['Tahun Baru',3,48],['Harbolnas 12.12',2,24],['Gajian',1.5,48],['Weekend Gila',2,48]].map((p,i)=>`<button class="btn" style="height:34px;min-width:90px" data-ps="${i}">${p[0]}</button>`).join('')}</div>${inp('x14el','','Nama event, mis. Weekend Gila')}${inp('x14em','2','Pengali hadiah (1.5 - 10)','number')}${inp('x14eh','24','Durasi (jam)','number')}${inp('x14ea','','Mulai (kosong = sekarang)','datetime-local')}${tg('x14ean',1,'Kirim pengumuman ke semua pemain')}<button class="btn pri" id="es">Jadwalkan</button></div><div class="sec-t">Terjadwal</div>${(d.s||[]).length?d.s.map(x=>`<div class="x14c"><div class="x14r"><b>${E(x.label)} ×${x.mult}</b><button class="btn" style="height:34px" data-sd="${E(x.id)}">Hapus</button></div><small class="mut">${new Date(x.start).toLocaleString('id-ID')} → ${new Date(x.end).toLocaleString('id-ID')}</small></div>`).join(''):'<p class="mut">Belum ada.</p>'}`;
+   v.querySelectorAll('[data-ps]').forEach(b=>b.onclick=()=>{const p=[['Ramadan',1.5,720],['17 Agustus',2,72],['Tahun Baru',3,48],['Harbolnas 12.12',2,24],['Gajian',1.5,48],['Weekend Gila',2,48]][+b.dataset.ps];$('#x14el',v).value='Event '+p[0];$('#x14em',v).value=p[1];$('#x14eh',v).value=p[2]});
    $('#es',v).onclick=e=>{const a=$('#x14ea',v).value;save(e.target,{act:'s',label:$('#x14el',v).value||'Event Bonus',mult:+$('#x14em',v).value,hrs:+$('#x14eh',v).value,at:a?new Date(a).getTime():0,ann:$('#x14ean',v).checked})};
    v.querySelectorAll('[data-sd]').forEach(b=>b.onclick=()=>save(b,{act:'sdel',id:b.dataset.sd}))}
   if(k==='qz'){const q=d.q,t=d.t;v.innerHTML=`<div class="x14c"><h4>Kuis Harian</h4>${tg('qon',q.on,'Aktif')}<div class="x14r">Jumlah soal/hari ${inp('qn',q.n,'','number')}</div><div class="x14r">Hadiah per benar ${inp('qr',q.r,'','number')}</div><div class="x14r">Bonus sempurna ${inp('qb',q.b,'','number')}</div><button class="btn pri" id="qs">Simpan kuis</button></div>
@@ -4281,4 +4284,79 @@ window.__x14=async function(v,k){const P=(p,b)=>api('admin/'+p,'POST',b||{},1);l
  d=await P('x14',{act:'get'});draw()};
 })();
 </script>
+<style>
+.shg{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.shi{border:1px solid var(--line);background:var(--card);border-radius:14px;padding:10px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;font-size:12.5px}
+.shi b{font-size:13px}.shi .pv{width:54px;height:54px;border-radius:50%;display:grid;place-items:center;font-size:24px;background:var(--card2,#222);position:relative}
+.shi .pv.f{padding:3px}.shi .pv.f i{display:block;width:100%;height:100%;border-radius:50%;background:var(--bg,#111)}
+.shi .btn{height:34px;width:100%}.shi.eq{border-color:#2fbf71}
+.shtabs{display:flex;gap:6px;margin:8px 0}.shtabs button{flex:1;padding:9px 4px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:inherit;font-weight:700;cursor:pointer}.shtabs button.on{border-color:var(--accent);background:rgba(80,140,255,.15)}
+.shpre{display:flex;align-items:center;gap:12px;padding:12px;border-radius:14px;border:1px solid var(--line);background:var(--card)}
+.bxbig{font-size:84px;text-align:center;transition:transform .2s}.bxbig.shake{animation:bxs .5s infinite}@keyframes bxs{0%,100%{transform:rotate(0)}25%{transform:rotate(-10deg) scale(1.1)}75%{transform:rotate(10deg) scale(1.1)}}
+.bxres{text-align:center;font-size:18px;font-weight:800;padding:12px;border-radius:14px;background:linear-gradient(135deg,rgba(124,58,237,.3),rgba(37,99,235,.3))}
+</style>
+<script>
+(()=>{
+const E=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const $=(s,r=document)=>r.querySelector(s);const rpf=n=>'Rp'+Math.round(n||0).toLocaleString('id-ID');
+const sync=r=>{try{if(r&&r.bal!=null)applyWallet({bal:r.bal,tx:r.tx})}catch(e){}};
+const cd=ms=>{ms=Math.max(0,ms);const h=Math.floor(ms/36e5),m=Math.floor(ms%36e5/6e4);return h+' jam '+m+' menit'};
+/* pratinjau profil dengan kosmetik */
+const prev=(eq,name)=>{const f=eq.frame,c=eq.color,b=eq.badge;return `<div class="shpre"><div class="pv" style="width:56px;height:56px;border-radius:50%;display:grid;place-items:center;font-size:22px;font-weight:800;${f?'background:'+E(f)+';padding:3px':'background:var(--card2,#222)'}"><span style="width:100%;height:100%;border-radius:50%;background:var(--bg,#111);display:grid;place-items:center">${E((name||'A')[0].toUpperCase())}</span></div><div><b style="${c?'color:'+E(c):''}">${E(name||'Kamu')} ${b?E(b):''}</b><div class="mut" style="font-size:12px">Pratinjau tampilan profilmu</div></div></div>`};
+window.cosmeticName=(n,cs)=>cs?`<span style="${cs.c?'color:'+E(cs.c):''}">${E(n)}${cs.b?' '+E(cs.b):''}</span>`:E(n);
+/* ================= TOKO ================= */
+function openShop(){
+ const o=modal('<div class="mh"><h3>Toko Kosmetik</h3><button class="ibtn" data-close>'+ic('x')+'</button></div><div id="shb"><small class="mut">Memuat…</small></div>','omod tfm'),sb=$('#shb',o);let D,tab='frame';
+ const load=async()=>{try{D=await api('shop','GET',null,1)}catch(e){sb.innerHTML='<p class="mut">'+E(e.message)+'</p>';return}draw()};
+ const val=id=>{const it=D.items.find(x=>x.id===id);return it?it.v:''};
+ const draw=()=>{if(!D.on)return sb.innerHTML='<p class="mut">Toko sedang tutup.</p>';
+  const eq={frame:val(D.eq.frame),color:val(D.eq.color),badge:val(D.eq.badge)},L=D.items.filter(x=>x.k===tab);
+  sb.innerHTML=`<small class="mut">Saldo: <b>${rpf(D.bal)}</b></small>${prev(eq,S.user.name)}<div class="shtabs"><button data-k="frame" class="${tab==='frame'?'on':''}">Bingkai</button><button data-k="color" class="${tab==='color'?'on':''}">Warna nama</button><button data-k="badge" class="${tab==='badge'?'on':''}">Lencana</button></div>
+  <div class="shg">${L.map(x=>{const on=D.eq[x.k]===x.id;const pv=x.k==='frame'?`<div class="pv f" style="background:${E(x.v)}"><i></i></div>`:x.k==='color'?`<div class="pv"><b style="color:${E(x.v)};font-size:20px">Aa</b></div>`:`<div class="pv">${E(x.v)}</div>`;
+   return `<div class="shi ${on?'eq':''}">${pv}<b>${E(x.n)}</b>${x.own?`<button class="btn ${on?'':'pri'}" data-e="${E(x.id)}">${on?'Lepas':'Pakai'}</button>`:`<button class="btn pri" data-b="${E(x.id)}">${rpf(x.p)}</button>`}</div>`}).join('')||'<p class="mut">Belum ada item.</p>'}</div>`;
+  sb.querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>{tab=b.dataset.k;draw()});
+  sb.querySelectorAll('[data-b]').forEach(b=>b.onclick=async()=>{const it=D.items.find(x=>x.id===b.dataset.b);if(!confirm('Beli '+it.n+' seharga '+rpf(it.p)+'?'))return;b.disabled=true;try{const r=await api('shop/buy','POST',{id:it.id},1);sync(r);D.bal=r.bal;D.eq=r.eq;D.items.forEach(x=>{if(r.own.includes(x.id))x.own=true});toast('Dibeli: '+it.n);draw()}catch(e){toast(e.message);b.disabled=false}});
+  sb.querySelectorAll('[data-e]').forEach(b=>b.onclick=async()=>{const it=D.items.find(x=>x.id===b.dataset.e),on=D.eq[it.k]===it.id;try{const r=await api('shop/equip','POST',{k:it.k,id:on?'':it.id},1);D.eq=r.eq;draw()}catch(e){toast(e.message)}})};
+ load()}
+/* ================= KOTAK MISTERI ================= */
+function openBox(){
+ const o=modal('<div class="mh"><h3>Kotak Misteri</h3><button class="ibtn" data-close>'+ic('x')+'</button></div><div id="bxb"><small class="mut">Memuat…</small></div>','omod tfm'),bb=$('#bxb',o);let D,res=null;
+ const load=async()=>{try{D=await api('box','GET',null,1)}catch(e){bb.innerHTML='<p class="mut">'+E(e.message)+'</p>';return}draw()};
+ const draw=()=>{if(!D.on)return bb.innerHTML='<p class="mut">Kotak Misteri sedang tidak aktif.</p>';
+  bb.innerHTML=`<div class="bxbig" id="bxi">🎁</div>${res?`<div class="bxres">${res.t==='item'?'🎉 Item baru: ':res.t==='pts'?'⭐ ':'💰 '}${E(res.l)}</div>`:''}
+  <div class="x14c"><div class="x14r"><span>Gratis hari ini</span><b>${D.free}/${D.freeMax}</b></div><div class="x14r"><span>Kotak berbayar (${rpf(D.cost)})</span><b>sisa ${D.paidLeft}</b></div><div class="x14r"><span>Saldo</span><b>${rpf(D.bal)}</b></div>${D.mult>1?`<small class="mut">🔥 Event aktif: hadiah kotak gratis ×${D.mult}</small>`:''}<small class="mut">Reset gratis dalam ${cd(D.reset)}</small></div>
+  <button class="btn pri" id="bxo" style="width:100%;height:46px" ${(D.free<=0&&(D.paidLeft<=0||D.bal<D.cost))?'disabled':''}>${D.free>0?'Buka kotak gratis':'Buka kotak ('+rpf(D.cost)+')'}</button>
+  <div class="sec-t">Kemungkinan hadiah</div><div class="x14c">${D.prizes.map(p=>`<div class="x14r"><small>${E(p.l)}</small></div>`).join('')}</div>`;
+  $('#bxo',bb).onclick=async e=>{e.target.disabled=true;$('#bxi',bb).classList.add('shake');try{const r=await api('box/open','POST',{},1);await new Promise(z=>setTimeout(z,900));sync(r);res=r.res;D=r.st;draw()}catch(er){toast(er.message);$('#bxi',bb).classList.remove('shake');e.target.disabled=false}}};
+ load()}
+window.openShop=openShop;window.openBox=openBox;
+/* ================= HUB OWNER ================= */
+const PRESET=[['Ramadan',1.5,720],['17 Agustus',2,72],['Tahun Baru',3,48],['Harbolnas 12.12',2,24],['Gajian',1.5,48],['Weekend Gila',2,48]];
+window.__x15=async function(v,k){const P=(p,b)=>api('admin/'+p,'POST',b||{},1);let d;
+ const inp=(id,val,ph,ty)=>`<input id="${id}" class="oin" ${ty?'type="'+ty+'"':''} value="${E(val)}" placeholder="${E(ph||'')}">`;
+ const tg=(id,on,l)=>`<label style="flex-direction:row;align-items:center;gap:8px"><input type="checkbox" id="${id}" ${on?'checked':''}> ${l}</label>`;
+ const save=(b,body)=>{if(b)b.disabled=true;P('x15',body).then(r=>{d=r;toast('Tersimpan');draw()}).catch(e=>{toast(e.message);if(b)b.disabled=false})};
+ const draw=()=>{
+  if(k==='tk'){const sh=d.shop,bx=d.box;v.innerHTML=`<div class="x14c"><h4>Toko Kosmetik</h4>${tg('x15sh',sh.on,'Toko buka')}<button class="btn pri" id="x15shs">Simpan</button></div>
+   <div class="x14c"><h4>Tambah item</h4><select id="x15k" class="oin"><option value="frame">Bingkai (gradient CSS)</option><option value="color">Warna nama (#rrggbb)</option><option value="badge">Lencana (emoji)</option></select>${inp('x15n','','Nama item')}${inp('x15p','10000','Harga','number')}${inp('x15v','','Nilai: linear-gradient(135deg,#f00,#00f) / #ff0000 / 🎯')}<button class="btn" id="x15ia">Tambah</button></div>
+   <div class="sec-t">Item (${sh.items.length})</div>${sh.items.map(x=>`<div class="x14c"><div class="x14r"><b>${E(x.n)} <small class="mut">${x.k}</small></b><span>${E(x.k==='frame'?'':x.v)}</span></div><div class="x14r"><input class="oin" style="flex:1" type="number" value="${x.p}" data-ip="${E(x.id)}"><button class="btn" style="height:36px" data-is="${E(x.id)}">${x.on?'Nonaktifkan':'Aktifkan'}</button><button class="btn" style="height:36px" data-id="${E(x.id)}">×</button></div></div>`).join('')}
+   <div class="x14c"><h4>Kotak Misteri</h4>${tg('x15bo',bx.on,'Aktif')}<div class="x14r">Gratis per hari ${inp('x15bf',bx.free,'','number')}</div><div class="x14r">Harga kotak ${inp('x15bc',bx.cost,'','number')}</div><div class="x14r">Maks. berbayar/hari ${inp('x15bm',bx.maxPaid,'','number')}</div><button class="btn pri" id="x15bs">Simpan kotak</button>
+   <div class="sec-t">Tabel hadiah (bobot · jenis · nilai)</div>${bx.prizes.map((p,i)=>`<div class="x14r"><input class="oin" style="width:60px" type="number" value="${p.w}" data-pw="${i}"><select class="oin" data-pt="${i}"><option value="sal" ${p.t==='sal'?'selected':''}>Saldo</option><option value="pts" ${p.t==='pts'?'selected':''}>Poin</option><option value="item" ${p.t==='item'?'selected':''}>Item</option></select><input class="oin" style="width:90px" type="number" value="${p.v||0}" data-pv="${i}"></div>`).join('')}<button class="btn" id="x15pa">Tambah baris</button><button class="btn pri" id="x15ps">Simpan hadiah</button><small class="mut">Rata-rata hadiah saldo per buka: ${rpf(d.ev)} (harga kotak ${rpf(bx.cost)}). Jaga rata-rata di bawah harga agar ekonomi sehat.</small></div>`;
+   $('#x15shs',v).onclick=e=>save(e.target,{act:'shop',on:$('#x15sh',v).checked});
+   $('#x15ia',v).onclick=e=>save(e.target,{act:'iadd',k:$('#x15k',v).value,n:$('#x15n',v).value,p:+$('#x15p',v).value,v:$('#x15v',v).value});
+   v.querySelectorAll('[data-is]').forEach(b=>b.onclick=()=>{const it=d.shop.items.find(x=>x.id===b.dataset.is);save(b,{act:'iset',id:it.id,on:it.on?0:1,p:+v.querySelector('[data-ip="'+it.id+'"]').value})});
+   v.querySelectorAll('[data-ip]').forEach(i=>i.onchange=()=>save(null,{act:'iset',id:i.dataset.ip,p:+i.value}));
+   v.querySelectorAll('[data-id]').forEach(b=>b.onclick=()=>{if(confirm('Hapus item ini?'))save(b,{act:'idel',id:b.dataset.id})});
+   $('#x15bs',v).onclick=e=>save(e.target,{act:'box',on:$('#x15bo',v).checked,free:+$('#x15bf',v).value,cost:+$('#x15bc',v).value,maxPaid:+$('#x15bm',v).value});
+   const rows=()=>bx.prizes.map((p,i)=>({w:+v.querySelector('[data-pw="'+i+'"]').value,t:v.querySelector('[data-pt="'+i+'"]').value,v:+v.querySelector('[data-pv="'+i+'"]').value}));
+   $('#x15pa',v).onclick=()=>{bx.prizes.push({w:5,t:'sal',v:1000});const cur=rows();draw();void cur};
+   $('#x15ps',v).onclick=e=>save(e.target,{act:'bprize',prizes:rows()})}
+  if(k==='ds'){const st=d.stats;v.innerHTML=`<div class="xgrid"><div class="xst"><b>${st.users}</b><span>Total akun</span></div><div class="xst"><b>${st.a24}</b><span>Aktif 24 jam</span></div><div class="xst"><b>${st.a7}</b><span>Aktif 7 hari</span></div><div class="xst"><b>${rpf(st.sal)}</b><span>Saldo beredar</span></div><div class="xst"><b>${st.own}</b><span>Item terjual</span></div><div class="xst"><b>${st.boxes}</b><span>Kotak dibuka hari ini</span></div></div><div class="x14c"><h4>Log aksi admin</h4>${inp('x15q','','Cari di log…')}<div id="x15l" style="max-height:320px;overflow:auto"></div><button class="btn" id="x15csv">Unduh CSV</button></div>`;
+   let LG=[];const dl=()=>{const q=$('#x15q',v).value.toLowerCase();$('#x15l',v).innerHTML=LG.filter(x=>!q||(x.by+x.a+x.d).toLowerCase().includes(q)).map(x=>`<div class="x14r" style="border-bottom:1px solid var(--line);padding:4px 0"><small><b>${E(x.by)}</b> · ${E(x.a)} ${E(x.d)}</small><small class="mut">${new Date(x.t).toLocaleString('id-ID')}</small></div>`).join('')||'<small class="mut">Kosong</small>'};
+   api('admin/log','GET',null,1).then(r=>{LG=r.list||[];dl()}).catch(()=>{});$('#x15q',v).oninput=dl;
+   $('#x15csv',v).onclick=()=>{const rows=[['waktu','oleh','aksi','detail']].concat(LG.map(x=>[new Date(x.t).toISOString(),x.by,x.a,x.d].map(z=>'"'+String(z).replace(/"/g,'""')+'"')));const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([rows.map(r=>r.join(',')).join('\n')],{type:'text/csv'}));a.download='log-admin-astra.csv';a.click()}}};
+ d=await P('x15',{act:'get'});draw()};
+})();
+</script>
+
 
