@@ -618,10 +618,22 @@ footer.comp,html[data-device=mobile] footer.comp{padding:4px 10px 6px}
     </div>
     <div class="err" id="authErr" role="alert"></div>
     <button class="btn pri" type="submit" id="aSubmit" data-t="login">Masuk</button>
+    <div class="or" style="margin:14px 0 10px"><span>atau coba cara lain</span></div>
+    <button type="button" class="gbtn" id="gBtn"><svg viewBox="0 0 48 48" width="20" height="20" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg><span>Masuk dengan Google</span><em>UJI COBA</em></button>
     <div class="trust"><span>🔒 Terenkripsi</span><span>🛡️ Anti-bruteforce</span><span>📱 Passkey &amp; 2FA</span></div>
     <div class="foot">From Ziurixy x Hanzzy</div>
   </form>
  </div>
+ <section class="gpage" id="gPage" hidden>
+  <div class="gcard">
+   <button type="button" class="gback" id="gBack">← Kembali ke Masuk / Daftar</button>
+   <div class="gtop"><svg viewBox="0 0 48 48" width="34" height="34" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg><h1>Masuk dengan Google <em>UJI COBA</em></h1></div>
+   <p class="gsub">Halaman terpisah dari Masuk / Daftar biasa. Kamu tidak perlu mengetik email: pilih akun Google-mu, lalu Google yang memverifikasi bahwa akun itu benar-benar ada. ASTRA hanya menerima email yang sudah diverifikasi Google.</p>
+   <div id="gBox" class="gbox"><small>Memeriksa ketersediaan…</small></div>
+   <div class="err" id="gErr" role="alert"></div>
+   <div class="hint sm">Ingin masuk tanpa akun Google? Kembali, lalu gunakan Masuk atau Daftar seperti biasa.</div>
+  </div>
+ </section>
 </div>
 
 <div id="app" hidden>
@@ -1528,8 +1540,8 @@ async function imageFlow(chat,raw){
 $('#menuBtn').onclick=e=>{
   e.stopPropagation();if(document.querySelector('.pop'))return closePop();
   const r=e.currentTarget.getBoundingClientRect();const p=document.createElement('div');p.className='pop';
-  const it=[['chat','x','com'],['crown','x','fr'],['zap','x','st'],['settings','x','acc'],'-',['edit','newChat','new'],['hist','history','hist'],['settings','settings','set'],['globe','lang','lang'],['db','storage','store'],'-',['wallet','saldoAstra','wal'],['spin','x','spin'],['gift','x','dly'],['spark','x','fxp'],['gamepad','x','bhv'],['music','Musik','mus'],['chat','waChannel','chn'],['crown','premium','prem'],['link','logoLink','logo'],'-',['help','help','help'],['info','about','about'],['shield','privacy','priv'],'-',['logout','logout','out']];
-  p.innerHTML=it.map(x=>x==='-'?'<hr>':`<button data-a="${x[2]}">${ic(x[0])}${x[2]==='com'?'Chat Komunitas':x[2]==='fr'?'Chat Pribadi':x[2]==='st'?'Status':x[2]==='acc'?'Pengaturan Akun':x[2]==='spin'?'Spin Hadiah':x[2]==='bhv'?'Brohaven':x[2]==='dly'?'Bonus Harian':x[2]==='fxp'?'Misi & Event':x[1]==='saldoAstra'?'Saldo Astra':x[1]==='Musik'?'Musik':x[1]==='waChannel'?'Saluran WhatsApp':t(x[1])}${x[2]==='prem'?'<span class="tag">GO</span>':''}${x[2]==='wal'?'<span class="tag">'+rp(bal())+'</span>':''}${x[2]==='spin'&&S.spCan?'<span class="tag">GRATIS</span>':''}${x[2]==='mus'&&!MU.audio.paused?'<span class="tag">Memutar</span>':''}${x[2]==='chn'||x[2]==='bhv'?'<span class="tag">BARU</span>':''}</button>`).join('');
+  const it=[['chat','x','com'],['crown','x','fr'],['zap','x','st'],['settings','x','acc'],'-',['edit','newChat','new'],['hist','history','hist'],['settings','settings','set'],['globe','lang','lang'],['db','storage','store'],'-',['wallet','saldoAstra','wal'],['spin','x','spin'],['gift','x','dly'],['spark','x','fxp'],['crown','x','evt'],['gamepad','x','bhv'],['music','Musik','mus'],['chat','waChannel','chn'],['crown','premium','prem'],['link','logoLink','logo'],'-',['help','help','help'],['info','about','about'],['shield','privacy','priv'],'-',['logout','logout','out']];
+  p.innerHTML=it.map(x=>x==='-'?'<hr>':`<button data-a="${x[2]}">${ic(x[0])}${x[2]==='com'?'Chat Komunitas':x[2]==='fr'?'Chat Pribadi':x[2]==='st'?'Status':x[2]==='acc'?'Pengaturan Akun':x[2]==='spin'?'Spin Hadiah':x[2]==='bhv'?'Brohaven':x[2]==='dly'?'Bonus Harian':x[2]==='fxp'?'Misi & Event':x[2]==='evt'?'Pusat Event':x[1]==='saldoAstra'?'Saldo Astra':x[1]==='Musik'?'Musik':x[1]==='waChannel'?'Saluran WhatsApp':t(x[1])}${x[2]==='prem'?'<span class="tag">GO</span>':''}${x[2]==='wal'?'<span class="tag">'+rp(bal())+'</span>':''}${x[2]==='spin'&&S.spCan?'<span class="tag">GRATIS</span>':''}${x[2]==='mus'&&!MU.audio.paused?'<span class="tag">Memutar</span>':''}${x[2]==='chn'||x[2]==='bhv'?'<span class="tag">BARU</span>':''}</button>`).join('');
   document.body.appendChild(p);p.style.left='12px';p.style.top=(r.bottom+6)+'px';p.style.maxHeight=(innerHeight-r.bottom-20)+'px';p.style.overflowY='auto';p.style.overscrollBehavior='contain';
   p.querySelectorAll('button').forEach(b=>b.onclick=()=>{closePop();menuAct(b.dataset.a)});
 };
@@ -1543,6 +1555,7 @@ function menuAct(a){
   else if(a==='spin')openSpin();
   else if(a==='dly')openDaily();
   else if(a==='fxp')openFx();
+  else if(a==='evt')openEvents();
   else if(a==='bhv')openBrohaven();
   else if(a==='mus')muOpen();
   else if(a==='prem')openPlans(false);
@@ -2453,7 +2466,7 @@ async function giftSheet(W,getWs){
 
 /* ====================== HUB OWNER ====================== */
 function hub(){
- const secs=[['ov','dash','Ringkasan'],['us','users','Pengguna'],['cd','key','Kode redeem'],['cm','chat','Komunitas'],['lv','live','Live'],['pr','tag','Harga & pembayaran'],...(X.isRootU()?[['wp','live','Video wallpaper'],['sp','spin','Event Spin'],['bh','zap','Brohaven'],['dy','zap','Bonus Harian'],['fx','spark','Misi & Event'],['bq','lock','Cadangan & Pemulihan'],['au','dash','Audit & Pencari'],['an','chat','Pengumuman & Notifikasi']]:[]),['bk','lock','Penyimpanan & cadangan'],['sd','coin','Top saldo'],['tx','list','Transaksi'],['tl','dash','Alat server'],['wd','flag','Kata terlarang'],['rg','lock','Pendaftaran'],['lg','list','Log']];
+ const secs=[['ov','dash','Ringkasan'],['us','users','Pengguna'],['cd','key','Kode redeem'],['cm','chat','Komunitas'],['lv','live','Live'],['pr','tag','Harga & pembayaran'],...(X.isRootU()?[['wp','live','Video wallpaper'],['sp','spin','Event Spin'],['bh','zap','Brohaven'],['dy','zap','Bonus Harian'],['fx','spark','Misi & Event'],['bq','lock','Cadangan & Pemulihan'],['au','dash','Audit & Pencari'],['an','chat','Pengumuman & Notifikasi'],['gl','lock','Login Google & Keamanan'],['ej','zap','Jadwal Event'],['qz','spark','Kuis & Turnamen'],['vt','coin','Brankas & Ekonomi']]:[]),['bk','lock','Penyimpanan & cadangan'],['sd','coin','Top saldo'],['tx','list','Transaksi'],['tl','dash','Alat server'],['wd','flag','Kata terlarang'],['rg','lock','Pendaftaran'],['lg','list','Log']];
  const o=modal(`<div class="mh"><h3>Hub Owner</h3><button class="ibtn" data-close>${ic('x')}</button></div><div class="xnav">${secs.map(([k,i,n])=>`<button data-k="${k}">${ic(i)} ${n}</button>`).join('')}</div><div id="hv"></div>`,'omod tfm'),v=o.querySelector('#hv');
  const go=async k=>{o.querySelectorAll('.xnav button').forEach(b=>b.classList.toggle('on',b.dataset.k===k));v.innerHTML='<p class="mt">Memuat...</p>';
   try{await V[k]()}catch(e){v.innerHTML='<p class="mt">'+esc(e.message)+'</p>'}};
@@ -2468,6 +2481,7 @@ function hub(){
   async bq(){window.__bqEditor(v)},
   async au(){window.__auEditor(v)},
   async an(){window.__anEditor(v)},
+  async gl(){window.__x14(v,'gl')},async ej(){window.__x14(v,'ej')},async qz(){window.__x14(v,'qz')},async vt(){window.__x14(v,'vt')},
   async us(){let f='all',qs='',off=0,list=[],tot=0,tm=0;v.innerHTML=`<input id="uq" class="oin" placeholder="Cari nama, email, atau ID"><div class="seg" id="uf"><button data-f="all" class="on">Semua</button><button data-f="on">Online</button><button data-f="ban">Di-ban</button><button data-f="adm">Admin</button></div><div id="ul" class="tlist"></div><button class="btn" id="um" hidden>Muat lebih banyak</button>`;
    const ul=v.querySelector('#ul'),um=v.querySelector('#um');
    const paint=()=>{ul.innerHTML=list.length?list.map((x,i)=>`<button class="xu" data-i="${i}">${avU(x)}<span class="tri"><b>${esc(x.name)} ${roleHTML(x.role)}</b><small>ID ${x.id} · ${esc(x.email)} · ${rp(x.sal)}</small></span>${x.ban?'<span class="bd">BAN</span>':x.mute?'<span class="bd">MUTE</span>':x.on?'<i class="dot on"></i>':''}</button>`).join(''):'<p class="mt">Tidak ada pengguna.</p>';um.hidden=list.length>=tot;ul.querySelectorAll('.xu').forEach(b=>b.onclick=()=>{const x=list[b.dataset.i];X.ownerUser({...x,avatar:null},()=>ld(1))})};
@@ -4007,6 +4021,7 @@ async function secPanel(){const o=modal(`<div class="mh"><h3>Keamanan Akun</h3><
  load()}
 window.__secPanel=secPanel;
 const _ac=window.account;window.account=function(){_ac();const b=$('#ao');if(b&&!$('#sk0')){b.insertAdjacentHTML('beforebegin','<button class="btn pri" id="sk0">🔐 Keamanan Akun (Passkey, 2FA, QR)</button>');$('#sk0').onclick=secPanel}};
+window.QRG=QRG;window.finishNP=finishNP;window.__qrDecode=decode;
 setMode('in');
 })();
 </script>
@@ -4148,3 +4163,122 @@ async function galleryFor(raw){try{const t=(raw||'').replace(/[?!.,]+/g,' ').rep
 window.A13={wantsImg,galleryFor,P,hint,run,gallery,after,apply,distill,status,ctx,begin,end,srcLog,actHTML};apply();
 })();
 </script>
+<style>
+.gbtn{width:100%;height:48px;border-radius:14px;border:1px solid #dadce0;background:#fff;color:#3c4043;font:600 15px system-ui,sans-serif;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;position:relative}
+.gbtn em,.gtop em{font-style:normal;font-size:10px;font-weight:800;letter-spacing:.08em;padding:2px 7px;border-radius:99px;background:#fbbc05;color:#3c2a00}
+.gbtn:active{transform:scale(.98)}
+.gpage{position:absolute;inset:0;display:grid;place-items:center;padding:18px;background:var(--bg,#0b1020);z-index:5;overflow:auto}
+.gpage[hidden]{display:none}
+.gcard{width:min(440px,100%);background:var(--card);border:1px solid var(--line);border-radius:22px;padding:22px;display:flex;flex-direction:column;gap:14px}
+.gtop{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.gtop h1{font-size:20px;margin:0}
+.gsub{font-size:13px;color:var(--muted);line-height:1.5;margin:0}
+.gback{align-self:flex-start;background:none;border:0;color:var(--accent);font-weight:700;cursor:pointer;padding:0}
+.gbox{min-height:60px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:12px;border-radius:14px;background:rgba(127,127,127,.08)}
+.x14c{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;margin:8px 0;display:flex;flex-direction:column;gap:8px}
+.x14c h4{margin:0;font-size:14px}.x14r{display:flex;gap:8px;align-items:center;justify-content:space-between;font-size:13px}
+.x14bar{height:8px;border-radius:9px;background:rgba(127,127,127,.2);overflow:hidden}.x14bar i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2))}
+.x14t{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.x14t button{padding:10px 4px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:inherit;font-weight:700;cursor:pointer}.x14t button.on{border-color:var(--accent);background:rgba(80,140,255,.15)}
+.x14o{display:block;width:100%;text-align:left;padding:12px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:inherit;cursor:pointer;margin:4px 0}.x14o.ok{border-color:#2fbf71;background:rgba(47,191,113,.18)}.x14o.no{border-color:#e5484d;background:rgba(229,72,77,.15)}
+.x14b{display:flex;gap:8px;flex-wrap:wrap}.x14b .btn{flex:1;height:42px;min-width:120px}
+.x14ev{padding:10px 12px;border-radius:14px;background:linear-gradient(135deg,#7c3aed,#2563eb);color:#fff;font-weight:700;font-size:13px}
+</style>
+<script>
+(()=>{
+const E=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const $=(s,r=document)=>r.querySelector(s);
+const rpf=n=>'Rp'+Math.round(n||0).toLocaleString('id-ID');
+const cd=ms=>{ms=Math.max(0,ms);const d=Math.floor(ms/864e5),h=Math.floor(ms%864e5/36e5),m=Math.floor(ms%36e5/6e4);return (d?d+' hari ':'')+h+' jam '+m+' menit'};
+const sync=r=>{try{if(r&&r.bal!=null)applyWallet({bal:r.bal,tx:r.tx})}catch(e){}};
+/* ================= LOGIN GOOGLE (halaman terpisah) ================= */
+const gp=$('#gPage'),gb=$('#gBtn'),box=$('#gBox'),gerr=$('#gErr');let gsLoad=null,gcfg=null,gbusy=0;
+const loadGIS=()=>gsLoad||(gsLoad=new Promise((ok,no)=>{if(window.google&&google.accounts&&google.accounts.id)return ok();const s=document.createElement('script');s.src='https://accounts.google.com/gsi/client';s.async=true;s.onload=ok;s.onerror=()=>{gsLoad=null;no(new Error('Tidak bisa memuat layanan Google. Periksa internet / pemblokir iklan lalu coba lagi.'))};document.head.appendChild(s)}));
+const say=m=>{gerr.textContent=m||''};
+async function onCred(resp){if(gbusy)return;gbusy=1;say('');box.innerHTML='<small>Google memverifikasi akunmu…</small>';
+ try{const o=await api('glogin','POST',{credential:resp.credential},1);box.innerHTML='<small>Berhasil. Membuka ASTRA…</small>';gp.hidden=true;window.finishNP(o)}
+ catch(e){say(e.st?e.message:'Server belum merespons, coba lagi.');draw()}finally{gbusy=0}}
+async function draw(){box.innerHTML='<small>Memeriksa ketersediaan…</small>';
+ try{gcfg=await api('gconfig','GET',null,1)}catch(e){box.innerHTML='<small>Server belum merespons. Coba lagi sebentar.</small><button type="button" class="btn" id="gRe">Coba lagi</button>';$('#gRe').onclick=draw;return}
+ if(!gcfg.on||!gcfg.cid){box.innerHTML='<b>Masuk dengan Google belum diaktifkan</b><small style="text-align:center">Fitur uji coba ini dihidupkan oleh Owner. Sementara itu kamu tetap bisa Masuk atau Daftar dengan email.</small>';return}
+ try{await loadGIS()}catch(e){box.innerHTML='<small>'+E(e.message)+'</small><button type="button" class="btn" id="gRe">Coba lagi</button>';$('#gRe').onclick=draw;return}
+ box.innerHTML='<div id="gRender"></div>';
+ try{google.accounts.id.initialize({client_id:gcfg.cid,callback:onCred,ux_mode:'popup',auto_select:false});google.accounts.id.renderButton($('#gRender'),{theme:'outline',size:'large',text:'continue_with',shape:'pill',width:280,locale:'id'})}
+ catch(e){box.innerHTML='<small>Gagal menampilkan tombol Google.</small>'}}
+if(gb){gb.onclick=()=>{say('');gp.hidden=false;draw()};$('#gBack').onclick=()=>{gp.hidden=true;try{google.accounts.id.cancel()}catch(e){}}}
+/* panel Keamanan Akun: buat password untuk akun Google */
+const _sp=window.secPanel;
+if(!window.__gpwHook){window.__gpwHook=1;const _ac2=window.account;window.account=function(){_ac2.apply(this,arguments);try{api('security','GET',null,1).then(s=>{const b=$('#ao');if(s&&s.go&&b&&!$('#gpw0')){b.insertAdjacentHTML('beforebegin','<button class="btn" id="gpw0">🔑 Buat password (akun Google)</button>');$('#gpw0').onclick=()=>{const sh=sheet('<h3>Buat password</h3><p class="xsm">Akunmu dibuat lewat Google. Password dibutuhkan untuk transfer saldo, Brankas, dan masuk dengan email.</p><input id="gpi" class="oin" type="password" autocomplete="new-password" placeholder="Password baru (min. 6 karakter)"><p class="rdErr" id="gpe"></p><button class="btn pri" id="gpg">Simpan password</button><button class="btn" data-close>Batal</button>');$('#gpg',sh).onclick=async()=>{const v=$('#gpi',sh).value;if(v.length<6)return $('#gpe',sh).textContent='Minimal 6 karakter';try{await api('password/init','POST',{pass:v},1);const k=await dk(S.user.email,v);try{await api('password','POST',{old:v,new:k},1)}catch(e){}DB.set('cred',{e:S.user.email,p:k});sh.remove();toast('Password dibuat');$('#gpw0').remove()}catch(e){$('#gpe',sh).textContent=e.message}}}}}).catch(()=>{})}catch(e){}}}
+/* ================= BRANKAS ================= */
+function openVault(){
+ const o=modal('<div class="mh"><h3>Brankas Saldo</h3><button class="ibtn" data-close>'+ic('x')+'</button></div><div id="vb"><small class="mut">Memuat…</small></div>','omod tfm'),vb=$('#vb',o);let D,tier=null;
+ const load=async()=>{try{D=await api('wallet/vault','GET',null,1)}catch(e){vb.innerHTML='<p class="mut">'+E(e.message)+'</p>';return}draw()};
+ const draw=()=>{const now=Date.now();
+  vb.innerHTML=`<div class="x14c"><h4>🔐 Kunci saldo, dapat bonus</h4><small class="mut">Simpan saldo selama beberapa hari. Setelah jatuh tempo kamu menerima bonus. Dibuka lebih awal kena denda ${D.pen}%. Total di brankas: <b>${rpf(D.locked)}</b> / ${rpf(D.max)}. Saldo tersedia: <b>${rpf(D.bal)}</b></small></div>
+  ${D.on?`<div class="x14t">${D.t.map(x=>`<button data-d="${x.d}" class="${tier&&tier.d===x.d?'on':''}">${x.d} hari<br><small>+${x.p}%</small></button>`).join('')}</div>
+  <input id="vam" class="oin" inputmode="numeric" placeholder="Jumlah (min. Rp10.000)"><input id="vnm" class="oin" maxlength="24" placeholder="Nama brankas (opsional)"><div id="vpr" class="mut" style="font-size:13px"></div><button class="btn pri" id="vgo2" style="width:100%">Simpan ke Brankas</button>`:'<div class="x14c"><small class="mut">Brankas sedang dimatikan Owner.</small></div>'}
+  <div class="sec-t">Brankas aktif</div>${D.list.length?D.list.map(v=>{const tot=v.u-v.t,pg=Math.min(100,(now-v.t)/tot*100),ok=now>=v.u;return `<div class="x14c"><div class="x14r"><b>${E(v.nm||'Brankas')} · ${rpf(v.a)}</b><span>+${v.p}%</span></div><div class="x14bar"><i style="width:${pg}%"></i></div><div class="x14r"><small class="mut">${ok?'Sudah jatuh tempo':'Cair dalam '+cd(v.u-now)}</small><button class="btn ${ok?'pri':''}" style="height:36px" data-t="${E(v.id)}">${ok?'Cairkan +'+rpf(Math.floor(v.a*v.p/100)):'Buka lebih awal'}</button></div></div>`}).join(''):'<p class="mut">Belum ada brankas.</p>'}`;
+  vb.querySelectorAll('[data-d]').forEach(b=>b.onclick=()=>{tier=D.t.find(x=>x.d===+b.dataset.d);draw();pr()});
+  const am=$('#vam',vb);if(am){am.oninput=pr;pr()}
+  const go=$('#vgo2',vb);if(go)go.onclick=()=>{const a=Math.floor(+String(am.value).replace(/\D/g,''));if(!tier)return toast('Pilih durasi dulu');if(!(a>=10000))return toast('Minimal Rp10.000');const nm=$('#vnm',vb).value;
+   const add=async vp=>{const r=await api('wallet/vault/add','POST',{amt:a,d:tier.d,nm,vp},1);sync(r);toast('Tersimpan di brankas');tier=null;await load()};
+   D.go?add('').catch(e=>toast(e.message)):askPw(`<p>Simpan <b>${rpf(a)}</b> selama ${tier.d} hari. Bonus ${rpf(Math.floor(a*tier.p/100))}.</p>`,add,'Simpan ke Brankas')};
+  vb.querySelectorAll('[data-t]').forEach(b=>b.onclick=async()=>{b.disabled=true;try{const r=await api('wallet/vault/take','POST',{id:b.dataset.t},1);sync(r);toast(r.bonus?'Cair! Bonus '+rpf(r.bonus):'Dibuka. Denda '+rpf(r.pen));await load()}catch(e){toast(e.message);b.disabled=false}})};
+ function pr(){const am=$('#vam',vb),p=$('#vpr',vb);if(!am||!p)return;const a=Math.floor(+String(am.value).replace(/\D/g,''));p.textContent=tier&&a>=10000?`Kamu menerima ${rpf(a+Math.floor(a*tier.p/100))} (bonus ${rpf(Math.floor(a*tier.p/100))}) pada ${new Date(Date.now()+tier.d*864e5).toLocaleDateString('id-ID')}`:''}
+ load()}
+/* ================= TERIMA QR ================= */
+function openRecv(){const id=S.user.id||S.user.uid||'';
+ const o=modal('<div class="mh"><h3>Terima saldo (QR)</h3><button class="ibtn" data-close>'+ic('x')+'</button></div><div style="display:grid;place-items:center;gap:10px" id="rq"></div><p class="mut" style="text-align:center;font-size:13px">ID Astra: <b>'+E(id)+'</b><br>Minta pengirim memindai QR ini atau ketik ID-mu saat transfer.</p><div class="x14b"><button class="btn" id="rsc">Pindai QR teman</button><button class="btn" id="rcp">Salin ID</button></div><input type="file" id="rfi" accept="image/*" hidden>','omod');
+ try{const cv=QRG.toCanvas('ASTRA-PAY:'+id,360);cv.style.cssText='width:min(260px,70vw);height:auto;border-radius:12px;background:#fff';$('#rq',o).appendChild(cv)}catch(e){}
+ $('#rcp',o).onclick=()=>{try{copyText(String(id));toast('ID disalin')}catch(e){}};
+ $('#rsc',o).onclick=()=>$('#rfi',o).click();
+ $('#rfi',o).onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const bm=await createImageBitmap(f),w=bm.width,h=bm.height,cv=document.createElement('canvas');cv.width=w;cv.height=h;cv.getContext('2d').drawImage(bm,0,0);const t=await window.__qrDecode(cv,w,h);const m=/^ASTRA-PAY:(\w+)/.exec(t||'');if(!m)return toast('QR bukan kode pembayaran Astra');closeModal();openTransfer();setTimeout(()=>{const q=$('#tq');if(q){q.value=m[1];q.dispatchEvent(new Event('input'))}},350)}catch(er){toast('Gagal membaca QR')}}}
+/* ================= STATISTIK ================= */
+function openStats(){const tx=(S.user.tx||[]).slice(),now=Date.now(),days=[];for(let i=13;i>=0;i--){const d=new Date(now-i*864e5);days.push({k:d.toDateString(),l:d.getDate(),i:0,o:0})}
+ let ti=0,to=0;tx.forEach(t=>{const a=+(t.a!=null?t.a:t.amt)||0,dt=new Date(t.t||t.d||0),x=days.find(y=>y.k===dt.toDateString());if(a>=0)ti+=a;else to-=a;if(x){if(a>=0)x.i+=a;else x.o-=a}});
+ const mx=Math.max(1,...days.map(d=>Math.max(d.i,d.o))),W=300,H=120,bw=W/days.length;
+ const bars=days.map((d,i)=>`<rect x="${i*bw+2}" y="${H-d.i/mx*H}" width="${bw/2-2}" height="${d.i/mx*H}" fill="#2fbf71" rx="2"/><rect x="${i*bw+bw/2}" y="${H-d.o/mx*H}" width="${bw/2-2}" height="${d.o/mx*H}" fill="#e5484d" rx="2"/><text x="${i*bw+bw/2}" y="${H+12}" font-size="8" text-anchor="middle" fill="currentColor">${d.l}</text>`).join('');
+ const o=modal('<div class="mh"><h3>Statistik saldo</h3><button class="ibtn" data-close>'+ic('x')+'</button></div><div class="xgrid"><div class="xst"><b>'+rpf(ti)+'</b><span>Total masuk</span></div><div class="xst"><b>'+rpf(to)+'</b><span>Total keluar</span></div></div><div class="x14c"><h4>14 hari terakhir</h4><svg viewBox="0 0 '+W+' '+(H+16)+'" style="width:100%">'+bars+'</svg><small class="mut"><span style="color:#2fbf71">■</span> masuk &nbsp;<span style="color:#e5484d">■</span> keluar</small></div><button class="btn pri" id="stcsv" style="width:100%">Unduh CSV riwayat</button>','omod');
+ $('#stcsv',o).onclick=()=>{const rows=[['waktu','jumlah','catatan']].concat(tx.map(t=>[new Date(t.t||t.d||0).toISOString(),t.a!=null?t.a:t.amt,'"'+String(t.n||t.note||'').replace(/"/g,'""')+'"']));const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([rows.map(r=>r.join(',')).join('\n')],{type:'text/csv'}));a.download='riwayat-saldo-astra.csv';a.click()}}
+/* tambah tombol ke dompet */
+const _ow=window.openWallet||openWallet;
+window.openWallet=function(){_ow.apply(this,arguments);const m=$('#ov .modal');if(!m||$('#x14w',m))return;const t=$('#walTf',m);if(t)t.parentNode.insertAdjacentHTML('afterend','<div class="x14b" id="x14w" style="margin-bottom:12px"><button class="btn" data-x="v">🔐 Brankas</button><button class="btn" data-x="r">📥 Terima QR</button><button class="btn" data-x="s">📊 Statistik</button><button class="btn" data-x="e">🏆 Pusat Event</button></div>');
+ m.querySelectorAll('[data-x]').forEach(b=>b.onclick=()=>({v:openVault,r:openRecv,s:openStats,e:openEvents})[b.dataset.x]())};
+try{openWallet=window.openWallet}catch(e){}
+/* ================= PUSAT EVENT ================= */
+function openEvents(){
+ const o=modal('<div class="mh"><h3>Pusat Event</h3><button class="ibtn" data-close>'+ic('x')+'</button></div><div id="evb"><small class="mut">Memuat…</small></div>','omod tfm'),eb=$('#evb',o);let Q,T;
+ const load=async()=>{try{[Q,T]=await Promise.all([api('quiz','GET',null,1),api('fx/tour','GET',null,1)])}catch(e){eb.innerHTML='<p class="mut">'+E(e.message)+'</p>';return}draw()};
+ const draw=()=>{eb.innerHTML=`${Q.mult>1?`<div class="x14ev">🔥 Event aktif: hadiah ×${Q.mult}!</div>`:''}
+  <div class="x14c"><h4>🧠 Kuis Harian</h4>${!Q.on?'<small class="mut">Kuis sedang tidak aktif.</small>':Q.done?`<div>Selesai! Benar <b>${Q.ok}/${Q.n}</b>. Kuis baru dalam ${cd(Q.reset)}.</div>`:`<div class="x14r"><small class="mut">Soal ${Q.i+1} dari ${Q.n} · benar ${rpf(Q.r*Q.mult)} · sempurna +${rpf(Q.b*Q.mult)}</small></div><b id="qq">${E(Q.q.q)}</b><div id="qo">${Q.q.o.map((x,i)=>`<button class="x14o" data-a="${i}">${E(x)}</button>`).join('')}</div>`}</div>
+  <div class="x14c"><h4>🏆 Turnamen Mingguan</h4>${!T.on?'<small class="mut">Turnamen sedang tidak aktif.</small>':`<small class="mut">Kumpulkan poin dari Misi, Kuis, dan aktivitas. Berakhir dalam ${cd(T.end-Date.now())}. Hadiah juara: ${T.prizes.map((p,i)=>'#'+(i+1)+' '+rpf(p)).join(' · ')}</small>
+   <div class="x14r"><b>Posisimu: ${T.me.rank?'#'+T.me.rank:'-'}</b><span>${T.me.v} poin</span></div>${T.top.length?T.top.map((x,i)=>`<div class="x14r" ${x.me?'style="font-weight:800"':''}><span>${i+1}. ${E(x.n)}</span><span>${x.v}</span></div>`).join(''):'<small class="mut">Belum ada peserta minggu ini.</small>'}
+   ${T.last&&T.last.win&&T.last.win.length?'<small class="mut">Juara minggu lalu: '+T.last.win.map((w,i)=>'#'+(i+1)+' '+E(w.n)).join(', ')+'</small>':''}`}</div>`;
+  eb.querySelectorAll('[data-a]').forEach(b=>b.onclick=async()=>{eb.querySelectorAll('[data-a]').forEach(x=>x.disabled=true);try{const r=await api('quiz/answer','POST',{a:+b.dataset.a},1);const all=eb.querySelectorAll('[data-a]');all[r.ans]&&all[r.ans].classList.add('ok');if(!r.right)b.classList.add('no');if(r.reward||r.bonus){sync({bal:r.bal});toast('+'+rpf((r.reward||0)+(r.bonus||0)))}Q=r;setTimeout(async()=>{try{T=await api('fx/tour','GET',null,1)}catch(e){}draw()},900)}catch(e){toast(e.message);eb.querySelectorAll('[data-a]').forEach(x=>x.disabled=false)}})};
+ load()}
+window.openEvents=openEvents;window.openVault=openVault;
+/* ================= HUB OWNER ================= */
+window.__x14=async function(v,k){const P=(p,b)=>api('admin/'+p,'POST',b||{},1);let d;
+ const inp=(id,val,ph,ty)=>`<input id="${id}" class="oin" ${ty?'type="'+ty+'"':''} value="${E(val)}" placeholder="${E(ph||'')}">`;
+ const tg=(id,on,l)=>`<label style="flex-direction:row;align-items:center;gap:8px"><input type="checkbox" id="${id}" ${on?'checked':''}> ${l}</label>`;
+ const save=(b,body)=>{b.disabled=true;P('x14',body).then(r=>{d=r;toast('Tersimpan');draw()}).catch(e=>{toast(e.message);b.disabled=false})};
+ const draw=()=>{
+  if(k==='gl'){const sc=d.g;v.innerHTML=`<div class="x14c"><h4>Login Google (uji coba)</h4><small class="mut">Tombol "Masuk dengan Google" tampil di bawah kartu login dan membuka halaman terpisah. Google yang memverifikasi akun, server mengecek token ke Google.</small>${tg('gon',sc.on,'Aktifkan Masuk dengan Google')}${inp('gcid',sc.cid,'Client ID: xxxx.apps.googleusercontent.com')}<button class="btn pri" id="gs">Simpan</button></div>
+   <div class="x14c"><h4>Cara membuat Client ID</h4><ol class="mut" style="font-size:13px;margin:0;padding-left:18px;line-height:1.6"><li>Buka console.cloud.google.com › APIs &amp; Services › Credentials.</li><li>Create Credentials › OAuth client ID › Web application.</li><li>Authorized JavaScript origins, tambahkan: <b>${E(location.origin)}</b></li><li>Salin Client ID, tempel di atas, aktifkan, simpan.</li></ol><small class="mut">Layar persetujuan (OAuth consent screen) isi mode Testing + daftarkan email penguji.</small></div>`;
+   $('#gs',v).onclick=e=>save(e.target,{act:'g',on:$('#gon',v).checked,cid:$('#gcid',v).value.trim()})}
+  if(k==='ej'){v.innerHTML=`<div class="x14c"><h4>Event sekarang</h4><small class="mut">${d.now&&d.now.mult>1?'Aktif: ×'+d.now.mult+' '+E(d.now.label||''):'Tidak ada event aktif'}</small></div><div class="x14c"><h4>Jadwalkan event bonus</h4>${inp('x14el','','Nama event, mis. Weekend Gila')}${inp('x14em','2','Pengali hadiah (1.5 - 10)','number')}${inp('x14eh','24','Durasi (jam)','number')}${inp('x14ea','','Mulai (kosong = sekarang)','datetime-local')}${tg('x14ean',1,'Kirim pengumuman ke semua pemain')}<button class="btn pri" id="es">Jadwalkan</button></div><div class="sec-t">Terjadwal</div>${(d.s||[]).length?d.s.map(x=>`<div class="x14c"><div class="x14r"><b>${E(x.label)} ×${x.mult}</b><button class="btn" style="height:34px" data-sd="${E(x.id)}">Hapus</button></div><small class="mut">${new Date(x.start).toLocaleString('id-ID')} → ${new Date(x.end).toLocaleString('id-ID')}</small></div>`).join(''):'<p class="mut">Belum ada.</p>'}`;
+   $('#es',v).onclick=e=>{const a=$('#x14ea',v).value;save(e.target,{act:'s',label:$('#x14el',v).value||'Event Bonus',mult:+$('#x14em',v).value,hrs:+$('#x14eh',v).value,at:a?new Date(a).getTime():0,ann:$('#x14ean',v).checked})};
+   v.querySelectorAll('[data-sd]').forEach(b=>b.onclick=()=>save(b,{act:'sdel',id:b.dataset.sd}))}
+  if(k==='qz'){const q=d.q,t=d.t;v.innerHTML=`<div class="x14c"><h4>Kuis Harian</h4>${tg('qon',q.on,'Aktif')}<div class="x14r">Jumlah soal/hari ${inp('qn',q.n,'','number')}</div><div class="x14r">Hadiah per benar ${inp('qr',q.r,'','number')}</div><div class="x14r">Bonus sempurna ${inp('qb',q.b,'','number')}</div><button class="btn pri" id="qs">Simpan kuis</button></div>
+   <div class="x14c"><h4>Tambah soal sendiri</h4>${inp('qq','','Pertanyaan')}${inp('qo','','Pilihan dipisah koma: A, B, C, D')}${inp('qa','1','Nomor jawaban benar (1 = pilihan pertama)','number')}<button class="btn" id="qad">Tambah soal</button><small class="mut">Soal sendiri: ${q.bank.length}</small>${q.bank.map((x,i)=>`<div class="x14r"><small>${E(x.q||x[0])}</small><button class="btn" style="height:32px" data-qd="${i}">×</button></div>`).join('')}</div>
+   <div class="x14c"><h4>Turnamen Mingguan</h4>${tg('ton',t.on,'Aktif')}<div class="x14r">Hadiah #1 ${inp('t1',t.p[0],'','number')}</div><div class="x14r">Hadiah #2 ${inp('t2',t.p[1],'','number')}</div><div class="x14r">Hadiah #3 ${inp('t3',t.p[2],'','number')}</div><button class="btn pri" id="ts">Simpan turnamen</button><button class="btn" id="tp">Bayar ulang minggu lalu</button><div class="sec-t">Peringkat minggu ini</div>${(t.top||[]).map((x,i)=>`<div class="x14r"><span>${i+1}. ${E(x.n||x.name)}</span><span>${x.v}</span></div>`).join('')||'<small class="mut">Kosong</small>'}</div>`;
+   $('#qs',v).onclick=e=>save(e.target,{act:'q',on:$('#qon',v).checked,n:+$('#qn',v).value,r:+$('#qr',v).value,b:+$('#qb',v).value});
+   $('#qad',v).onclick=e=>save(e.target,{act:'qadd',q:$('#qq',v).value,o:$('#qo',v).value.split(',').map(s=>s.trim()).filter(Boolean),a:Math.max(0,+$('#qa',v).value-1)});
+   v.querySelectorAll('[data-qd]').forEach(b=>b.onclick=()=>save(b,{act:'qdel',i:+b.dataset.qd}));
+   $('#ts',v).onclick=e=>save(e.target,{act:'t',on:$('#ton',v).checked,p:[+$('#t1',v).value,+$('#t2',v).value,+$('#t3',v).value]});
+   $('#tp',v).onclick=e=>{if(confirm('Bayar ulang hadiah minggu lalu?'))save(e.target,{act:'tpay'})}}
+  if(k==='vt'){const c=d.v,ec=d.econ||{};v.innerHTML=`<div class="x14c"><h4>Brankas</h4>${tg('von',c.on,'Aktif')}<div class="x14r">Batas total/pengguna ${inp('vmx',c.max,'','number')}</div><div class="x14r">Denda buka awal % ${inp('vpn',c.pen,'','number')}</div>${c.t.map((x,i)=>`<div class="x14r">Durasi ${inp('vd'+i,x.d,'','number')} hari · bonus % ${inp('vp'+i,x.p,'','number')}</div>`).join('')}<button class="btn pri" id="vs">Simpan</button></div>
+   <div class="x14c"><h4>Ekonomi</h4><div class="xgrid"><div class="xst"><b>${ec.users||0}</b><span>Akun</span></div><div class="xst"><b>${rpf(ec.sal)}</b><span>Saldo beredar</span></div><div class="xst"><b>${rpf(ec.lock)}</b><span>Terkunci di brankas</span></div><div class="xst"><b>${ec.players||0}</b><span>Pemain kuis/turnamen</span></div></div></div>`;
+   $('#vs',v).onclick=e=>save(e.target,{act:'v',on:$('#von',v).checked,max:+$('#vmx',v).value,pen:+$('#vpn',v).value,t:c.t.map((x,i)=>({d:+$('#vd'+i,v).value,p:+$('#vp'+i,v).value}))})}};
+ d=await P('x14',{act:'get'});draw()};
+})();
+</script>
+
