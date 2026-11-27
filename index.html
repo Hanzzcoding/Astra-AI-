@@ -4487,6 +4487,39 @@ window.__x15=async function(v,k){if(k!=='sn')return _x15(v,k);let d;const P=b=>a
  d=await P({act:'get'});draw()};
 })();
 </script>
+<script>
+(()=>{
+const rpf=n=>'Rp'+Math.round(n||0).toLocaleString('id-ID');
+const E=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pl=rc=>{try{return JSON.parse(atob(rc.split('.')[0].replace(/-/g,'+').replace(/_/g,'/')))}catch(e){return null}};
+const get=()=>{try{return DB.get('rcs',{})||{}}catch(e){return{}}};
+const put=o=>{try{DB.set('rcs',o)}catch(e){}};
+let curG=null;
+/* simpan bukti saldo bertanda tangan server tiap kali server mengirimnya */
+const _a=api;
+api=async function(){const r=await _a.apply(this,arguments);try{const rc=r&&(r.rc||(r.user&&r.user.rc));if(rc){const p=pl(rc);if(p){curG=p.g;const m=get(),k=p.e+'|'+p.g;if(!m[k]||m[k].w<=p.w){m[k]={r:rc,s:p.s,w:p.w,g:p.g,e:p.e,t:p.t};const ks=Object.keys(m).sort((x,y)=>m[y].t-m[x].t);ks.slice(6).forEach(x=>delete m[x]);put(m)}}}}catch(e){}return r};
+/* setelah masuk: kalau ada bukti saldo dari "generasi" server sebelumnya, coba pulihkan */
+let busy=0;
+async function tryRestore(){if(busy||curG==null)return;busy=1;try{const m=get();let changed=0,fail=null;
+ for(const k of Object.keys(m)){const x=m[k];if(x.g===curG)continue;
+  try{const r=await _a('wallet/restore','POST',{rc:x.r},1);delete m[k];changed=1;if(r&&r.restored>0){try{applyWallet({bal:r.bal,tx:r.tx})}catch(e){}toast('Saldo lamamu dipulihkan: '+rpf(r.restored));showOk(r.restored)}}
+  catch(e){if(e.st===409||e.st===410||e.st===400){delete m[k];changed=1}else if(e.st===403&&/belum aktif/.test(e.message||'')){fail=x}else if(e.st===403){/* bukti milik akun lain di perangkat ini */}}}
+ if(changed)put(m);
+ if(fail&&fail.s>0&&!(DB.get('rcw',{})[fail.g])){const w=DB.get('rcw',{});w[fail.g]=1;DB.set('rcw',w);showFail(fail)}
+ }catch(e){}finally{busy=0}}
+function showOk(a){try{modal('<div class="mh"><h3>Saldo dipulihkan</h3><button class="ibtn" data-close>'+ic('x')+'</button></div><p>Server sempat kehilangan data akun. Saldo terakhirmu <b>'+rpf(a)+'</b> sudah dikembalikan memakai bukti saldo yang ditandatangani server.</p><button class="btn pri" data-close style="width:100%">Oke</button>','omod')}catch(e){}}
+function showFail(x){try{const o=modal('<div class="mh"><h3>Saldo belum bisa dipulihkan</h3><button class="ibtn" data-close>'+ic('x')+'</button></div><p>Server sempat kehilangan data akun, sehingga akunmu dibuat ulang. Saldo terakhirmu tercatat <b>'+rpf(x.s)+'</b>, tetapi server belum mengaktifkan pemulihan otomatis (Owner perlu mengisi <b>WALLET_SECRET</b> di Render).</p><p class="mut" style="font-size:13px">Bukti saldo tersimpan di perangkat ini. Setelah Owner mengaktifkannya, buka ASTRA lagi dan saldo dipulihkan otomatis. Kamu juga bisa menyalin bukti dan mengirimkannya ke Owner.</p><div class="x14b"><button class="btn" id="rcc">Salin bukti saldo</button><button class="btn pri" data-close>Mengerti</button></div>','omod');o.querySelector('#rcc').onclick=()=>{try{copyText(x.r);toast('Bukti disalin')}catch(e){}}}catch(e){}}
+const _ad=adopt;adopt=function(){const r=_ad.apply(this,arguments);setTimeout(tryRestore,900);return r};
+const _ro=recoverOnce;recoverOnce=function(){return _ro.apply(this,arguments).then(ok=>{if(ok)setTimeout(tryRestore,600);return ok})};
+setInterval(()=>{try{if(tok())tryRestore()}catch(e){}},120000);
+/* Hub: kartu perlindungan saldo */
+const _x15=window.__x15;
+window.__x15=async function(v,k){await _x15(v,k);if(k!=='ds')return;try{const d=await api('admin/x15','POST',{act:'get'},1),w=d.wal||{};const dot=(ok,t)=>`<div class="x14r"><span><span class="dot ${ok?'ok':'no'}" style="display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;background:${ok?'#2fbf71':'#e5484d'}"></span>${t}</span></div>`;
+ const age=w.ok?Math.round((Date.now()-w.ok)/1000):null;
+ v.insertAdjacentHTML('afterbegin',`<div class="x14c"><h4>${ic('shield')} Perlindungan saldo</h4>${dot(w.up,'Cadangan cloud (Upstash) '+(w.up?'terhubung':'belum terhubung'))}${dot(w.rc,'Bukti saldo bertanda tangan '+(w.rc?'aktif':'nonaktif'))}${w.up?dot(!w.err&&age!=null&&age<3600,'Sinkron saldo terakhir: '+(age==null?'belum ada':age<90?age+' detik lalu':Math.round(age/60)+' menit lalu')):''}${w.err?'<small class="mut">Kesalahan terakhir: '+E(w.err)+'</small>':''}${!w.up?'<small class="mut">Tanpa Upstash, semua akun dan saldo hilang saat server restart. Isi UPSTASH_REDIS_REST_URL dan UPSTASH_REDIS_REST_TOKEN di Render.</small>':''}${!w.rc?'<small class="mut">Isi WALLET_SECRET di Render (teks acak panjang apa saja) agar pemain bisa memulihkan saldo otomatis walau data server hilang total.</small>':''}</div>`);try{__emoScan(v)}catch(e){}}catch(e){}};
+})();
+</script>
+
 
 
 
