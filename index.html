@@ -1973,7 +1973,8 @@ function pick(max,cb,sq){const i=document.createElement('input');i.type='file';i
  if(sq){const z=Math.min(im.width,im.height);cv.width=cv.height=Math.min(max,z);cv.getContext('2d').drawImage(im,(im.width-z)/2,(im.height-z)/2,z,z,0,0,cv.width,cv.height)}else{cv.width=im.width*s;cv.height=im.height*s;cv.getContext('2d').drawImage(im,0,0,cv.width,cv.height)}
  cb(cv.toDataURL('image/jpeg',.8),im)};im.onerror=()=>toast('Gambar tidak bisa dibaca');im.src=URL.createObjectURL(f)};i.click()}
 const post=async b=>{const o=await api('profile','POST',b);DB.set('ouser',o);Object.assign(S.user,{name:o.name,avatar:o.avatar});saveUser();applyLook();return o};
-const av=(u)=>u&&u.avatar?`<img class="oav" data-uid="${u.id}" src="${u.avatar}">`:`<span class="oav" data-uid="${u&&u.id}">${esc((u&&u.name||'?')[0]||'?').toUpperCase()}</span>`;
+const frs=u=>{const f=u&&u.cs&&u.cs.f,m=f&&/#[0-9a-fA-F]{3,8}/.exec(f);return m?` style="outline:2px solid ${m[0]};outline-offset:1px"`:''};
+const av=(u)=>u&&u.avatar?`<img class="oav"${frs(u)} data-uid="${u.id}" src="${u.avatar}">`:`<span class="oav"${frs(u)} data-uid="${u&&u.id}">${esc((u&&u.name||'?')[0]||'?').toUpperCase()}</span>`;
 /* stiker */
 const BS=['😂','😍','😭','😎','🔥','👍','🙏','🎉','😡','🥺','💯','🤝'];
 const MYS=()=>DB.get('stk:'+S.user.email,[]);
@@ -2037,7 +2038,7 @@ function privChat(){const me=DB.get('ouser',{}),o=modal(`<div class="rh"><button
  let data=[],stInit=0,ws;const hm=t=>new Date(t).toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
  const delf=(id,n)=>{const s=sheet(`<h3>Hapus teman?</h3><p>${esc(n)} akan dihapus dari daftar temanmu.</p><button class="btn dng" id="dy">Hapus</button><button class="btn" data-close>Batal</button>`);s.querySelector('#dy').onclick=async()=>{try{await api('unfriend','POST',{id});s.parentNode.remove();toast('Teman dihapus');load()}catch(e){}}};
  const draw=()=>{const f=q('#pq').value.toLowerCase(),l=data.filter(x=>x.u.name.toLowerCase().includes(f)||String(x.u.id).includes(f));
-  cl.innerHTML=l.length?l.map(x=>`<div class="frw cr" data-id="${x.u.id}" data-n="${esc(x.u.name)}">${av(x.u)}<div class="cm"><div class="ct"><b>${esc(x.u.name)}</b>${roleHTML(x.u.role)}<i>${x.t?hm(x.t):''}</i></div><small>${x.me?'✓ ':''}${esc(x.p||'Mulai chat')}</small></div>${x.un?`<span class="bdg">${x.un}</span>`:''}</div>`).join(''):'<p class="mt">Belum ada teman. Ketuk ➕ untuk cari teman lewat ID.</p>';
+  cl.innerHTML=l.length?l.map(x=>`<div class="frw cr" data-id="${x.u.id}" data-n="${esc(x.u.name)}">${av(x.u)}<div class="cm"><div class="ct"><b>${cname(x.u)}</b>${roleHTML(x.u.role)}<i>${x.t?hm(x.t):''}</i></div><small>${x.me?'✓ ':''}${esc(x.p||'Mulai chat')}</small></div>${x.un?`<span class="bdg">${x.un}</span>`:''}</div>`).join(''):'<p class="mt">Belum ada teman. Ketuk ➕ untuk cari teman lewat ID.</p>';
   cl.querySelectorAll('.cr').forEach(w=>{let tm,lp=0;w.onclick=()=>{if(!lp)room('dm/'+w.dataset.id,'Chat '+w.dataset.n,privChat)};w.addEventListener('pointerdown',()=>{lp=0;tm=setTimeout(()=>{lp=1;delf(w.dataset.id,w.dataset.n)},650)});['pointerup','pointerleave','pointermove'].forEach(ev=>w.addEventListener(ev,()=>clearTimeout(tm)))})};
  const load=async()=>{try{data=await api('chats','GET',null,1);draw()}catch(e){cl.innerHTML='<p class="mt">Gagal memuat chat. Tarik ke bawah atau coba lagi.</p>'}};
  q('#pq').oninput=draw;load();
@@ -2067,7 +2068,7 @@ function story(x,mine){const s=x.s,nm=esc((x.u&&x.u.name)||'Statusku'),d=documen
  q('.stray').querySelectorAll('button').forEach(b=>b.onclick=async()=>{q('.stray').hidden=true;fly(b.textContent);await send(b.textContent)});
  q('#slk').onclick=async()=>{try{const r=await api('status/like','POST',{id:s.id});s.liked=r.liked;q('#slk').innerHTML=ic('heart',r.liked?'hrt on':'hrt');q('#slk').classList.toggle('on',!!r.liked);if(r.liked){fly(ic('heart','hrt on'));send('❤️')}}catch(e){}}}
 function statusPage(root){const me=DB.get('ouser',{}),html=`<div class="rh"><button class="ibtn" data-close>${ic('x')}</button><h3>Status</h3></div><div class="stb"><div id="mys" class="frw"></div><div class="rbar"><button class="btn pri" id="st1" style="flex:1">${ic('plus')} Buat status</button></div><input id="fs" class="oin" maxlength="80" placeholder="Status singkat (tampil di chat)" value="${esc(me.status||'')}"><button class="btn" id="fss">Simpan status singkat</button><h4>Status teman</h4><div id="fl"><p class="mt">Memuat...</p></div><h4>Status global · semua pengguna</h4><div id="gl"></div></div>`;let o;if(root){root.innerHTML=html.replace(/<div class="rh">[\s\S]*?<\/h3><\/div>/,'');o=root}else o=modal(html,'omod full');
- const q=s=>o.querySelector(s),rows=(l,el)=>{el.innerHTML=l.length?l.map((x,i)=>`<div class="frw" data-i="${i}">${av(x.u)}<div><b>${esc(x.u.name)}</b> ${roleHTML(x.u.role)}<small>${timeAgo(x.s.t)} · ${ic('heart','sm')} ${x.s.nl} · ${ic('eye','sm')} ${x.s.nv}</small></div></div>`).join(''):'<p class="mt">Belum ada status. Kosong sampai ada yang upload.</p>';el.querySelectorAll('.frw').forEach(w=>w.onclick=()=>story(l[w.dataset.i]))};
+ const q=s=>o.querySelector(s),rows=(l,el)=>{el.innerHTML=l.length?l.map((x,i)=>`<div class="frw" data-i="${i}">${av(x.u)}<div><b>${cname(x.u)}</b> ${roleHTML(x.u.role)}<small>${timeAgo(x.s.t)} · ${ic('heart','sm')} ${x.s.nl} · ${ic('eye','sm')} ${x.s.nv}</small></div></div>`).join(''):'<p class="mt">Belum ada status. Kosong sampai ada yang upload.</p>';el.querySelectorAll('.frw').forEach(w=>w.onclick=()=>story(l[w.dataset.i]))};
  const load=async()=>{try{const d=await api('statuses');q('#mys').innerHTML=`${av(me)}<div><b>Statusku</b><small>${d.me?timeAgo(d.me.t)+' · '+ic('heart','sm')+' '+d.me.nl+' · '+ic('eye','sm')+' '+d.me.nv:'Belum ada status'}</small></div>`+(d.me?'<button class="btn dng" id="sdel" style="margin-left:auto">Hapus</button>':'');
   q('#mys').onclick=e=>{if(e.target.id!=='sdel'&&d.me)story({s:d.me},1)};const sd=q('#sdel');if(sd)sd.onclick=async()=>{try{await api('status/del','POST',{});toast('Status dihapus');load()}catch(e){}};rows(d.list,q('#fl'));rows(d.global,q('#gl'))}catch(e){q('#fl').innerHTML='<p class="mt">Gagal memuat status.</p>'}};
  q('#st1').onclick=()=>{let bg=0,fs=0,img='';const s=sheet(`<h3>Buat status</h3><div class="stc"><div class="stp" id="stpv" hidden><img id="stim" alt=""><button id="strm" aria-label="Hapus foto">${ic('x')}</button></div><textarea id="stx" class="oin" rows="4" maxlength="200" placeholder="Tulis status..."></textarea><div class="cnt"><span id="stn">0</span>/200</div><div id="stopt"><div class="sw">${GR.map((g,i)=>`<i data-g="${i}" style="background:${g}" class="${i?'':'on'}"></i>`).join('')}</div><div class="tb">${['Normal','Serif','Tulisan sambung','Tebal'].map((n,i)=>`<button data-f="${i}" class="${i?'':'on'}">${n}</button>`).join('')}</div></div><button class="btn" id="stph">${ic('image')} Tambah foto (opsional)</button><button class="btn pri" id="sgo">Upload status</button><button class="btn" data-close>Batal</button></div>`),tx=s.querySelector('#stx'),pv=s.querySelector('#stpv'),opt=s.querySelector('#stopt'),ph=s.querySelector('#stph');
@@ -2307,14 +2308,14 @@ function floater(parent,o){
  const up=()=>{if(!d)return;d=null;h.style.cursor='';try{localStorage.setItem('astra_lvpos_'+o.key,JSON.stringify([el.offsetLeft/parent.clientWidth,el.offsetTop/parent.clientHeight]))}catch(e){}};h.addEventListener('pointerup',up);h.addEventListener('pointercancel',up);
  el.querySelector('.mn').onclick=()=>{el.classList.toggle('min');place(el.offsetLeft,el.offsetTop)};
  const add=(html,cls,dt)=>{const near=lm.scrollHeight-lm.scrollTop-lm.clientHeight<40,r=document.createElement('div');r.className='cm '+(cls||'');if(dt){r.dataset.id=dt.id;r.dataset.uid=dt.uid;r.dataset.nm=dt.nm;r.dataset.b=dt.b}r.innerHTML=html;lm.appendChild(r);while(lm.children.length>80)lm.firstChild.remove();if(near)lm.scrollTop=lm.scrollHeight};
- const api_={el,add,cm:x=>add(`<b>${esc(x.u.name)}</b>${roleHTML(x.u.role||'free')} ${esc(x.b)}`,(x.u.role==='root'||x.u.role==='owner')?'top':'',{id:x.id,uid:x.u.id,nm:x.u.name,b:x.b}),fx:f=>__lv.theme(el,f),gf:x=>add(`<b>${esc(x.u.name)}</b>${roleHTML(x.u.role||'free')} mengirim ${x.g.e} ${esc(x.g.n)}${x.q>1?' ×'+x.q:''} · ${rp(x.total)}`,'g'),sys:t=>add(esc(t),'sys')};
+ const api_={el,add,cm:x=>add(`<b>${cname(x.u)}</b>${roleHTML(x.u.role||'free')} ${esc(x.b)}`,(x.u.role==='root'||x.u.role==='owner')?'top':'',{id:x.id,uid:x.u.id,nm:x.u.name,b:x.b}),fx:f=>__lv.theme(el,f),gf:x=>add(`<b>${cname(x.u)}</b>${roleHTML(x.u.role||'free')} mengirim ${x.g.e} ${esc(x.g.n)}${x.q>1?' ×'+x.q:''} · ${rp(x.total)}`,'g'),sys:t=>add(esc(t),'sys')};
  __lv.theme(el,o.fx||{theme:'neon',anim:'slide'});lm.addEventListener('click',e=>{const r=e.target.closest('.cm[data-id]');if(r&&o.tap)o.tap(r.dataset)});
  if(o.send){const i=el.querySelector('input'),go=()=>{const v=i.value.trim();if(!v)return;i.value='';o.send(v)};el.querySelector('.lf button').onclick=go;i.onkeydown=e=>{if(e.key==='Enter')go()}}
  return api_}
 
 /* ---------- efek gift ---------- */
 function giftFx(host,x){
- const t=x.g.tier||1,f=document.createElement('div');f.className='gfx t'+t;f.innerHTML=`<div class="ge">${x.g.e}</div><b>${esc(x.u.name)}</b><small>${esc(x.g.n)}${x.q>1?' ×'+x.q:''}</small>`;host.appendChild(f);setTimeout(()=>f.remove(),2700);
+ const t=x.g.tier||1,f=document.createElement('div');f.className='gfx t'+t;f.innerHTML=`<div class="ge">${x.g.e}</div><b>${cname(x.u)}</b><small>${esc(x.g.n)}${x.q>1?' ×'+x.q:''}</small>`;host.appendChild(f);setTimeout(()=>f.remove(),2700);
  if(t>=4){const b=document.createElement('div');b.className='gban';b.textContent=`${x.g.e} ${x.u.name} mengirim ${x.g.n}${x.q>1?' ×'+x.q:''} (${rp(x.total)}) ${x.g.e}`;host.appendChild(b);setTimeout(()=>b.remove(),3300)}}
 const topHTML=t=>(t||[]).slice(0,3).map((x,i)=>`<span><em>${i+1}</em>${esc(x.name)} · ${rp(x.v)}</span>`).join('');
 
@@ -2468,7 +2469,7 @@ async function giftSheet(W,getWs){
 
 /* ====================== HUB OWNER ====================== */
 function hub(){
- const secs=[['ov','dash','Ringkasan'],['us','users','Pengguna'],['cd','key','Kode redeem'],['cm','chat','Komunitas'],['lv','live','Live'],['pr','tag','Harga & pembayaran'],...(X.isRootU()?[['wp','live','Video wallpaper'],['sp','spin','Event Spin'],['bh','zap','Brohaven'],['dy','zap','Bonus Harian'],['fx','spark','Misi & Event'],['bq','lock','Cadangan & Pemulihan'],['au','dash','Audit & Pencari'],['an','chat','Pengumuman & Notifikasi'],['gl','lock','Login Google & Keamanan'],['ej','zap','Jadwal Event'],['qz','spark','Kuis & Turnamen'],['vt','coin','Brankas & Ekonomi'],['tk','crown','Toko & Kotak Misteri'],['ds','chart','Dasbor & Log']]:[]),['bk','lock','Penyimpanan & cadangan'],['sd','coin','Top saldo'],['tx','list','Transaksi'],['tl','dash','Alat server'],['wd','flag','Kata terlarang'],['rg','lock','Pendaftaran'],['lg','list','Log']];
+ const secs=[['ov','dash','Ringkasan'],['us','users','Pengguna'],['cd','key','Kode redeem'],['cm','chat','Komunitas'],['lv','live','Live'],['pr','tag','Harga & pembayaran'],...(X.isRootU()?[['wp','live','Video wallpaper'],['sp','spin','Event Spin'],['bh','zap','Brohaven'],['dy','zap','Bonus Harian'],['fx','spark','Misi & Event'],['bq','lock','Cadangan & Pemulihan'],['au','dash','Audit & Pencari'],['an','chat','Pengumuman & Notifikasi'],['gl','lock','Login Google & Keamanan'],['ej','zap','Jadwal Event'],['qz','spark','Kuis & Turnamen'],['vt','coin','Brankas & Ekonomi'],['tk','crown','Toko & Kotak Misteri'],['sn','sparkle','Event Musiman'],['ds','chart','Dasbor & Log']]:[]),['bk','lock','Penyimpanan & cadangan'],['sd','coin','Top saldo'],['tx','list','Transaksi'],['tl','dash','Alat server'],['wd','flag','Kata terlarang'],['rg','lock','Pendaftaran'],['lg','list','Log']];
  const o=modal(`<div class="mh"><h3>Hub Owner</h3><button class="ibtn" data-close>${ic('x')}</button></div><div class="xnav">${secs.map(([k,i,n])=>`<button data-k="${k}">${ic(i)} ${n}</button>`).join('')}</div><div id="hv"></div>`,'omod tfm'),v=o.querySelector('#hv');
  const go=async k=>{o.querySelectorAll('.xnav button').forEach(b=>b.classList.toggle('on',b.dataset.k===k));v.innerHTML='<p class="mt">Memuat...</p>';
   try{await V[k]()}catch(e){v.innerHTML='<p class="mt">'+esc(e.message)+'</p>'}};
@@ -2483,7 +2484,7 @@ function hub(){
   async bq(){window.__bqEditor(v)},
   async au(){window.__auEditor(v)},
   async an(){window.__anEditor(v)},
-  async gl(){window.__x14(v,'gl')},async ej(){window.__x14(v,'ej')},async qz(){window.__x14(v,'qz')},async vt(){window.__x14(v,'vt')},async tk(){window.__x15(v,'tk')},async ds(){window.__x15(v,'ds')},
+  async gl(){window.__x14(v,'gl')},async ej(){window.__x14(v,'ej')},async qz(){window.__x14(v,'qz')},async vt(){window.__x14(v,'vt')},async tk(){window.__x15(v,'tk')},async sn(){window.__x15(v,'sn')},async ds(){window.__x15(v,'ds')},
   async us(){let f='all',qs='',off=0,list=[],tot=0,tm=0;v.innerHTML=`<input id="uq" class="oin" placeholder="Cari nama, email, atau ID"><div class="seg" id="uf"><button data-f="all" class="on">Semua</button><button data-f="on">Online</button><button data-f="ban">Di-ban</button><button data-f="adm">Admin</button></div><div id="ul" class="tlist"></div><button class="btn" id="um" hidden>Muat lebih banyak</button>`;
    const ul=v.querySelector('#ul'),um=v.querySelector('#um');
    const paint=()=>{ul.innerHTML=list.length?list.map((x,i)=>`<button class="xu" data-i="${i}">${avU(x)}<span class="tri"><b>${esc(x.name)} ${roleHTML(x.role)}</b><small>ID ${x.id} · ${esc(x.email)} · ${rp(x.sal)}</small></span>${x.ban?'<span class="bd">BAN</span>':x.mute?'<span class="bd">MUTE</span>':x.on?'<i class="dot on"></i>':''}</button>`).join(''):'<p class="mt">Tidak ada pengguna.</p>';um.hidden=list.length>=tot;ul.querySelectorAll('.xu').forEach(b=>b.onclick=()=>{const x=list[b.dataset.i];X.ownerUser({...x,avatar:null},()=>ld(1))})};
@@ -4252,7 +4253,7 @@ function openEvents(){
  const draw=()=>{eb.innerHTML=`${Q.mult>1?`<div class="x14ev">🔥 Event aktif: hadiah ×${Q.mult}!</div>`:''}
   <div class="x14c"><h4>🧠 Kuis Harian</h4>${!Q.on?'<small class="mut">Kuis sedang tidak aktif.</small>':Q.done?`<div>Selesai! Benar <b>${Q.ok}/${Q.n}</b>. Kuis baru dalam ${cd(Q.reset)}.</div>`:`<div class="x14r"><small class="mut">Soal ${Q.i+1} dari ${Q.n} · benar ${rpf(Q.r*Q.mult)} · sempurna +${rpf(Q.b*Q.mult)}</small></div><b id="qq">${E(Q.q.q)}</b><div id="qo">${Q.q.o.map((x,i)=>`<button class="x14o" data-a="${i}">${E(x)}</button>`).join('')}</div>`}</div>
   <div class="x14c"><h4>🏆 Turnamen Mingguan</h4>${!T.on?'<small class="mut">Turnamen sedang tidak aktif.</small>':`<small class="mut">Kumpulkan poin dari Misi, Kuis, dan aktivitas. Berakhir dalam ${cd(T.end-Date.now())}. Hadiah juara: ${T.prizes.map((p,i)=>'#'+(i+1)+' '+rpf(p)).join(' · ')}</small>
-   <div class="x14r"><b>Posisimu: ${T.me.rank?'#'+T.me.rank:'-'}</b><span>${T.me.v} poin</span></div>${T.top.length?T.top.map((x,i)=>`<div class="x14r" ${x.me?'style="font-weight:800"':''}><span>${i+1}. ${E(x.n)}</span><span>${x.v}</span></div>`).join(''):'<small class="mut">Belum ada peserta minggu ini.</small>'}
+   <div class="x14r"><b>Posisimu: ${T.me.rank?'#'+T.me.rank:'-'}</b><span>${T.me.v} poin</span></div>${T.top.length?T.top.map((x,i)=>`<div class="x14r" ${x.me?'style="font-weight:800"':''}><span>${i+1}. ${cosmeticName(x.n,x.cs)}</span><span>${x.v}</span></div>`).join(''):'<small class="mut">Belum ada peserta minggu ini.</small>'}
    ${T.last&&T.last.win&&T.last.win.length?'<small class="mut">Juara minggu lalu: '+T.last.win.map((w,i)=>'#'+(i+1)+' '+E(w.n)).join(', ')+'</small>':''}`}</div>`;
   eb.querySelectorAll('[data-a]').forEach(b=>b.onclick=async()=>{eb.querySelectorAll('[data-a]').forEach(x=>x.disabled=true);try{const r=await api('quiz/answer','POST',{a:+b.dataset.a},1);const all=eb.querySelectorAll('[data-a]');all[r.ans]&&all[r.ans].classList.add('ok');if(!r.right)b.classList.add('no');if(r.reward||r.bonus){sync({bal:r.bal});toast('+'+rpf((r.reward||0)+(r.bonus||0)))}Q=r;setTimeout(async()=>{try{T=await api('fx/tour','GET',null,1)}catch(e){}draw()},900)}catch(e){toast(e.message);eb.querySelectorAll('[data-a]').forEach(x=>x.disabled=false)}})};
  load()}
@@ -4358,5 +4359,135 @@ window.__x15=async function(v,k){const P=(p,b)=>api('admin/'+p,'POST',b||{},1);l
  d=await P('x15',{act:'get'});draw()};
 })();
 </script>
+<style>
+svg.i.em{width:1.15em;height:1.15em;vertical-align:-.2em;margin:0 .12em;stroke-width:1.9}
+.wst{border:1px solid var(--line);background:var(--card);border-radius:14px;padding:12px;margin-bottom:12px;display:flex;flex-direction:column;gap:8px}
+.wst h4{margin:0;font-size:14px;display:flex;align-items:center;gap:8px}.wst .row{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:13px}
+.wst .dot{width:9px;height:9px;border-radius:50%;display:inline-block;margin-right:6px;background:#8a8f98}.wst .dot.ok{background:#2fbf71}.wst .dot.no{background:#e5484d}.wst .dot.mid{background:#f5a524}
+.wst .warn{padding:9px 11px;border-radius:10px;background:rgba(245,165,36,.14);border:1px solid rgba(245,165,36,.4);font-size:12.5px;line-height:1.5}
+.wst .bt{display:flex;gap:8px;flex-wrap:wrap}.wst .bt .btn{flex:1;min-width:130px;height:38px}
+</style>
+<script>
+(()=>{
+/* ===== ikon garis tambahan ===== */
+Object.assign(IC,{
+ party:'<path d="M4 20l5.5-14.5L18 14z"/><path d="M14 4v2.5M19 9h2.5M17.5 3.5l1 1.6M20 13.5l1.6 1M5 5l1.5 1.5"/>',
+ flame:'<path d="M12 3c.9 3.3 5.2 5.2 5.2 10A5.2 5.2 0 0 1 6.8 13c0-2 .9-3.2 2.1-4.2.1 2 .9 2.9 2 3 .4-3-.6-6 1.1-8.8z"/>',
+ gift:'<rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13M5 12v9h14v-9M7.5 8a2.5 2.5 0 010-5C10 3 12 8 12 8s2-5 4.5-5a2.5 2.5 0 010 5"/>',
+ star:'<path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/>',
+ flag:'<path d="M5 21V4M5 4h11l-2 4 2 4H5"/>',
+ trophy:'<path d="M8 4h8v5a4 4 0 01-8 0zM8 6H4v1a4 4 0 004 4M16 6h4v1a4 4 0 01-4 4M12 13v4M8 21h8M10 17h4"/>',
+ tag:'<path d="M3 12V4h8l10 10-8 8z"/><circle cx="7.5" cy="8.5" r="1.2"/>',
+ coin:'<circle cx="12" cy="12" r="9"/><path d="M9.5 8v8M9.5 8h3.2a2.4 2.4 0 010 4.8H9.5M12.5 12.8l2.5 3.2"/>',
+ vault:'<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="12" cy="12" r="3.5"/><path d="M12 8.5v-1.2M12 16.7v-1.2M8.5 12H7.3M16.7 12h-1.2"/>',
+ warn:'<path d="M12 3.5l9.5 16.5h-19z"/><path d="M12 10v4.5M12 17.5h.01"/>',
+ camera:'<path d="M4 8h3l2-3h6l2 3h3v12H4z"/><circle cx="12" cy="13" r="3.5"/>',
+ ticket:'<path d="M3 8a2 2 0 002-2h14a2 2 0 002 2v3a2 2 0 000 4v3H3v-3a2 2 0 000-4z"/><path d="M13 7v2M13 11v2M13 15v2"/>',
+ users:'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0113 0M16 4.7a3.5 3.5 0 010 6.6M18 14.2A6.5 6.5 0 0121.5 20"/>',
+ chart:'<path d="M5 20V11M11 20V4M17 20v-7M3 20h18"/>',
+ megaphone:'<path d="M3 11v3l12 5V6zM15 8.5a4 4 0 010 7M6 14l1 6h3l-1-5"/>',
+ bell:'<path d="M6 16v-5a6 6 0 0112 0v5l2 2H4zM10 21h4"/>',
+ phone:'<rect x="7" y="2.5" width="10" height="19" rx="2"/><path d="M11 18h2"/>',
+ sparkle:'<path d="M11 3l1.9 5.6L18.5 10.5 12.9 12.4 11 18l-1.9-5.6L3.5 10.5l5.6-1.9zM19 15l.8 2.2 2.2.8-2.2.8L19 21l-.8-2.2-2.2-.8 2.2-.8z"/>',
+ target:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2"/>',
+ brush:'<path d="M14 4l6 6-8 8H6v-6zM4 21h16"/>',
+ dot:'<circle cx="12" cy="12" r="6" fill="currentColor"/>',
+ film:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M8 5v14M16 5v14M3 10h5M3 14h5M16 10h5M16 14h5"/>',
+ medal:'<circle cx="12" cy="15" r="5"/><path d="M8.5 3L11 9M15.5 3L13 9"/>',
+ clipboard:'<rect x="6" y="4" width="12" height="17" rx="2"/><path d="M9 4h6v3H9zM9 12h6M9 16h6"/>',
+ plusc:'<circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/>',
+ cloud:'<path d="M7 18a5 5 0 010-10 6 6 0 0111.5 2A4 4 0 0117 18z"/>',
+ save:'<path d="M5 4h11l4 4v12H5zM8 4v5h7V4M8 20v-6h8v6"/>',
+ book:'<path d="M5 4h10a3 3 0 013 3v13H8a3 3 0 01-3-3zM5 17a3 3 0 013-3h10"/>',
+ search:'<circle cx="11" cy="11" r="6.5"/><path d="M16 16l5 5"/>',
+ receipt:'<path d="M6 3h12v18l-3-2-3 2-3-2-3 2zM9 8h6M9 12h6"/>',
+ refresh:'<path d="M20 11a8 8 0 00-14-4L4 9M4 4v5h5M4 13a8 8 0 0014 4l2-2M20 20v-5h-5"/>',
+ laptop:'<rect x="5" y="5" width="14" height="10" rx="1"/><path d="M2 19h20"/>',
+ clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+ pin:'<path d="M9 3h6l-1 6 3 3H7l3-3zM12 12v9"/>',
+ download:'<path d="M12 4v11M7 11l5 5 5-5M5 20h14"/>',
+ bag:'<path d="M5 8h14l-1 13H6zM9 8V6a3 3 0 016 0v2"/>',
+ cross:'<path d="M6 6l12 12M18 6L6 18"/>'});
+const C={flame:'#ff8a3d',star:'#ffc83d',crown:'#ffc83d',trophy:'#ffc83d',medal:'#ffc83d',coin:'#ffc83d',check:'#2fbf71',warn:'#f5a524',heart:'#ff5c8a',dot:'#e5484d',party:'#c084fc',sparkle:'#ffd86b',gift:'#ff6b9d',target:'#ff5c5c',flag:'#e5e7eb'};
+const MAP={'🎉':'party','🎊':'party','🔥':'flame','🎁':'gift','⭐':'star','🌟':'star','💫':'sparkle','✨':'sparkle','👑':'crown','🏁':'flag','🛡':'shield','🎡':'target','🏷':'tag','💰':'coin','🪙':'coin','✔':'check','✓':'check','✅':'check','🏆':'trophy','🔐':'vault','🔒':'lock','⚠':'warn','❗':'warn','📷':'camera','💬':'chat','🎟':'ticket','👥':'users','🤝':'users','📊':'chart','📢':'megaphone','🔔':'bell','🔑':'key','🧠':'brain','📱':'phone','✎':'edit','💯':'star','🧹':'brush','➕':'plus','🔴':'dot','🎬':'film','🎤':'mic','📎':'clip','🥇':'medal','🥈':'medal','🥉':'medal','🏅':'medal','📋':'clipboard','🩹':'plusc','☁':'cloud','💾':'save','📒':'book','📖':'book','🔎':'search','🧾':'receipt','♻':'refresh','💻':'laptop','🕘':'clock','📌':'pin','📥':'download','🛍':'bag','🎯':'target','✕':'cross','❤':'heart','💖':'heart'};
+const RX=new RegExp('('+Object.keys(MAP).join('|')+')\\uFE0F?','g');
+const SKIP='textarea,input,select,option,script,style,title,svg,[contenteditable],[data-keep],.bub,.cm,.tg,#stp,.sbot,.scap,.rxb';
+const mk=k=>{const s=document.createElementNS('http://www.w3.org/2000/svg','svg');s.setAttribute('viewBox','0 0 24 24');s.setAttribute('class','i em');s.setAttribute('aria-hidden','true');s.innerHTML=IC[k]||'';if(C[k])s.style.color=C[k];return s};
+const conv=t=>{const p=t.parentElement;if(!p||p.closest(SKIP))return;const v=t.nodeValue;RX.lastIndex=0;if(!RX.test(v))return;RX.lastIndex=0;const f=document.createDocumentFragment();let i=0,m;while((m=RX.exec(v))){if(m.index>i)f.appendChild(document.createTextNode(v.slice(i,m.index)));f.appendChild(mk(MAP[m[1]]));i=m.index+m[0].length}if(i<v.length)f.appendChild(document.createTextNode(v.slice(i)));t.replaceWith(f)};
+const scan=root=>{if(!root)return;if(root.nodeType===3)return conv(root);if(root.nodeType!==1)return;const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);const L=[];let n;while((n=w.nextNode()))L.push(n);L.forEach(conv)};
+let q=new Set(),raf=0;const flush=()=>{raf=0;const L=[...q];q.clear();L.forEach(n=>{if(n.isConnected)scan(n)})};
+new MutationObserver(ms=>{for(const m of ms){if(m.type==='characterData')q.add(m.target);else m.addedNodes.forEach(n=>{if(n.nodeType===1||n.nodeType===3)q.add(n)})}if(!raf)raf=requestAnimationFrame(flush)}).observe(document.body,{childList:true,subtree:true,characterData:true});
+scan(document.body);
+window.__emoScan=scan;
+/* ===== status wallpaper permanen di Hub ===== */
+const E=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const _wp=window.__wpEditor;
+window.__wpEditor=function(v,f){v.innerHTML='<div id="wst"></div><div id="wmain"></div>';_wp(v.querySelector('#wmain'),f);const box=v.querySelector('#wst');
+ const draw=(st,busy)=>{const fl=st.files||[];const safe=fl.every(x=>x.disk&&(x.cloud||x.src));
+  box.innerHTML=`<div class="wst"><h4>${ic('cloud')} Penyimpanan permanen wallpaper</h4>
+  ${!st.up?`<div class="warn"><b>Cloud (Upstash) belum terhubung di server.</b> Video hanya tersimpan di disk Render, dan disk itu terhapus tiap server restart atau deploy ulang. Agar permanen: di Render buka Environment lalu isi <b>UPSTASH_REDIS_REST_URL</b> dan <b>UPSTASH_REDIS_REST_TOKEN</b>. Atau pakai wallpaper dari <b>link https</b>, karena server mengunduh ulang otomatis dari link itu.</div>`:''}
+  ${st.err?`<div class="warn">Catatan terakhir: ${E(st.err)}</div>`:''}
+  ${fl.length?fl.map(x=>`<div class="row"><span><span class="dot ${x.disk?'ok':'no'}"></span>Disk server</span><span><span class="dot ${x.cloud?(x.cloudOk===false?'no':'ok'):'no'}"></span>Cloud${x.cloudOk===true?' (terverifikasi)':''}</span><span><span class="dot ${x.src?'ok':'mid'}"></span>Link sumber</span></div><div class="row"><small class="mut">${(x.n/1048576).toFixed(1)} MB</small></div>`).join(''):'<small class="mut">Belum ada file video yang diunggah (video bawaan atau link langsung tidak butuh penyimpanan).</small>'}
+  ${fl.length?`<div class="row"><b>${safe?'Aman, akan bertahan setelah server mati':'Rawan hilang saat server restart'}</b></div>`:''}
+  <div class="bt"><button class="btn" id="wvf" ${busy?'disabled':''}>Periksa cloud</button><button class="btn pri" id="wrs" ${busy?'disabled':''}>Cadangkan ulang sekarang</button></div></div>`;
+  box.querySelector('#wvf').onclick=()=>run('verify');box.querySelector('#wrs').onclick=()=>run('resync')};
+ const run=async act=>{draw(window.__wst||{files:[]},1);try{const st=await api('admin/wallpaper','POST',{act},1,0,180000);window.__wst=st;draw(st);toast(act==='resync'?'Pencadangan ulang selesai':'Pemeriksaan selesai')}catch(e){toast(e.message);draw(window.__wst||{files:[]})}};
+ api('admin/wallpaper','POST',{act:'status'},1).then(st=>{window.__wst=st;draw(st)}).catch(()=>{box.innerHTML=''})};
+})();
+</script>
+<script>
+(()=>{
+const E=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const $=(s,r=document)=>r.querySelector(s);const rpf=n=>'Rp'+Math.round(n||0).toLocaleString('id-ID');
+const sync=r=>{try{if(r&&r.bal!=null)applyWallet({bal:r.bal,tx:r.tx})}catch(e){}};
+window.cname=u=>u?window.cosmeticName(u.name,u.cs):'';
+/* ===== TAGIHAN (permintaan bayar) ===== */
+function payReq(id){id=String(id||'').toUpperCase().replace(/[^A-F0-9]/g,'');if(!id)return toast('Kode tagihan tidak valid');
+ const o=modal('<div class="mh"><h3>Bayar tagihan</h3><button class="ibtn" data-close>'+ic('x')+'</button></div><div id="prb"><small class="mut">Memuat…</small></div>','omod');const pb=$('#prb',o);
+ api('wallet/req/'+id,'GET',null,1).then(q=>{
+  const bad=q.paid?'Tagihan ini sudah dibayar':q.cancel?'Tagihan dibatalkan':q.expired?'Tagihan sudah kedaluwarsa':q.mine?'Ini tagihan milikmu sendiri':'';
+  pb.innerHTML=`<div class="x14c"><div class="x14r"><span class="mut">Penerima</span><b>${cosmeticName(q.to.name,q.to.cs)} <small class="mut">ID ${E(q.to.id)}</small></b></div><div class="x14r"><span class="mut">Jumlah</span><b style="font-size:20px">${rpf(q.amt)}</b></div>${q.note?`<div class="x14r"><span class="mut">Catatan</span><span>${E(q.note)}</span></div>`:''}<small class="mut">Berlaku sampai ${new Date(q.exp).toLocaleString('id-ID')}</small></div>${bad?`<p class="mut" style="text-align:center">${bad}</p>`:'<button class="btn pri" id="prg" style="width:100%;height:46px">Bayar sekarang</button>'}`;
+  const g=$('#prg',pb);if(g)g.onclick=()=>askPw(`<p>Bayar <b>${rpf(q.amt)}</b> kepada <b>${E(q.to.name)}</b>?</p>`,async vp=>{const r=await api('wallet/req/'+id+'/pay','POST',{vp},1);sync(r);o.remove();toast('Tagihan dibayar');return r},'Konfirmasi pembayaran')}).catch(e=>{pb.innerHTML='<p class="mut">'+E(e.message)+'</p>'})}
+window.payReq=payReq;
+function openBill(){
+ const o=modal('<div class="mh"><h3>Tagihan & Terima QR</h3><button class="ibtn" data-close>'+ic('x')+'</button></div><div id="bb"></div>','omod tfm'),bb=$('#bb',o);let L=[],cur=null;
+ const load=async()=>{try{L=(await api('wallet/req','GET',null,1)).list}catch(e){L=[]}draw()};
+ const link=id=>location.origin+location.pathname+'#pay='+id;
+ const draw=()=>{bb.innerHTML=`<div class="x14c"><h4>Buat tagihan</h4><input id="bam" class="oin" inputmode="numeric" placeholder="Jumlah (min. Rp1.000)"><input id="bnt" class="oin" maxlength="40" placeholder="Catatan (opsional)"><button class="btn pri" id="bgo">Buat kode QR</button></div>
+  ${cur?`<div class="x14c" style="align-items:center"><div id="bqr"></div><b>${rpf(cur.amt)}</b><small class="mut">Kode: <b>${cur.id}</b> · berlaku 24 jam</small><div class="x14b"><button class="btn" id="bcp">Salin link</button><button class="btn" id="bsh">Bagikan</button></div></div>`:''}
+  <div class="x14c"><h4>Punya kode tagihan?</h4><input id="bcd" class="oin" maxlength="8" placeholder="Kode 8 karakter"><div class="x14b"><button class="btn" id="bpy">Bayar</button><button class="btn" id="bsc">Pindai QR</button></div><input type="file" id="bfi" accept="image/*" hidden></div>
+  <div class="sec-t">Tagihanmu</div>${L.length?L.map(q=>`<div class="x14c"><div class="x14r"><b>${rpf(q.amt)} <small class="mut">${q.id}</small></b><span class="mut" style="font-size:12px">${q.paid?'Lunas':q.cancel?'Dibatalkan':q.expired?'Kedaluwarsa':'Menunggu'}</span></div>${!q.paid&&!q.cancel&&!q.expired?`<div class="x14b"><button class="btn" data-sh="${q.id}" data-am="${q.amt}">Tampilkan QR</button><button class="btn" data-cx="${q.id}">Batalkan</button></div>`:''}</div>`).join(''):'<p class="mut">Belum ada tagihan.</p>'}`;
+  if(cur){try{const cv=QRG.toCanvas('ASTRA-REQ:'+cur.id,360);cv.style.cssText='width:min(240px,66vw);height:auto;border-radius:12px;background:#fff';$('#bqr',bb).appendChild(cv)}catch(e){}
+   $('#bcp',bb).onclick=()=>{try{copyText(link(cur.id));toast('Link disalin')}catch(e){}};
+   $('#bsh',bb).onclick=()=>{const t='Bayar tagihan Rp'+Math.round(cur.amt).toLocaleString('id-ID')+' lewat Astra: '+link(cur.id);if(navigator.share)navigator.share({text:t}).catch(()=>{});else{try{copyText(t);toast('Teks disalin')}catch(e){}}}}
+  $('#bgo',bb).onclick=async e=>{const a=Math.floor(+String($('#bam',bb).value).replace(/\D/g,''));if(!(a>=1000))return toast('Minimal Rp1.000');e.target.disabled=true;try{const r=await api('wallet/req','POST',{amt:a,note:$('#bnt',bb).value},1);cur={id:r.id,amt:a};await load()}catch(er){toast(er.message);e.target.disabled=false}};
+  $('#bpy',bb).onclick=()=>{const v=$('#bcd',bb).value.trim();if(v){o.remove();payReq(v)}};
+  $('#bsc',bb).onclick=()=>$('#bfi',bb).click();
+  $('#bfi',bb).onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const bm=await createImageBitmap(f),cv=document.createElement('canvas');cv.width=bm.width;cv.height=bm.height;cv.getContext('2d').drawImage(bm,0,0);const t=await window.__qrDecode(cv,bm.width,bm.height);const m=/^ASTRA-REQ:([A-F0-9]{8})$/.exec(t||'');if(m){o.remove();return payReq(m[1])}const p=/^ASTRA-PAY:(\w+)/.exec(t||'');if(p){o.remove();openTransfer();return setTimeout(()=>{const q=$('#tq');if(q){q.value=p[1];q.dispatchEvent(new Event('input'))}},350)}toast('QR bukan kode Astra')}catch(er){toast('Gagal membaca QR')}};
+  bb.querySelectorAll('[data-sh]').forEach(b=>b.onclick=()=>{cur={id:b.dataset.sh,amt:+b.dataset.am};draw()});
+  bb.querySelectorAll('[data-cx]').forEach(b=>b.onclick=async()=>{if(!confirm('Batalkan tagihan ini?'))return;try{await api('wallet/req/'+b.dataset.cx+'/cancel','POST',{},1);if(cur&&cur.id===b.dataset.cx)cur=null;await load()}catch(e){toast(e.message)}})};
+ load()}
+window.openBill=openBill;
+/* tombol di dompet + tautan #pay= */
+const _w=window.openWallet;window.openWallet=function(){_w.apply(this,arguments);const g=document.querySelector('#x14w');if(g&&!g.querySelector('[data-x=q]')){g.insertAdjacentHTML('beforeend','<button class="btn" data-x="q">'+ic('receipt')+' Tagihan</button>');g.querySelector('[data-x=q]').onclick=openBill;try{__emoScan(g)}catch(e){}}};try{openWallet=window.openWallet}catch(e){}
+const chk=()=>{const m=/#pay=([A-Fa-f0-9]{8})/.exec(location.hash);if(!m)return;if(!(typeof S!=='undefined'&&S&&S.user&&tok()))return false;if(document.querySelector('#ov'))return false;history.replaceState(null,'',location.pathname+location.search);payReq(m[1]);return true};
+if(/#pay=/.test(location.hash)){const iv=setTimeout(()=>{const iv2=setInterval(()=>{if(chk()!==false)clearInterval(iv2)},1500);setTimeout(()=>clearInterval(iv2),60000)},3500);setTimeout(()=>clearInterval(iv),60000)}
+/* ===== HUB: event musiman ===== */
+const _x15=window.__x15;
+window.__x15=async function(v,k){if(k!=='sn')return _x15(v,k);let d;const P=b=>api('admin/x15','POST',b,1);
+ const draw=()=>{const L=d.sea;v.innerHTML=`<div class="x14c"><h4>${ic('sparkle')} Event musiman otomatis</h4><small class="mut">Aktif sendiri tiap tahun pada tanggal yang kamu atur (zona WIB). Pengali hadiah berlaku untuk misi, kuis, dan kotak gratis. Tanggal Ramadan berubah tiap tahun, jadi cek dan ubah sendiri.</small><label style="flex-direction:row;align-items:center;gap:8px"><input type="checkbox" id="sna" ${L.on?'checked':''}> Semua event musiman aktif</label>${d.seaNow.length?`<div class="x14ev">Sedang berlangsung: ${d.seaNow.map(x=>E(x.label)+' ×'+x.mult).join(', ')}</div>`:'<small class="mut">Tidak ada event musiman hari ini.</small>'}</div>
+  ${L.list.map(e=>`<div class="x14c"><div class="x14r"><b>${E(e.n)}</b><button class="btn" style="height:32px" data-sx="${e.id}">Hapus</button></div><small class="mut">${e.d}/${e.m}${e.y?'/'+e.y:' tiap tahun'} · ${e.len} hari</small><div class="x14r"><label style="flex-direction:row;align-items:center;gap:6px"><input type="checkbox" data-so="${e.id}" ${e.on?'checked':''}> Aktif</label><span>pengali ×<input class="oin" style="width:70px;display:inline-block" type="number" step="0.1" value="${e.mult}" data-sm="${e.id}"></span></div></div>`).join('')}
+  <div class="x14c"><h4>Tambah event musiman</h4><input id="sn_n" class="oin" placeholder="Nama (mis. Hari Pahlawan)"><div class="x14r"><input id="sn_d" class="oin" type="number" placeholder="Tanggal" min="1" max="31"><input id="sn_m" class="oin" type="number" placeholder="Bulan" min="1" max="12"><input id="sn_y" class="oin" type="number" placeholder="Tahun (kosong = tiap tahun)"></div><div class="x14r"><input id="sn_l" class="oin" type="number" placeholder="Durasi (hari)" value="2"><input id="sn_x" class="oin" type="number" step="0.1" placeholder="Pengali" value="2"></div><button class="btn pri" id="sn_a">Tambah</button></div>`;
+  const sv=(b,body)=>{if(b)b.disabled=true;P(body).then(r=>{d=r;toast('Tersimpan');draw()}).catch(e=>{toast(e.message);if(b)b.disabled=false})};
+  $('#sna',v).onchange=e=>sv(null,{act:'sset',all:e.target.checked?1:0});
+  v.querySelectorAll('[data-sx]').forEach(b=>b.onclick=()=>{if(confirm('Hapus event ini?'))sv(b,{act:'sdel',id:b.dataset.sx})});
+  v.querySelectorAll('[data-so]').forEach(c=>c.onchange=()=>sv(null,{act:'sset',id:c.dataset.so,on:c.checked?1:0}));
+  v.querySelectorAll('[data-sm]').forEach(c=>c.onchange=()=>sv(null,{act:'sset',id:c.dataset.sm,mult:+c.value}));
+  $('#sn_a',v).onclick=e=>sv(e.target,{act:'sadd',n:$('#sn_n',v).value,d:+$('#sn_d',v).value,m:+$('#sn_m',v).value,y:+$('#sn_y',v).value||0,len:+$('#sn_l',v).value,mult:+$('#sn_x',v).value})};
+ d=await P({act:'get'});draw()};
+})();
+</script>
+
+
 
 
